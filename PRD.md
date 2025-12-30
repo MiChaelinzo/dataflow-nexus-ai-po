@@ -1,14 +1,14 @@
 # Planning Guide
 
-An intelligent analytics intelligence platform that demonstrates the future of data visualization by combining real-time metrics, predictive insights, and AI-powered recommendations in a stunning visual interface - showcasing what's possible when Tableau's analytical power meets modern web technologies.
+An enterprise-grade analytics intelligence platform built to showcase the future of Tableau integration - combining real-time metrics, AI-powered insights, semantic data modeling, and actionable analytics in a stunning visual interface. This platform demonstrates extensibility, data governance, and workflow integration capabilities that align with Tableau's Developer Platform vision.
 
 **Experience Qualities**:
-1. **Sophisticated** - Professional-grade analytics with enterprise credibility that showcases data mastery
-2. **Intelligent** - AI-enhanced insights surface automatically, guiding users to what matters most
-3. **Commanding** - Bold, confident design that makes users feel empowered and in control of their data
+1. **Enterprise-Ready** - Professional-grade analytics with robust data governance, security controls, and audit trails
+2. **Intelligent** - AI-enhanced insights with semantic understanding surface automatically, guiding users to what matters most
+3. **Actionable** - Data integrated into workflows with smart recommendations, alerts, and automated actions
 
 **Complexity Level**: Complex Application (advanced functionality, likely with multiple views)
-This is a multi-view analytics platform featuring real-time dashboards, AI-powered insights generation, interactive data exploration, predictive modeling visualization, and comprehensive metric tracking - demonstrating the full spectrum of modern analytics capabilities.
+This is a comprehensive analytics platform featuring real-time dashboards, AI-powered insights, semantic data layer, predictive modeling, data governance controls, collaboration features, and custom dashboard builder - demonstrating enterprise-grade analytics capabilities suitable for Tableau integration.
 
 ## Essential Features
 
@@ -53,6 +53,34 @@ This is a multi-view analytics platform featuring real-time dashboards, AI-power
 - **Trigger**: User discovers interesting pattern or saves a view
 - **Progression**: Find insight → Click save → Add notes/tags → Access later from history → Share with team
 - **Success criteria**: Instant save, easy retrieval, organized history view
+
+### Data Governance & Security Dashboard
+- **Functionality**: Comprehensive data lineage, access controls, audit logs, and quality monitoring
+- **Purpose**: Demonstrates enterprise-grade data governance crucial for Tableau deployments
+- **Trigger**: User navigates to Governance tab or data quality alerts appear
+- **Progression**: View data lineage → Check access permissions → Review audit log → Monitor quality metrics → Configure alerts
+- **Success criteria**: Clear visualization of data flow, detailed audit trails, actionable quality metrics
+
+### Semantic Data Layer
+- **Functionality**: Business-friendly data model with natural language queries and metric definitions
+- **Purpose**: Showcases semantic modeling capabilities aligned with Tableau's semantic layer
+- **Trigger**: User searches using natural language or explores data catalog
+- **Progression**: Browse data catalog → View metric definitions → See relationships → Query with natural language → Understand business context
+- **Success criteria**: Intuitive data discovery, accurate semantic search, clear metric lineage
+
+### Collaboration & Sharing Hub
+- **Functionality**: Real-time collaboration, dashboard sharing, commenting, and team notifications
+- **Purpose**: Demonstrates how analytics integrate with team workflows (like Slack integration)
+- **Trigger**: User shares dashboard, adds comment, or mentions team member
+- **Progression**: Create view → Share with team → Add annotations → Receive feedback → Track engagement → Export insights
+- **Success criteria**: Instant sharing, threaded comments, activity tracking
+
+### Custom Dashboard Builder
+- **Functionality**: Drag-and-drop dashboard creation with template library and custom visualizations
+- **Purpose**: Shows extensibility and customization capabilities of the platform
+- **Trigger**: User clicks "Create Dashboard" or customizes existing view
+- **Progression**: Select template → Add components → Configure data sources → Customize styling → Save & publish → Share
+- **Success criteria**: Intuitive builder, real-time preview, easy save/publish flow
 
 ## Edge Case Handling
 

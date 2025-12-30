@@ -43,3 +43,78 @@ export interface FilterState {
   category?: string
   segment?: string
 }
+
+export interface DataSource {
+  id: string
+  name: string
+  type: 'database' | 'api' | 'file' | 'stream'
+  status: 'connected' | 'disconnected' | 'syncing'
+  lastSync?: number
+  recordCount?: number
+  owner?: string
+}
+
+export interface SemanticMetric {
+  id: string
+  name: string
+  description: string
+  formula: string
+  category: string
+  dataSource: string
+  createdBy: string
+  lastModified: number
+  tags: string[]
+}
+
+export interface AuditLog {
+  id: string
+  timestamp: number
+  user: string
+  action: 'view' | 'edit' | 'share' | 'export' | 'delete'
+  resource: string
+  details?: string
+}
+
+export interface DataQualityMetric {
+  id: string
+  name: string
+  score: number
+  status: 'excellent' | 'good' | 'warning' | 'critical'
+  issues?: string[]
+  lastChecked: number
+}
+
+export interface DashboardTemplate {
+  id: string
+  name: string
+  description: string
+  category: string
+  thumbnail?: string
+  components: DashboardComponent[]
+}
+
+export interface DashboardComponent {
+  id: string
+  type: 'metric' | 'chart' | 'table' | 'text'
+  position: { x: number; y: number; w: number; h: number }
+  config: any
+}
+
+export interface Comment {
+  id: string
+  dashboardId: string
+  author: string
+  content: string
+  timestamp: number
+  replies?: Comment[]
+}
+
+export interface Alert {
+  id: string
+  name: string
+  condition: string
+  metric: string
+  threshold: number
+  active: boolean
+  lastTriggered?: number
+}

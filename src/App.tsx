@@ -2,11 +2,14 @@ import { useState, useMemo } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChartBar, Sparkle, TrendUp, Funnel } from '@phosphor-icons/react'
+import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { PredictionChart } from '@/components/PredictionChart'
 import { InsightGenerator } from '@/components/InsightGenerator'
+import { DataGovernance } from '@/components/DataGovernance'
+import { SemanticLayer } from '@/components/SemanticLayer'
+import { CollaborationHub } from '@/components/CollaborationHub'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
@@ -61,7 +64,7 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-2xl grid-cols-4 h-auto p-1">
+            <TabsList className="grid w-full max-w-4xl grid-cols-7 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -73,6 +76,18 @@ function App() {
               <TabsTrigger value="predictions" className="gap-2 py-3">
                 <TrendUp size={18} weight="duotone" />
                 <span className="hidden sm:inline">Predictions</span>
+              </TabsTrigger>
+              <TabsTrigger value="semantic" className="gap-2 py-3">
+                <Function size={18} weight="duotone" />
+                <span className="hidden sm:inline">Semantic</span>
+              </TabsTrigger>
+              <TabsTrigger value="governance" className="gap-2 py-3">
+                <Shield size={18} weight="duotone" />
+                <span className="hidden sm:inline">Governance</span>
+              </TabsTrigger>
+              <TabsTrigger value="collaborate" className="gap-2 py-3">
+                <Users size={18} weight="duotone" />
+                <span className="hidden sm:inline">Collaborate</span>
               </TabsTrigger>
               <TabsTrigger value="explorer" className="gap-2 py-3">
                 <Funnel size={18} weight="duotone" />
@@ -234,6 +249,18 @@ function App() {
                   Interactive data exploration with multi-dimensional filtering, custom segmentation, and export capabilities coming soon.
                 </p>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="semantic" className="space-y-6">
+              <SemanticLayer />
+            </TabsContent>
+
+            <TabsContent value="governance" className="space-y-6">
+              <DataGovernance />
+            </TabsContent>
+
+            <TabsContent value="collaborate" className="space-y-6">
+              <CollaborationHub />
             </TabsContent>
           </Tabs>
         </main>
