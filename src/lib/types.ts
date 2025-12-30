@@ -162,3 +162,23 @@ export interface UserPresence {
   lastSeen: number
   cursor?: CursorPosition
 }
+
+export interface YoYDataPoint {
+  month: string
+  monthIndex: number
+  currentYear: number
+  previousYear: number
+  yoyChange: number
+  yoyChangePercent: number
+}
+
+export interface SeasonalTrend {
+  season: 'Q1' | 'Q2' | 'Q3' | 'Q4'
+  seasonName: string
+  months: string[]
+  currentYearAvg: number
+  previousYearAvg: number
+  change: number
+  changePercent: number
+  trend: 'up' | 'down' | 'neutral'
+}

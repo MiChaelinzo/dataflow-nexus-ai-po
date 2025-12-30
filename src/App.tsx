@@ -17,6 +17,7 @@ import { SessionReplay } from '@/components/SessionReplay'
 import { MentionNotifications } from '@/components/MentionNotifications'
 import { ReportBuilder } from '@/components/ReportBuilder'
 import { ComparisonReport } from '@/components/ComparisonReport'
+import { YoYComparison } from '@/components/YoYComparison'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { motion } from 'framer-motion'
@@ -393,10 +394,23 @@ function App() {
             </TabsContent>
 
             <TabsContent value="comparison" className="space-y-6">
-              <ComparisonReport
-                metrics={metrics}
-                timeSeriesData={timeSeriesData}
-              />
+              <Tabs defaultValue="period" className="w-full">
+                <TabsList className="grid w-full max-w-md grid-cols-2">
+                  <TabsTrigger value="period">Period Comparison</TabsTrigger>
+                  <TabsTrigger value="yoy">Year-over-Year</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="period" className="mt-6">
+                  <ComparisonReport
+                    metrics={metrics}
+                    timeSeriesData={timeSeriesData}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="yoy" className="mt-6">
+                  <YoYComparison />
+                </TabsContent>
+              </Tabs>
             </TabsContent>
           </Tabs>
         </main>

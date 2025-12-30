@@ -1,4 +1,4 @@
-import { Metric, ChartDataPoint, PredictionData } from './types'
+import { Metric, ChartDataPoint, PredictionData, YoYDataPoint, SeasonalTrend } from './types'
 
 export function generateMetrics(): Metric[] {
   return [
@@ -176,4 +176,64 @@ export function getChangeColor(change: number, inverse: boolean = false): string
   if (change === 0) return 'text-muted-foreground'
   const isPositive = inverse ? change < 0 : change > 0
   return isPositive ? 'text-success' : 'text-destructive'
+}
+
+export function generateYoYData(metricId: string = 'revenue'): YoYDataPoint[] {
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ]
+  
+  const baseValues: { [key: string]: number[] } = {
+    revenue: [180000, 175000, 195000, 210000, 225000, 240000, 235000, 245000, 250000, 255000, 260000, 270000],
+    customers: [8500, 8700, 9100, 9500, 9800, 10200, 10500, 10800, 11100, 11400, 11700, 12000],
+    conversion: [2.8, 2.85, 2.9, 2.95, 3.0, 3.05, 3.1, 3.15, 3.2, 3.25, 3.3, 3.35]
+  }
+  
+  const currentYearValues = baseValues[metricId] || baseValues.revenue
+  
+  return months.map((month, index) => {
+    const currentYear = currentYearValues[index]
+    const growthFactor = 0.15 + (Math.random() * 0.1 - 0.05)
+    const previousYear = currentYear / (1 + growthFactor)
+    const yoyChange = currentYear - previousYear
+    const yoyChangePercent = (yoyChange / previousYear) * 100
+    
+    return {
+      month,
+      monthIndex: index,
+      currentYear: Math.round(currentYear),
+      previousYear: Math.round(previousYear),
+      yoyChange: Math.round(yoyChange),
+      yoyChangePercent: Math.round(yoyChangePercent * 10) / 10
+    }
+  })
+}
+
+export function calculateSeasonalTrends(yoyData: YoYDataPoint[]): SeasonalTrend[] {
+  const seasons = [
+    { season: 'Q1' as const, seasonName: 'Winter (Q1)', months: ['Jan', 'Feb', 'Mar'], indices: [0, 1, 2] },
+    { season: 'Q2' as const, seasonName: 'Spring (Q2)', months: ['Apr', 'May', 'Jun'], indices: [3, 4, 5] },
+    { season: 'Q3' as const, seasonName: 'Summer (Q3)', months: ['Jul', 'Aug', 'Sep'], indices: [6, 7, 8] },
+    { season: 'Q4' as const, seasonName: 'Fall (Q4)', months: ['Oct', 'Nov', 'Dec'], indices: [9, 10, 11] }
+  ]
+  
+  return seasons.map(({ season, seasonName, months, indices }) => {
+    const seasonData = indices.map(i => yoyData[i])
+    const currentYearAvg = seasonData.reduce((sum, d) => sum + d.currentYear, 0) / seasonData.length
+    const previousYearAvg = seasonData.reduce((sum, d) => sum + d.previousYear, 0) / seasonData.length
+    const change = currentYearAvg - previousYearAvg
+    const changePercent = (change / previousYearAvg) * 100
+    
+    return {
+      season,
+      seasonName,
+      months,
+      currentYearAvg: Math.round(currentYearAvg),
+      previousYearAvg: Math.round(previousYearAvg),
+      change: Math.round(change),
+      changePercent: Math.round(changePercent * 10) / 10,
+      trend: changePercent > 0 ? 'up' : changePercent < 0 ? 'down' : 'neutral'
+    }
+  })
 }

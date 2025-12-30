@@ -103,6 +103,13 @@ This is a comprehensive analytics platform featuring real-time dashboards, AI-po
 - **Progression**: Select template → Add components → Configure data sources → Customize styling → Save & publish → Share
 - **Success criteria**: Intuitive builder, real-time preview, easy save/publish flow
 
+### Year-over-Year Comparison with Seasonal Trends
+- **Functionality**: Compare current year performance against previous year with monthly breakdown and seasonal trend analysis across quarters
+- **Purpose**: Reveals long-term growth patterns, identifies seasonal fluctuations, and highlights best/worst performing periods for strategic planning
+- **Trigger**: User navigates to Compare tab and selects Year-over-Year view
+- **Progression**: Select metric → View monthly YoY bars → Analyze seasonal trends → Identify best/worst months → Compare quarterly performance → Export insights
+- **Success criteria**: Clear visual comparison with trend indicators, actionable seasonal insights, smooth animated bar comparisons, quarter-based aggregations with performance badges
+
 ## Edge Case Handling
 
 - **Empty State**: Beautiful onboarding with sample data preloaded, clear CTAs to explore features
