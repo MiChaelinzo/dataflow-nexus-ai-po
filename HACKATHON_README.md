@@ -85,6 +85,18 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 - **Activity tracking** showing views, comments, shares, and exports
 - **Notification system** for mentions and team updates
 
+### 7.5. **Real-Time Collaboration Features** ⭐ NEW!
+- **Live cursor tracking** showing all active users' cursors in real-time
+- **Active presence indicators** displaying who's viewing which dashboard section
+- **Color-coded user identification** with unique colors for each collaborator
+- **Location awareness** tracking which tabs/sections users are viewing
+- **Automatic activity detection** with smart inactivity timeouts (30 seconds)
+- **Collaboration panel** with searchable user list and activity timestamps
+- **Demo mode** simulating 4 users for easy demonstration
+- **Persistent user identity** maintaining consistent colors across sessions
+- **Smooth animations** for cursor movements and presence updates
+- **Performance optimized** with throttled updates (50ms) and efficient state management
+
 ### 8. **Advanced Data Explorer**
 - **Coming soon** placeholder demonstrating roadmap for multi-dimensional filtering
 - Shows vision for custom segmentation and advanced drill-down capabilities
@@ -107,7 +119,7 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 ### **APIs & Developer Tools Used**
 1. **Spark Runtime SDK** (`spark.llm`, `spark.kv`, `spark.user`)
    - LLM API for AI-powered insight generation
-   - Key-Value persistence for data storage
+   - Key-Value persistence for data storage and real-time collaboration state
    - User authentication and context
 
 2. **Tableau Developer Platform Integration** (Demonstrated Patterns)
@@ -118,6 +130,7 @@ This platform showcases how modern web technologies can extend and strengthen Ta
    - Data governance framework (security, audit, quality)
    - Dashboard embedding patterns (collaboration, sharing, export)
    - Real-time data sync patterns (data source monitoring)
+   - **Collaboration integration** enabling real-time teamwork on Tableau dashboards
 
 3. **Data Visualization Libraries**
    - D3.js for custom interactive visualizations

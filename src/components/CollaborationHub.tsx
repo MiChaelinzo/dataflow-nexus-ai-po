@@ -6,13 +6,14 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ShareNetwork, ChatCircle, Bell, Export, Users, PaperPlaneTilt, UserList, CalendarBlank } from '@phosphor-icons/react'
+import { ShareNetwork, ChatCircle, Bell, Export, Users, PaperPlaneTilt, UserList, CalendarBlank, Cursor } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Comment } from '@/lib/types'
+import { Comment, UserPresence } from '@/lib/types'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { TeamManagement } from '@/components/TeamManagement'
 import { RoleBasedDigests } from '@/components/RoleBasedDigests'
+import { CollaborationPanel } from '@/components/CollaborationPanel'
 
 const mockComments: Comment[] = [
   {
@@ -54,7 +55,17 @@ const mockSharedUsers = [
   { id: '4', name: 'Emily Watson', email: 'emily.w@company.com', role: 'Viewer' }
 ]
 
-export function CollaborationHub() {
+export function CollaborationHub({ 
+  activeUsers, 
+  currentUser 
+}: { 
+  activeUsers: UserPresence[]
+  currentUser: {
+    userId: string
+    userName: string
+    userColor: string
+  }
+}) {
   const [comments, setComments] = useKV<Comment[]>('dashboard-comments', mockComments)
   const [newComment, setNewComment] = useState('')
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
@@ -124,13 +135,17 @@ export function CollaborationHub() {
             </div>
           </div>
           <Badge className="bg-success/20 text-success border-success/30">
-            {mockSharedUsers.length} Team Members
+            {activeUsers.length + 1} Active Now
           </Badge>
         </div>
       </motion.div>
 
-      <Tabs defaultValue="comments" className="w-full">
-        <TabsList className="grid w-full max-w-2xl grid-cols-4">
+      <Tabs defaultValue="live" className="w-full">
+        <TabsList className="grid w-full max-w-2xl grid-cols-5">
+          <TabsTrigger value="live" className="gap-2">
+            <Cursor size={16} weight="duotone" />
+            Live
+          </TabsTrigger>
           <TabsTrigger value="comments" className="gap-2">
             <ChatCircle size={16} weight="duotone" />
             Comments
@@ -148,6 +163,10 @@ export function CollaborationHub() {
             Share
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="live" className="mt-6">
+          <CollaborationPanel activeUsers={activeUsers} currentUser={currentUser} />
+        </TabsContent>
 
         <TabsContent value="comments" className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

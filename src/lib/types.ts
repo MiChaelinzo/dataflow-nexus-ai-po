@@ -143,3 +143,22 @@ export interface TeamMember {
   lastActive: number
   digestSubscriptions: DigestSubscription[]
 }
+
+export interface CursorPosition {
+  userId: string
+  userName: string
+  userColor: string
+  x: number
+  y: number
+  timestamp: number
+}
+
+export interface UserPresence {
+  userId: string
+  userName: string
+  userColor: string
+  currentView: string
+  isActive: boolean
+  lastSeen: number
+  cursor?: CursorPosition
+}

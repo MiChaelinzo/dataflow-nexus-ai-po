@@ -16,6 +16,9 @@ import { TableauPulse } from '@/components/TableauPulse'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
+import { LiveCursors } from '@/components/LiveCursor'
+import { PresenceIndicator } from '@/components/PresenceIndicator'
+import { useCollaboration } from '@/hooks/use-collaboration'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -24,6 +27,11 @@ function App() {
   const timeSeriesData = useMemo(() => generateTimeSeriesData(30), [])
   const categoryData = useMemo(() => generateCategoryData(), [])
   const predictionData = useMemo(() => generatePredictionData(), [])
+  
+  const { currentUser, cursors, activeUsers } = useCollaboration({
+    currentView: activeTab,
+    enabled: true
+  })
   
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -55,7 +63,9 @@ function App() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
+                className="flex items-center gap-3"
               >
+                <PresenceIndicator users={activeUsers} />
                 <Badge className="text-sm px-4 py-2 bg-accent/20 text-accent border-accent/30 gap-2">
                   <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                   Live Data
@@ -178,6 +188,7 @@ function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.4 }}
+                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
               >
                 <Card className="p-6 bg-gradient-to-br from-accent/10 via-card to-metric-purple/10 border-accent/20">
                   <div className="flex items-start gap-4">
@@ -198,6 +209,30 @@ function App() {
                         onClick={() => setActiveTab('insights')}
                       >
                         Generate Insights →
+                      </Badge>
+                    </div>
+                  </div>
+                </Card>
+                
+                <Card className="p-6 bg-gradient-to-br from-success/10 via-card to-accent/10 border-success/20">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-success/20 flex items-center justify-center">
+                        <Users size={24} weight="fill" className="text-success" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Collaborate in real-time
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        See your team's cursors live, track who's viewing what, and collaborate seamlessly on analytics.
+                      </p>
+                      <Badge 
+                        className="cursor-pointer bg-success text-white hover:bg-success/90"
+                        onClick={() => setActiveTab('collaborate')}
+                      >
+                        View Collaboration →
                       </Badge>
                     </div>
                   </div>
@@ -290,7 +325,7 @@ function App() {
             </TabsContent>
 
             <TabsContent value="collaborate" className="space-y-6">
-              <CollaborationHub />
+              <CollaborationHub activeUsers={activeUsers} currentUser={currentUser} />
             </TabsContent>
           </Tabs>
         </main>
@@ -305,6 +340,7 @@ function App() {
         </footer>
       </div>
       
+      <LiveCursors cursors={cursors} />
       <Toaster />
     </div>
   )
