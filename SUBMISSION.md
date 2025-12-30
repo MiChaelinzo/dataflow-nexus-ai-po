@@ -69,16 +69,25 @@
 - Security: SOC 2, GDPR, HIPAA compliance dashboards
 - This demonstrates enterprise-ready data management
 
-### **[4:15-4:45] Collaboration Features**
+### **[4:15-4:45] Analytics Reports & Export** ⭐ NEW!
+- Navigate to Reports tab
+- Three pre-built templates: Executive Summary, Detailed Analytics, Custom
+- Click "Quick PDF" - instant professional report generation
+- Configure reports: toggle sections, preview before export
+- Multiple formats: PDF for presentations, CSV for analysis, JSON for APIs
+- Schedule automated reports: daily, weekly, or monthly
+- Add email recipients for automated distribution
+- Shows how analytics integrates into workflows
+- Perfect for stakeholder updates and compliance reporting
+
+### **[4:45-5:15] Collaboration Features**
 - Navigate to Collaborate tab
 - Real-time commenting on dashboards
 - Team member management with role-based access
-- Export to PDF, Excel, or Image for sharing
-- Share via email with instant notifications
 - Activity tracking shows views, comments, shares
 - Integrates analytics into team workflows
 
-### **[4:45-5:00] Conclusion & Vision**
+### **[5:15-5:30] Conclusion & Vision**
 - Built with React, TypeScript, Tailwind, D3.js, and GPT-4o
 - Production-ready code, not just a prototype
 - Demonstrates multiple Tableau integration points:
@@ -86,6 +95,7 @@
   - Data governance
   - Dashboard extensibility
   - AI/ML integration
+  - Report generation & export
 - Future vision: Direct Tableau embedding, Salesforce integration, Agentforce
 - This is the future of analytics platforms
 - Thank you for watching!
@@ -124,13 +134,15 @@
 
 ### **Additional: Best Use of Actionable Analytics** ⭐⭐⭐
 **Why We Should Win:**
+- **Analytics Reports** with PDF, CSV, and JSON export for stakeholder distribution
+- **Scheduled report automation** ensuring timely delivery of insights
+- **Report templates** optimized for executives, analysts, and teams
+- **Email distribution** to multiple recipients automatically
 - **Tableau Pulse** delivering proactive AI insights with specific actions
-- Smart prioritization with confidence scoring
-- Real-time team collaboration
-- Multi-format export integration
-- AI-generated actionable insights
-- Email sharing with notifications
-- Activity tracking and engagement
+- **Smart prioritization** with confidence scoring
+- **Real-time team collaboration**
+- **AI-generated actionable insights**
+- **Activity tracking** and engagement
 
 ### **Additional: Best Product Extensibility** ⭐⭐
 **Why We Should Win:**
@@ -145,14 +157,15 @@
 ## 📊 Technical Highlights
 
 ### **Innovation Points**
-1. ✅ **Tableau Pulse** - AI-driven proactive insights delivery
-2. ✅ AI-powered insight generation using GPT-4o
-3. ✅ Semantic layer with natural language search
-4. ✅ Comprehensive data governance framework
-5. ✅ Real-time collaboration features
-6. ✅ Predictive analytics with confidence intervals
-7. ✅ Interactive visualizations with D3.js
-8. ✅ Production-ready architecture
+1. ✅ **Exportable Analytics Reports** - Multi-format report generation with scheduling
+2. ✅ **Tableau Pulse** - AI-driven proactive insights delivery
+3. ✅ AI-powered insight generation using GPT-4o
+4. ✅ Semantic layer with natural language search
+5. ✅ Comprehensive data governance framework
+6. ✅ Real-time collaboration features
+7. ✅ Predictive analytics with confidence intervals
+8. ✅ Interactive visualizations with D3.js
+9. ✅ Production-ready architecture
 
 ### **Technical Excellence**
 - TypeScript for type safety

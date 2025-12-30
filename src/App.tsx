@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera } from '@phosphor-icons/react'
+import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera, FileText } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { PredictionChart } from '@/components/PredictionChart'
@@ -15,12 +15,15 @@ import { TableauAPIShowcase } from '@/components/TableauAPIShowcase'
 import { TableauPulse } from '@/components/TableauPulse'
 import { SessionReplay } from '@/components/SessionReplay'
 import { MentionNotifications } from '@/components/MentionNotifications'
+import { ReportBuilder } from '@/components/ReportBuilder'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
+import { Insight } from '@/lib/types'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
 import { LiveCursors } from '@/components/LiveCursor'
 import { PresenceIndicator } from '@/components/PresenceIndicator'
 import { useCollaboration } from '@/hooks/use-collaboration'
+import { useKV } from '@github/spark/hooks'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -29,6 +32,8 @@ function App() {
   const timeSeriesData = useMemo(() => generateTimeSeriesData(30), [])
   const categoryData = useMemo(() => generateCategoryData(), [])
   const predictionData = useMemo(() => generatePredictionData(), [])
+  
+  const [insights] = useKV<Insight[]>('analytics-insights', [])
   
   const { currentUser, cursors, activeUsers } = useCollaboration({
     currentView: activeTab,
@@ -80,7 +85,7 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-[1600px] grid-cols-5 lg:grid-cols-10 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1600px] grid-cols-5 lg:grid-cols-11 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -116,6 +121,10 @@ function App() {
               <TabsTrigger value="replay" className="gap-2 py-3">
                 <VideoCamera size={18} weight="duotone" />
                 <span className="hidden sm:inline">Replay</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="gap-2 py-3">
+                <FileText size={18} weight="duotone" />
+                <span className="hidden sm:inline">Reports</span>
               </TabsTrigger>
               <TabsTrigger value="explorer" className="gap-2 py-3">
                 <Funnel size={18} weight="duotone" />
@@ -341,6 +350,16 @@ function App() {
                 currentUserName={currentUser.userName}
                 currentUserColor={currentUser.userColor}
                 currentView={activeTab}
+              />
+            </TabsContent>
+
+            <TabsContent value="reports" className="space-y-6">
+              <ReportBuilder
+                metrics={metrics}
+                timeSeriesData={timeSeriesData}
+                categoryData={categoryData}
+                predictionData={predictionData}
+                insights={insights || []}
               />
             </TabsContent>
           </Tabs>
