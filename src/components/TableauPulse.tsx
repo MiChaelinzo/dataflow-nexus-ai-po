@@ -17,12 +17,14 @@ import {
   BookmarkSimple,
   ShareNetwork,
   ChartLine,
-  Warning
+  Warning,
+  SlackLogo
 } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 import { Metric } from '@/lib/types'
+import { SlackIntegration, SlackNotificationRule } from '@/components/SlackIntegration'
 
 interface PulseInsight {
   id: string
@@ -51,6 +53,9 @@ export function TableauPulse({ metrics }: TableauPulseProps) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [filter, setFilter] = useState<'all' | 'unread' | 'bookmarked'>('all')
   const [selectedInsight, setSelectedInsight] = useState<PulseInsight | null>(null)
+  const [activeView, setActiveView] = useState<'insights' | 'slack'>('insights')
+  const [slackConnected] = useKV<boolean>('slack-connected', false)
+  const [notificationRules] = useKV<SlackNotificationRule[]>('slack-notification-rules', [])
 
   useEffect(() => {
     if (!pulseInsights || pulseInsights.length === 0) {
@@ -167,6 +172,9 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
       }
 
       setPulseInsights(current => [newInsight, ...(current || [])])
+      
+      await sendToSlackIfMatches(newInsight)
+      
       toast.success('New Pulse insight generated!', {
         description: newInsight.title
       })
@@ -178,6 +186,54 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
     } finally {
       setIsGenerating(false)
     }
+  }
+
+  const sendToSlackIfMatches = async (insight: PulseInsight) => {
+    if (!slackConnected || !notificationRules || notificationRules.length === 0) {
+      return
+    }
+
+    const matchingRules = notificationRules.filter(rule => 
+      rule.enabled &&
+      rule.insightTypes.includes(insight.type) &&
+      rule.priorityLevel.includes(insight.priority) &&
+      insight.confidence >= rule.confidenceThreshold &&
+      rule.notifyImmediately
+    )
+
+    if (matchingRules.length > 0) {
+      for (const rule of matchingRules) {
+        await sendSlackNotification(insight, rule.channel)
+      }
+    }
+  }
+
+  const sendSlackNotification = async (insight: PulseInsight, channel: string) => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      toast.success(`Sent to Slack: #${channel}`, {
+        description: insight.title,
+        icon: <SlackLogo size={16} weight="fill" />
+      })
+    } catch (error) {
+      console.error('Error sending to Slack:', error)
+    }
+  }
+
+  const shareToSlack = async (insight: PulseInsight) => {
+    if (!slackConnected) {
+      toast.error('Slack not connected', {
+        description: 'Connect to Slack in the Notifications tab first'
+      })
+      return
+    }
+
+    const defaultChannel = notificationRules && notificationRules.length > 0 
+      ? notificationRules[0].channel 
+      : 'analytics-insights'
+
+    await sendSlackNotification(insight, defaultChannel)
   }
 
   const markAsRead = (id: string) => {
@@ -251,7 +307,15 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
                 </div>
               </div>
               <div>
-                <h2 className="text-2xl font-bold mb-2">Tableau Pulse</h2>
+                <h2 className="text-2xl font-bold mb-2 flex items-center gap-3">
+                  Tableau Pulse
+                  {slackConnected && (
+                    <Badge className="bg-[#4A154B]/20 text-[#4A154B] border-[#4A154B]/30 gap-1.5">
+                      <SlackLogo size={14} weight="fill" />
+                      Slack Active
+                    </Badge>
+                  )}
+                </h2>
                 <p className="text-muted-foreground max-w-2xl">
                   AI-driven insights delivered proactively. Tableau Pulse analyzes your data continuously and surfaces the most relevant insights, anomalies, and opportunities in real-time.
                 </p>
@@ -279,6 +343,24 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
         </Card>
       </motion.div>
 
+      <Tabs value={activeView} onValueChange={(v) => setActiveView(v as any)} className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+          <TabsTrigger value="insights" className="gap-2">
+            <Bell size={16} weight="duotone" />
+            Insights
+            {unreadCount > 0 && (
+              <Badge className="ml-1 h-5 px-1.5 text-xs bg-accent text-accent-foreground">
+                {unreadCount}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="slack" className="gap-2">
+            <SlackLogo size={16} weight="fill" />
+            Notifications
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="insights">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between gap-4">
@@ -509,9 +591,22 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
                         <ArrowRight size={16} weight="bold" />
                         View in Dashboard
                       </Button>
-                      <Button className="w-full gap-2" variant="outline">
-                        <ShareNetwork size={16} weight="bold" />
-                        Share Insight
+                      <Button 
+                        className="w-full gap-2" 
+                        variant="outline"
+                        onClick={() => shareToSlack(selectedInsight)}
+                      >
+                        {slackConnected ? (
+                          <>
+                            <SlackLogo size={16} weight="fill" />
+                            Send to Slack
+                          </>
+                        ) : (
+                          <>
+                            <ShareNetwork size={16} weight="bold" />
+                            Share Insight
+                          </>
+                        )}
                       </Button>
                     </div>
 
@@ -557,6 +652,12 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
           </AnimatePresence>
         </div>
       </div>
+        </TabsContent>
+
+        <TabsContent value="slack">
+          <SlackIntegration />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

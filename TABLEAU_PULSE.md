@@ -62,6 +62,17 @@ Each actionable insight includes:
 - **Business context**: Why this action matters
 - **Related metrics**: What else might be affected
 
+#### 7. **Slack Notification Integration**
+Seamlessly delivers insights to team Slack channels:
+- **Workspace Connection**: One-click integration with Slack webhook
+- **Configurable Rules**: Set up multiple notification rules with custom filters
+- **Smart Filtering**: Send insights based on type, priority, and confidence threshold
+- **Instant Delivery**: Real-time notifications as insights are generated
+- **Rich Formatting**: Beautiful Slack messages with metric details, suggested actions, and interactive buttons
+- **Channel Management**: Send different insight types to different channels
+- **Preview Mode**: See exactly how insights will appear in Slack before setting up rules
+- **Test Functionality**: Send test messages to verify channel configuration
+
 ## Technical Implementation
 
 ### Component Structure
@@ -71,7 +82,15 @@ TableauPulse.tsx
 ├── Feed Management (filtering, sorting)
 ├── Detail View (sidebar with full insight)
 ├── Persistence (useKV for data storage)
-└── Actions (bookmark, share, view dashboard)
+├── Actions (bookmark, share, view dashboard, send to Slack)
+└── Slack Integration Tab
+    ├── SlackIntegration.tsx
+    │   ├── Connection Management
+    │   ├── Notification Rules Configuration
+    │   ├── Channel Management
+    │   └── Message Preview
+    └── SlackMessagePreview.tsx
+        └── Visual preview of Slack messages
 ```
 
 ### Data Model
@@ -92,6 +111,19 @@ interface PulseInsight {
   actionable: boolean
   suggestedAction?: string
   relatedMetrics?: string[]
+}
+
+interface SlackNotificationRule {
+  id: string
+  name: string
+  enabled: boolean
+  channel: string
+  insightTypes: ('opportunity' | 'alert' | 'trend' | 'anomaly' | 'achievement')[]
+  priorityLevel: ('high' | 'medium' | 'low')[]
+  confidenceThreshold: number
+  notifyImmediately: boolean
+  digestEnabled: boolean
+  digestSchedule?: 'hourly' | 'daily' | 'weekly'
 }
 ```
 
@@ -152,9 +184,26 @@ Review detailed insight
   ↓
 See suggested action (if applicable)
   ↓
-Bookmark for later or share with team
+Bookmark for later or share directly to Slack
   ↓
 Navigate to dashboard for deeper analysis
+```
+
+### 5. Setting Up Slack Notifications
+```
+Navigate to Notifications tab in Pulse
+  ↓
+Connect to Slack workspace with webhook URL
+  ↓
+Create notification rule
+  ↓
+Select channel and configure filters (type, priority, confidence)
+  ↓
+Enable instant notifications
+  ↓
+Test the connection
+  ↓
+Automatic delivery when insights match rules
 ```
 
 ## Integration with Tableau Developer Platform
@@ -180,7 +229,15 @@ This implementation showcases how Tableau Pulse could be integrated with:
 ### 4. **Tableau Webhooks**
 - Trigger insight generation on data refresh
 - Send alerts when high-priority insights appear
-- Integrate with Slack/Teams for notifications
+- **Integrate with Slack for real-time team notifications**
+- **Automated delivery of insights to configured channels**
+- **Rich message formatting with actionable buttons**
+
+### 5. **Salesforce Platform Integration**
+- Leverage Slack integration (part of Salesforce ecosystem)
+- Deliver insights where teams are already working
+- Enable collaboration around data insights
+- Support for Agentforce to act on insights automatically
 
 ## Best Practices Demonstrated
 
@@ -212,16 +269,20 @@ This implementation showcases how Tableau Pulse could be integrated with:
 ## Future Enhancements
 
 ### Potential Additions
-1. **Scheduled Delivery**: Email/Slack digests of daily insights
+1. **Advanced Slack Features**: 
+   - Scheduled digest delivery (hourly, daily, weekly summaries)
+   - Interactive Slack workflows for taking action on insights
+   - Thread-based collaboration on specific insights
+   - Slash commands for querying insights from Slack
 2. **Personalization**: Learn user preferences for insight types
-3. **Collaboration**: Comment threads on insights
+3. **Collaboration**: Comment threads on insights within the app
 4. **Impact Tracking**: Measure which insights drove actions
 5. **Custom Alerts**: User-defined thresholds and notifications
 6. **Natural Language Queries**: Ask questions, get insights
 7. **Insight History**: Track how metrics changed after acting on insights
 8. **Team Feed**: See insights shared by team members
 9. **Mobile Notifications**: Push alerts for critical insights
-10. **Integration with Agentforce**: AI agents that act on insights
+10. **Integration with Agentforce**: AI agents that automatically act on insights and report back via Slack
 
 ## Alignment with Hackathon Criteria
 
@@ -268,23 +329,33 @@ When demonstrating this feature:
    - Show AI analyzing metrics
    - New insight appears with animation
    - Highlight confidence score and priority
+   - Show automatic Slack notification if rules configured
 
 4. **Review Insight Details** (45 seconds)
    - Click an insight card
    - Show detailed view in sidebar
    - Point out suggested actions
    - Show related metrics
+   - Demonstrate "Send to Slack" button
 
-5. **Key Differentiators** (30 seconds)
+5. **Slack Integration** (60 seconds)
+   - Switch to Notifications tab
+   - Show connected Slack workspace
+   - Display configured notification rules
+   - Show message preview with rich formatting
+   - Explain automatic delivery based on rules
+
+6. **Key Differentiators** (30 seconds)
    - "AI-powered with confidence scoring"
    - "Actionable recommendations, not just observations"
    - "Persistent feed with smart filtering"
+   - "Automatic Slack delivery - insights where work happens"
    - "Integration-ready with Tableau Platform"
 
-**Total: 3.5 minutes** (fits well within 5-minute limit)
+**Total: 4.5 minutes** (fits well within 5-minute limit)
 
 ## Conclusion
 
-This Tableau Pulse implementation demonstrates the future of analytics: AI-driven, proactive, and actionable. It showcases deep integration with the Tableau Developer Platform while solving real business problems - helping users discover insights faster and take action with confidence.
+This Tableau Pulse implementation demonstrates the future of analytics: AI-driven, proactive, and actionable. It showcases deep integration with the Tableau Developer Platform and Salesforce ecosystem (via Slack) while solving real business problems - helping users discover insights faster, take action with confidence, and collaborate with their teams where work already happens.
 
-The feature aligns perfectly with Tableau's vision of "actionable analytics" and demonstrates how AI can augment (not replace) human decision-making in the analytics workflow.
+The feature aligns perfectly with Tableau's vision of "actionable analytics" and demonstrates how AI can augment (not replace) human decision-making in the analytics workflow. The Slack integration exemplifies the "Best Use of Actionable Analytics" hackathon category by seamlessly integrating data insights into team workflows, ensuring that critical information reaches the right people at the right time.

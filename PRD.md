@@ -20,11 +20,18 @@ This is a comprehensive analytics platform featuring real-time dashboards, AI-po
 - **Success criteria**: Smooth animations, responsive interactions, clear data hierarchy
 
 ### Tableau Pulse - AI-Driven Insights Delivery
-- **Functionality**: Proactive AI-powered insights surfaced automatically with prioritization, confidence scoring, and actionable recommendations
-- **Purpose**: Demonstrates Tableau Pulse integration - the future of AI-driven analytics delivery that surfaces insights automatically
-- **Trigger**: Insights appear on page load; user can generate new insights or filter by unread/bookmarked
-- **Progression**: View feed → Read insight detail → See confidence & priority → Get suggested actions → Bookmark important → Share with team
-- **Success criteria**: Real-time insight generation using LLM, persistent feed with filtering, clear prioritization with actionable recommendations
+- **Functionality**: Proactive AI-powered insights surfaced automatically with prioritization, confidence scoring, actionable recommendations, and Slack notification integration
+- **Purpose**: Demonstrates Tableau Pulse integration - the future of AI-driven analytics delivery that surfaces insights automatically and delivers them to teams via Slack
+- **Trigger**: Insights appear on page load; user can generate new insights, filter by unread/bookmarked, configure Slack notifications
+- **Progression**: View feed → Read insight detail → See confidence & priority → Get suggested actions → Configure Slack rules → Auto-send to channels → Bookmark important → Share directly to Slack
+- **Success criteria**: Real-time insight generation using LLM, persistent feed with filtering, clear prioritization with actionable recommendations, seamless Slack integration with configurable notification rules
+
+### Slack Integration for Team Alerts
+- **Functionality**: Connect to Slack workspace and configure automated notification rules to send Pulse insights to specific channels based on priority, type, and confidence thresholds
+- **Purpose**: Demonstrates how analytics integrate into team workflows - making insights actionable where work happens
+- **Trigger**: User navigates to Notifications tab in Pulse section
+- **Progression**: Connect Slack workspace → Configure notification rules → Select channels → Set filters (priority, type, confidence) → Enable instant notifications → Preview message format → Test notifications → Receive automatic alerts
+- **Success criteria**: Seamless Slack connection, flexible rule configuration, real-time message delivery, rich formatted messages with actionable buttons
 
 ### AI Insight Generator
 - **Functionality**: Uses LLM to analyze displayed data and generate actionable business insights
