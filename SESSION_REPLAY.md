@@ -41,6 +41,22 @@ The Session Replay feature provides comprehensive recording and playback capabil
 - **View Tracking**: Records which tabs/views were visited
 - **Duration Tracking**: Automatic calculation of session length
 
+### 6. Annotations & Bookmarks (NEW)
+- **Annotations**: Add detailed notes at specific moments with categories
+  - **Important**: Mark critical moments or decisions
+  - **Question**: Flag items needing clarification
+  - **Issue**: Identify problems or bugs
+  - **Highlight**: Note interesting or notable moments
+  - **Note**: General observations or comments
+- **Bookmarks**: Quick visual markers for key moments
+  - **Color-coded**: 8 distinct colors for categorization
+  - **Quick Navigation**: Jump directly to bookmarked moments
+  - **Visual Timeline**: See all bookmarks on the progress bar
+- **Timeline Integration**: Both appear on the playback timeline
+- **User Attribution**: Track who added each annotation/bookmark
+- **Delete Controls**: Creators can remove their own annotations/bookmarks
+- **Seek to Moment**: Click any annotation or bookmark to jump to that time
+
 ## Technical Architecture
 
 ### Data Structures
@@ -79,6 +95,39 @@ The Session Replay feature provides comprehensive recording and playback capabil
     tags: string[]
     views: string[]
   }
+  annotations?: Annotation[]
+  bookmarks?: Bookmark[]
+}
+```
+
+#### Annotation (NEW)
+```typescript
+{
+  id: string
+  sessionId: string
+  timestamp: number
+  userId: string
+  userName: string
+  userColor: string
+  title: string
+  description?: string
+  category: 'important' | 'question' | 'issue' | 'highlight' | 'note'
+  createdAt: number
+}
+```
+
+#### Bookmark (NEW)
+```typescript
+{
+  id: string
+  sessionId: string
+  timestamp: number
+  userId: string
+  userName: string
+  userColor: string
+  label: string
+  color: string
+  createdAt: number
 }
 ```
 
@@ -119,13 +168,84 @@ Full-screen playback interface for reviewing recorded sessions.
 **Props:**
 - `recording`: The session recording to play
 - `onClose`: Callback when closing the viewer
+- `onUpdateRecording`: Callback when recording is updated with annotations/bookmarks
+- `currentUserId`: Current user's ID
+- `currentUserName`: Current user's name
+- `currentUserColor`: Current user's color
 
 **Features:**
 - Real-time cursor rendering
 - Event timeline with filtering
 - Full playback controls
-- Progress indicator
+- Progress indicator with annotation/bookmark markers
 - Event details panel
+- **Tabbed sidebar**: Events, Annotations, and Bookmarks tabs
+- **Add Annotation**: Create detailed notes at any moment
+- **Add Bookmark**: Quick visual markers for key moments
+- **Interactive Timeline**: Click annotations/bookmarks to jump to that time
+
+#### `AnnotationMarker` (NEW)
+Visual marker for annotations on the playback timeline.
+
+**Props:**
+- `annotation`: The annotation data
+- `position`: Position on timeline (0-100%)
+- `isActive`: Whether this annotation is at the current playback time
+- `onSeek`: Callback to jump to annotation time
+- `onDelete`: Callback to delete annotation
+- `canDelete`: Whether current user can delete
+
+**Features:**
+- Color-coded by category
+- Hover tooltip with full details
+- Click to seek to timestamp
+- Delete button for owner
+
+#### `BookmarkMarker` (NEW)
+Visual marker for bookmarks on the playback timeline.
+
+**Props:**
+- `bookmark`: The bookmark data
+- `position`: Position on timeline (0-100%)
+- `isActive`: Whether this bookmark is at the current playback time
+- `onSeek`: Callback to jump to bookmark time
+- `onDelete`: Callback to delete bookmark
+- `canDelete`: Whether current user can delete
+
+**Features:**
+- Custom color selection
+- Hover tooltip with details
+- Click to seek to timestamp
+- Delete button for owner
+
+#### `AddAnnotationDialog` (NEW)
+Dialog for creating new annotations during playback.
+
+**Props:**
+- `open`: Dialog visibility state
+- `onOpenChange`: Callback when dialog state changes
+- `onAdd`: Callback when annotation is created
+- `currentTime`: Current playback time (formatted)
+
+**Features:**
+- Category selection with descriptions
+- Title and description fields
+- Visual category indicators
+- Real-time validation
+
+#### `AddBookmarkDialog` (NEW)
+Dialog for creating new bookmarks during playback.
+
+**Props:**
+- `open`: Dialog visibility state
+- `onOpenChange`: Callback when dialog state changes
+- `onAdd`: Callback when bookmark is created
+- `currentTime`: Current playback time (formatted)
+
+**Features:**
+- Label input field
+- 8 color options with visual selection
+- Quick creation flow
 
 ### Hooks
 
@@ -236,6 +356,53 @@ seek(30000)
 setSpeed(2)
 ```
 
+### Adding Annotations (NEW)
+
+```typescript
+import { createAnnotation } from '@/lib/session-replay'
+
+// Create an annotation
+const annotation = createAnnotation(
+  sessionId,
+  timestamp,
+  userId,
+  userName,
+  userColor,
+  'Critical Decision Made',
+  'important',
+  'Team decided to pivot strategy based on Q4 data'
+)
+
+// Add to recording
+const updatedRecording = {
+  ...recording,
+  annotations: [...recording.annotations, annotation]
+}
+```
+
+### Adding Bookmarks (NEW)
+
+```typescript
+import { createBookmark } from '@/lib/session-replay'
+
+// Create a bookmark
+const bookmark = createBookmark(
+  sessionId,
+  timestamp,
+  userId,
+  userName,
+  userColor,
+  'Demo Starts',
+  'oklch(0.70 0.15 195)' // Cyan color
+)
+
+// Add to recording
+const updatedRecording = {
+  ...recording,
+  bookmarks: [...recording.bookmarks, bookmark]
+}
+```
+
 ## Data Persistence
 
 All recordings are stored using the Spark KV (Key-Value) persistence API:
@@ -297,15 +464,19 @@ const recordings = [
 Potential improvements for the Session Replay feature:
 
 1. **Video Export**: Convert sessions to MP4 video format
-2. **Annotations**: Add notes and markers during playback
+2. ~~**Annotations**: Add notes and markers during playback~~ ✅ IMPLEMENTED
 3. **Search & Filter**: Find specific events or users in recordings
 4. **Sharing**: Share recordings with team members via links
 5. **Analytics**: Generate insights from recorded sessions
 6. **Screen Capture**: Optional screenshot capture at key moments
 7. **Audio Recording**: Capture voice commentary during sessions
 8. **Collaborative Playback**: Watch recordings together in real-time
-9. **Bookmarks**: Mark important moments in recordings
+9. ~~**Bookmarks**: Mark important moments in recordings~~ ✅ IMPLEMENTED
 10. **Export Timeline**: Generate reports from session events
+11. **Annotation Threading**: Reply to annotations for discussions
+12. **Smart Bookmarks**: Auto-generate bookmarks at significant events
+13. **Annotation Search**: Find recordings by annotation content
+14. **Export Annotations**: Generate documentation from annotations
 
 ## Integration Points
 
@@ -359,6 +530,35 @@ createSessionEvent(
   userColor: string,
   data: any
 ): SessionEvent
+
+// Create an annotation (NEW)
+createAnnotation(
+  sessionId: string,
+  timestamp: number,
+  userId: string,
+  userName: string,
+  userColor: string,
+  title: string,
+  category: Annotation['category'],
+  description?: string
+): Annotation
+
+// Create a bookmark (NEW)
+createBookmark(
+  sessionId: string,
+  timestamp: number,
+  userId: string,
+  userName: string,
+  userColor: string,
+  label: string,
+  color: string
+): Bookmark
+
+// Get category color (NEW)
+getCategoryColor(category: Annotation['category']): string
+
+// Get category icon (NEW)
+getCategoryIcon(category: Annotation['category']): string
 
 // Calculate session duration
 calculateDuration(events: SessionEvent[]): number

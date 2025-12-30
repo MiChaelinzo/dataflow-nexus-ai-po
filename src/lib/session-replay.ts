@@ -8,6 +8,31 @@ export interface SessionEvent {
   data: any
 }
 
+export interface Annotation {
+  id: string
+  sessionId: string
+  timestamp: number
+  userId: string
+  userName: string
+  userColor: string
+  title: string
+  description?: string
+  category: 'important' | 'question' | 'issue' | 'highlight' | 'note'
+  createdAt: number
+}
+
+export interface Bookmark {
+  id: string
+  sessionId: string
+  timestamp: number
+  userId: string
+  userName: string
+  userColor: string
+  label: string
+  color: string
+  createdAt: number
+}
+
 export interface SessionRecording {
   id: string
   startTime: number
@@ -27,6 +52,8 @@ export interface SessionRecording {
     tags: string[]
     views: string[]
   }
+  annotations?: Annotation[]
+  bookmarks?: Bookmark[]
 }
 
 export interface PlaybackState {
@@ -133,5 +160,73 @@ export function getEventDescription(event: SessionEvent): string {
       return `Applied filter: ${event.data.filter}`
     default:
       return 'Unknown event'
+  }
+}
+
+export function createAnnotation(
+  sessionId: string,
+  timestamp: number,
+  userId: string,
+  userName: string,
+  userColor: string,
+  title: string,
+  category: Annotation['category'],
+  description?: string
+): Annotation {
+  return {
+    id: `ann-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+    sessionId,
+    timestamp,
+    userId,
+    userName,
+    userColor,
+    title,
+    description,
+    category,
+    createdAt: Date.now()
+  }
+}
+
+export function createBookmark(
+  sessionId: string,
+  timestamp: number,
+  userId: string,
+  userName: string,
+  userColor: string,
+  label: string,
+  color: string
+): Bookmark {
+  return {
+    id: `bmk-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+    sessionId,
+    timestamp,
+    userId,
+    userName,
+    userColor,
+    label,
+    color,
+    createdAt: Date.now()
+  }
+}
+
+export function getCategoryColor(category: Annotation['category']): string {
+  switch (category) {
+    case 'important': return 'oklch(0.55 0.22 25)'
+    case 'question': return 'oklch(0.45 0.15 250)'
+    case 'issue': return 'oklch(0.70 0.15 70)'
+    case 'highlight': return 'oklch(0.70 0.15 195)'
+    case 'note': return 'oklch(0.60 0.18 290)'
+    default: return 'oklch(0.70 0.15 195)'
+  }
+}
+
+export function getCategoryIcon(category: Annotation['category']): string {
+  switch (category) {
+    case 'important': return '⚠️'
+    case 'question': return '❓'
+    case 'issue': return '🐛'
+    case 'highlight': return '⭐'
+    case 'note': return '📝'
+    default: return '📌'
   }
 }

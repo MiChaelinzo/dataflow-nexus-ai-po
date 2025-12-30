@@ -137,12 +137,12 @@ export function useSessionRecorder({
 
   const updateRecordingMetadata = useCallback((
     sessionId: string,
-    updates: Partial<SessionRecording['metadata']>
+    updates: Partial<SessionRecording>
   ) => {
     setRecordings((prev) => 
       (prev || []).map(r => 
         r.id === sessionId 
-          ? { ...r, metadata: { ...r.metadata, ...updates } }
+          ? { ...r, ...updates }
           : r
       )
     )

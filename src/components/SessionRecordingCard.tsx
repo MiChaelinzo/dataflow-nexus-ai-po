@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { SessionRecording, formatDuration, formatTimestamp } from '@/lib/session-replay'
-import { Play, Trash, Clock, Users, Eye } from '@phosphor-icons/react'
+import { Play, Trash, Clock, Users, Eye, Note, BookmarkSimple } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
 interface SessionRecordingCardProps {
@@ -15,6 +15,8 @@ export function SessionRecordingCard({ recording, onPlay, onDelete }: SessionRec
   const participantCount = recording.participants.length
   const eventCount = recording.events.length
   const viewsCount = recording.metadata.views.length
+  const annotationCount = recording.annotations?.length || 0
+  const bookmarkCount = recording.bookmarks?.length || 0
 
   return (
     <motion.div
@@ -58,6 +60,18 @@ export function SessionRecordingCard({ recording, onPlay, onDelete }: SessionRec
                 <Clock size={16} weight="duotone" />
                 <span>{eventCount} events</span>
               </div>
+              {annotationCount > 0 && (
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Note size={16} weight="duotone" />
+                  <span>{annotationCount}</span>
+                </div>
+              )}
+              {bookmarkCount > 0 && (
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <BookmarkSimple size={16} weight="duotone" />
+                  <span>{bookmarkCount}</span>
+                </div>
+              )}
             </div>
 
             {recording.metadata.tags.length > 0 && (

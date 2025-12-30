@@ -4,20 +4,44 @@ import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { SessionRecording, SessionEvent, formatDuration, getEventIcon, getEventDescription } from '@/lib/session-replay'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { SessionRecording, SessionEvent, Annotation, Bookmark, formatDuration, getEventIcon, getEventDescription, createAnnotation, createBookmark, getCategoryColor, getCategoryIcon } from '@/lib/session-replay'
 import { useSessionPlayback } from '@/hooks/use-session-playback'
-import { Play, Pause, Stop, FastForward, Rewind, X } from '@phosphor-icons/react'
+import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CursorPosition } from '@/lib/types'
+import { AnnotationMarker } from '@/components/AnnotationMarker'
+import { BookmarkMarker } from '@/components/BookmarkMarker'
+import { AddAnnotationDialog } from '@/components/AddAnnotationDialog'
+import { AddBookmarkDialog } from '@/components/AddBookmarkDialog'
+import { toast } from 'sonner'
 
 interface SessionPlaybackViewerProps {
   recording: SessionRecording
   onClose: () => void
+  onUpdateRecording?: (recording: SessionRecording) => void
+  currentUserId: string
+  currentUserName: string
+  currentUserColor: string
 }
 
-export function SessionPlaybackViewer({ recording, onClose }: SessionPlaybackViewerProps) {
+export function SessionPlaybackViewer({ 
+  recording, 
+  onClose,
+  onUpdateRecording,
+  currentUserId,
+  currentUserName,
+  currentUserColor
+}: SessionPlaybackViewerProps) {
   const [selectedEvent, setSelectedEvent] = useState<SessionEvent | null>(null)
   const [showCursors, setShowCursors] = useState(true)
+  const [activeTab, setActiveTab] = useState<'events' | 'annotations' | 'bookmarks'>('events')
+  const [showAnnotationDialog, setShowAnnotationDialog] = useState(false)
+  const [showBookmarkDialog, setShowBookmarkDialog] = useState(false)
+  const [localRecording, setLocalRecording] = useState(recording)
+
+  const annotations = localRecording.annotations || []
+  const bookmarks = localRecording.bookmarks || []
 
   const handleEventPlay = (event: SessionEvent) => {
     console.log('Playing event:', event)
@@ -33,17 +57,91 @@ export function SessionPlaybackViewer({ recording, onClose }: SessionPlaybackVie
     seek,
     setSpeed
   } = useSessionPlayback({
-    recording,
+    recording: localRecording,
     onEventPlay: handleEventPlay
   })
 
   const handleSeek = (value: number[]) => {
-    const time = (value[0] / 100) * recording.duration
+    const time = (value[0] / 100) * localRecording.duration
     seek(time)
+  }
+
+  const handleSeekToTime = (timestamp: number) => {
+    const relativeTime = timestamp - localRecording.startTime
+    seek(relativeTime)
   }
 
   const handleSpeedChange = (speed: 0.5 | 1 | 1.5 | 2) => {
     setSpeed(speed)
+  }
+
+  const handleAddAnnotation = (title: string, category: Annotation['category'], description?: string) => {
+    const annotation = createAnnotation(
+      localRecording.id,
+      localRecording.startTime + playbackState.currentTime,
+      currentUserId,
+      currentUserName,
+      currentUserColor,
+      title,
+      category,
+      description
+    )
+
+    const updatedRecording = {
+      ...localRecording,
+      annotations: [...annotations, annotation]
+    }
+    
+    setLocalRecording(updatedRecording)
+    onUpdateRecording?.(updatedRecording)
+    toast.success('Annotation added', {
+      description: `Marked at ${formatDuration(playbackState.currentTime)}`
+    })
+  }
+
+  const handleAddBookmark = (label: string, color: string) => {
+    const bookmark = createBookmark(
+      localRecording.id,
+      localRecording.startTime + playbackState.currentTime,
+      currentUserId,
+      currentUserName,
+      currentUserColor,
+      label,
+      color
+    )
+
+    const updatedRecording = {
+      ...localRecording,
+      bookmarks: [...bookmarks, bookmark]
+    }
+    
+    setLocalRecording(updatedRecording)
+    onUpdateRecording?.(updatedRecording)
+    toast.success('Bookmark added', {
+      description: label
+    })
+  }
+
+  const handleDeleteAnnotation = (id: string) => {
+    const updatedRecording = {
+      ...localRecording,
+      annotations: annotations.filter(a => a.id !== id)
+    }
+    
+    setLocalRecording(updatedRecording)
+    onUpdateRecording?.(updatedRecording)
+    toast.success('Annotation deleted')
+  }
+
+  const handleDeleteBookmark = (id: string) => {
+    const updatedRecording = {
+      ...localRecording,
+      bookmarks: bookmarks.filter(b => b.id !== id)
+    }
+    
+    setLocalRecording(updatedRecording)
+    onUpdateRecording?.(updatedRecording)
+    toast.success('Bookmark deleted')
   }
 
   const cursorEvents = currentEvents.filter(e => e.type === 'cursor') as (SessionEvent & { data: { x: number; y: number } })[]
@@ -68,9 +166,9 @@ export function SessionPlaybackViewer({ recording, onClose }: SessionPlaybackVie
         <div className="max-w-[1600px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold">{recording.metadata.title}</h2>
+              <h2 className="text-xl font-bold">{localRecording.metadata.title}</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                {recording.events.length} events • {recording.participants.length} participants
+                {localRecording.events.length} events • {localRecording.participants.length} participants • {annotations.length} annotations • {bookmarks.length} bookmarks
               </p>
             </div>
             <Button onClick={onClose} variant="ghost" size="sm" className="gap-2">
@@ -148,66 +246,239 @@ export function SessionPlaybackViewer({ recording, onClose }: SessionPlaybackVie
         </div>
 
         <div className="w-96 border-l border-border/50 bg-card/30 backdrop-blur flex flex-col">
-          <div className="p-4 border-b border-border/50">
-            <h3 className="font-semibold mb-2">Event Timeline</h3>
-            <div className="flex items-center gap-2">
+          <div className="p-4 border-b border-border/50 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Timeline</h3>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant={showCursors ? "default" : "outline"}
+                  onClick={() => setShowCursors(!showCursors)}
+                  className="text-xs"
+                >
+                  {showCursors ? 'Hide' : 'Show'} Cursors
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
               <Button
+                onClick={() => setShowAnnotationDialog(true)}
                 size="sm"
-                variant={showCursors ? "default" : "outline"}
-                onClick={() => setShowCursors(!showCursors)}
-                className="text-xs"
+                variant="outline"
+                className="gap-2 flex-1"
               >
-                {showCursors ? 'Hide' : 'Show'} Cursors
+                <Note size={16} weight="duotone" />
+                Add Annotation
               </Button>
-              <Badge variant="secondary" className="text-xs">
-                {currentEvents.length} / {recording.events.length}
-              </Badge>
+              <Button
+                onClick={() => setShowBookmarkDialog(true)}
+                size="sm"
+                variant="outline"
+                className="gap-2 flex-1"
+              >
+                <BookmarkSimple size={16} weight="duotone" />
+                Bookmark
+              </Button>
             </div>
           </div>
 
-          <ScrollArea className="flex-1">
-            <div className="p-4 space-y-2">
-              <AnimatePresence mode="popLayout">
-                {currentEvents.map((event, index) => (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ delay: index * 0.02 }}
-                  >
-                    <button
-                      onClick={() => setSelectedEvent(event)}
-                      className={`w-full text-left p-3 rounded-lg border transition-all ${
-                        selectedEvent?.id === event.id
-                          ? 'bg-accent/10 border-accent/40'
-                          : 'bg-card/50 border-border/50 hover:border-accent/20'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="text-lg flex-shrink-0">{getEventIcon(event.type)}</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div
-                              className="w-3 h-3 rounded-full flex-shrink-0"
-                              style={{ backgroundColor: event.userColor }}
-                            />
-                            <span className="text-xs font-medium truncate">{event.userName}</span>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="flex-1 flex flex-col">
+            <TabsList className="w-full grid grid-cols-3 rounded-none border-b border-border/50">
+              <TabsTrigger value="events" className="gap-2">
+                <ListChecks size={16} />
+                Events
+              </TabsTrigger>
+              <TabsTrigger value="annotations" className="gap-2">
+                <Note size={16} />
+                Notes
+              </TabsTrigger>
+              <TabsTrigger value="bookmarks" className="gap-2">
+                <BookmarkSimple size={16} />
+                Marks
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="events" className="flex-1 m-0">
+              <ScrollArea className="h-full">
+                <div className="p-4 space-y-2">
+                  <Badge variant="secondary" className="text-xs mb-2">
+                    {currentEvents.length} / {localRecording.events.length}
+                  </Badge>
+                  <AnimatePresence mode="popLayout">
+                    {currentEvents.map((event, index) => (
+                      <motion.div
+                        key={event.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ delay: index * 0.02 }}
+                      >
+                        <button
+                          onClick={() => setSelectedEvent(event)}
+                          className={`w-full text-left p-3 rounded-lg border transition-all ${
+                            selectedEvent?.id === event.id
+                              ? 'bg-accent/10 border-accent/40'
+                              : 'bg-card/50 border-border/50 hover:border-accent/20'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-lg flex-shrink-0">{getEventIcon(event.type)}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <div
+                                  className="w-3 h-3 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: event.userColor }}
+                                />
+                                <span className="text-xs font-medium truncate">{event.userName}</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground line-clamp-2">
+                                {getEventDescription(event)}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1 font-mono">
+                                {formatDuration(event.timestamp - localRecording.startTime)}
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-xs text-muted-foreground line-clamp-2">
-                            {getEventDescription(event)}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1 font-mono">
-                            {formatDuration(event.timestamp - recording.startTime)}
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </ScrollArea>
+                        </button>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="annotations" className="flex-1 m-0">
+              <ScrollArea className="h-full">
+                <div className="p-4 space-y-3">
+                  {annotations.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Note size={48} weight="thin" className="text-muted-foreground mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">No annotations yet</p>
+                    </div>
+                  ) : (
+                    <AnimatePresence mode="popLayout">
+                      {annotations
+                        .sort((a, b) => a.timestamp - b.timestamp)
+                        .map((annotation) => {
+                          const relativeTime = annotation.timestamp - localRecording.startTime
+                          const color = getCategoryColor(annotation.category)
+                          const icon = getCategoryIcon(annotation.category)
+                          
+                          return (
+                            <motion.div
+                              key={annotation.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                            >
+                              <button
+                                onClick={() => handleSeekToTime(annotation.timestamp)}
+                                className="w-full text-left p-3 rounded-lg border border-border/50 hover:border-accent/40 bg-card/50 hover:bg-accent/5 transition-all"
+                              >
+                                <div className="space-y-2">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <Badge 
+                                      className="text-xs"
+                                      style={{ 
+                                        backgroundColor: `${color}20`,
+                                        color: color,
+                                        borderColor: `${color}40`
+                                      }}
+                                    >
+                                      {icon} {annotation.category}
+                                    </Badge>
+                                    <span className="text-xs font-mono text-muted-foreground">
+                                      {formatDuration(relativeTime)}
+                                    </span>
+                                  </div>
+                                  <h4 className="font-semibold text-sm">{annotation.title}</h4>
+                                  {annotation.description && (
+                                    <p className="text-xs text-muted-foreground line-clamp-2">
+                                      {annotation.description}
+                                    </p>
+                                  )}
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className="w-3 h-3 rounded-full"
+                                      style={{ backgroundColor: annotation.userColor }}
+                                    />
+                                    <span className="text-xs text-muted-foreground">
+                                      {annotation.userName}
+                                    </span>
+                                  </div>
+                                </div>
+                              </button>
+                            </motion.div>
+                          )
+                        })}
+                    </AnimatePresence>
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="bookmarks" className="flex-1 m-0">
+              <ScrollArea className="h-full">
+                <div className="p-4 space-y-3">
+                  {bookmarks.length === 0 ? (
+                    <div className="text-center py-8">
+                      <BookmarkSimple size={48} weight="thin" className="text-muted-foreground mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">No bookmarks yet</p>
+                    </div>
+                  ) : (
+                    <AnimatePresence mode="popLayout">
+                      {bookmarks
+                        .sort((a, b) => a.timestamp - b.timestamp)
+                        .map((bookmark) => {
+                          const relativeTime = bookmark.timestamp - localRecording.startTime
+                          
+                          return (
+                            <motion.div
+                              key={bookmark.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                            >
+                              <button
+                                onClick={() => handleSeekToTime(bookmark.timestamp)}
+                                className="w-full text-left p-3 rounded-lg border border-border/50 hover:border-accent/40 bg-card/50 hover:bg-accent/5 transition-all"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <BookmarkSimple 
+                                    size={24} 
+                                    weight="fill"
+                                    style={{ color: bookmark.color }}
+                                    className="flex-shrink-0 mt-0.5"
+                                  />
+                                  <div className="flex-1 space-y-2">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <h4 className="font-semibold text-sm">{bookmark.label}</h4>
+                                      <span className="text-xs font-mono text-muted-foreground">
+                                        {formatDuration(relativeTime)}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <div
+                                        className="w-3 h-3 rounded-full"
+                                        style={{ backgroundColor: bookmark.userColor }}
+                                      />
+                                      <span className="text-xs text-muted-foreground">
+                                        {bookmark.userName}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </button>
+                            </motion.div>
+                          )
+                        })}
+                    </AnimatePresence>
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
@@ -218,15 +489,53 @@ export function SessionPlaybackViewer({ recording, onClose }: SessionPlaybackVie
               <span className="text-sm font-mono text-muted-foreground min-w-[80px]">
                 {formatDuration(playbackState.currentTime)}
               </span>
-              <Slider
-                value={[progress]}
-                onValueChange={handleSeek}
-                max={100}
-                step={0.1}
-                className="flex-1"
-              />
+              <div className="flex-1 relative">
+                <div className="relative py-4">
+                  <AnimatePresence>
+                    {annotations.map(annotation => {
+                      const position = ((annotation.timestamp - localRecording.startTime) / localRecording.duration) * 100
+                      const isActive = Math.abs((localRecording.startTime + playbackState.currentTime) - annotation.timestamp) < 1000
+                      return (
+                        <AnnotationMarker
+                          key={annotation.id}
+                          annotation={annotation}
+                          position={position}
+                          isActive={isActive}
+                          onSeek={handleSeekToTime}
+                          onDelete={handleDeleteAnnotation}
+                          canDelete={annotation.userId === currentUserId}
+                        />
+                      )
+                    })}
+                  </AnimatePresence>
+                  <Slider
+                    value={[progress]}
+                    onValueChange={handleSeek}
+                    max={100}
+                    step={0.1}
+                    className="cursor-pointer"
+                  />
+                  <AnimatePresence>
+                    {bookmarks.map(bookmark => {
+                      const position = ((bookmark.timestamp - localRecording.startTime) / localRecording.duration) * 100
+                      const isActive = Math.abs((localRecording.startTime + playbackState.currentTime) - bookmark.timestamp) < 1000
+                      return (
+                        <BookmarkMarker
+                          key={bookmark.id}
+                          bookmark={bookmark}
+                          position={position}
+                          isActive={isActive}
+                          onSeek={handleSeekToTime}
+                          onDelete={handleDeleteBookmark}
+                          canDelete={bookmark.userId === currentUserId}
+                        />
+                      )
+                    })}
+                  </AnimatePresence>
+                </div>
+              </div>
               <span className="text-sm font-mono text-muted-foreground min-w-[80px] text-right">
-                {formatDuration(recording.duration)}
+                {formatDuration(localRecording.duration)}
               </span>
             </div>
 
@@ -255,7 +564,7 @@ export function SessionPlaybackViewer({ recording, onClose }: SessionPlaybackVie
                   <Rewind size={16} weight="duotone" />
                 </Button>
                 <Button
-                  onClick={() => seek(Math.min(recording.duration, playbackState.currentTime + 5000))}
+                  onClick={() => seek(Math.min(localRecording.duration, playbackState.currentTime + 5000))}
                   size="sm"
                   variant="ghost"
                 >
@@ -281,6 +590,20 @@ export function SessionPlaybackViewer({ recording, onClose }: SessionPlaybackVie
           </div>
         </div>
       </div>
+      
+      <AddAnnotationDialog
+        open={showAnnotationDialog}
+        onOpenChange={setShowAnnotationDialog}
+        onAdd={handleAddAnnotation}
+        currentTime={formatDuration(playbackState.currentTime)}
+      />
+      
+      <AddBookmarkDialog
+        open={showBookmarkDialog}
+        onOpenChange={setShowBookmarkDialog}
+        onAdd={handleAddBookmark}
+        currentTime={formatDuration(playbackState.currentTime)}
+      />
     </div>
   )
 }

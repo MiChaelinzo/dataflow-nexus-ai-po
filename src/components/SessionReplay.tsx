@@ -40,7 +40,8 @@ export function SessionReplay({
     recordings,
     startRecording,
     stopRecording,
-    deleteRecording
+    deleteRecording,
+    updateRecordingMetadata
   } = useSessionRecorder({
     enabled: true,
     currentUserId,
@@ -87,6 +88,10 @@ export function SessionReplay({
 
   const handleClosePlayback = () => {
     setPlayingRecording(null)
+  }
+
+  const handleUpdateRecording = (updatedRecording: SessionRecording) => {
+    updateRecordingMetadata(updatedRecording.id, updatedRecording)
   }
 
   const sortedRecordings = [...(recordings || [])].sort((a, b) => b.startTime - a.startTime)
@@ -328,6 +333,10 @@ export function SessionReplay({
         <SessionPlaybackViewer
           recording={playingRecording}
           onClose={handleClosePlayback}
+          onUpdateRecording={handleUpdateRecording}
+          currentUserId={currentUserId}
+          currentUserName={currentUserName}
+          currentUserColor={currentUserColor}
         />
       )}
     </>
