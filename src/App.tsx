@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users } from '@phosphor-icons/react'
+import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { PredictionChart } from '@/components/PredictionChart'
@@ -10,6 +10,8 @@ import { InsightGenerator } from '@/components/InsightGenerator'
 import { DataGovernance } from '@/components/DataGovernance'
 import { SemanticLayer } from '@/components/SemanticLayer'
 import { CollaborationHub } from '@/components/CollaborationHub'
+import { TableauEmbed } from '@/components/TableauEmbed'
+import { TableauAPIShowcase } from '@/components/TableauAPIShowcase'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
@@ -64,10 +66,14 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-4xl grid-cols-7 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1400px] grid-cols-4 lg:grid-cols-8 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger value="tableau" className="gap-2 py-3">
+                <ChartLineUp size={18} weight="duotone" />
+                <span className="hidden sm:inline">Tableau</span>
               </TabsTrigger>
               <TabsTrigger value="insights" className="gap-2 py-3">
                 <Sparkle size={18} weight="duotone" />
@@ -194,6 +200,21 @@ function App() {
               </motion.div>
             </TabsContent>
             
+            <TabsContent value="tableau" className="space-y-6">
+              <Tabs defaultValue="embed" className="w-full">
+                <TabsList className="grid w-full max-w-md grid-cols-2">
+                  <TabsTrigger value="embed">Dashboard Embeds</TabsTrigger>
+                  <TabsTrigger value="api">REST API</TabsTrigger>
+                </TabsList>
+                <TabsContent value="embed" className="mt-6">
+                  <TableauEmbed />
+                </TabsContent>
+                <TabsContent value="api" className="mt-6">
+                  <TableauAPIShowcase />
+                </TabsContent>
+              </Tabs>
+            </TabsContent>
+
             <TabsContent value="insights" className="space-y-6">
               <InsightGenerator metrics={metrics} />
             </TabsContent>

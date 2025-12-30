@@ -24,21 +24,41 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 - **Persistent storage** allowing users to save and revisit important discoveries
 - **Real-time generation** with progress indicators and smooth animations
 
-### 3. **Predictive Analytics Visualizer**
+### 3. **Tableau Integration Examples** ⭐ (Best Product Extensibility)
+- **Dashboard Embedding**: Real working examples of embedded Tableau dashboards
+  - Sales Performance Dashboard with regional breakdown
+  - COVID-19 Global Tracker with real-time data
+  - Financial Performance Overview with quarterly metrics
+  - Customer Behavior Analytics with segmentation
+- **REST API Showcase**: Interactive API testing interface with 6+ endpoints
+  - Authentication (sign-in, token management)
+  - Workbook operations (query, publish, permissions)
+  - Data source management (query, certification)
+  - User and access management
+  - Views and usage analytics
+- **Code Examples**: Complete integration patterns
+  - JavaScript API embedding with event handling
+  - Dynamic filtering and parameter updates
+  - Workbook publishing workflows
+  - Metadata API GraphQL queries
+- **Toggle Views**: Switch between live Tableau embeds and demo screenshots
+- **Category Navigation**: Organized by business function (Sales, Operations, Finance, Marketing)
+
+### 4. **Predictive Analytics Visualizer**
 - **14-day revenue forecasting** with trend analysis
 - **Confidence intervals** showing prediction uncertainty ranges
 - **Growth rate projections** with accuracy metrics
 - **Interactive charts** with historical and predicted data visualization
 - **Statistical modeling** demonstrating ML/AI integration capabilities
 
-### 4. **Semantic Data Layer** ⭐ (Best Use of Semantic Modeling)
+### 5. **Semantic Data Layer** ⭐ (Best Use of Semantic Modeling)
 - **Business-friendly metric catalog** with 6+ pre-defined business metrics
 - **Natural language search** allowing users to query metrics conversationally
 - **Metric lineage tracking** showing formulas, data sources, and relationships
 - **Metadata management** with descriptions, categories, tags, and ownership
 - **Data catalog** enabling self-service analytics discovery
 
-### 5. **Data Governance & Security Dashboard** ⭐ (Best Data Layer Implementation)
+### 6. **Data Governance & Security Dashboard** ⭐ (Best Data Layer Implementation)
 - **Data source monitoring** with connection status, sync times, and record counts
 - **Data quality scoring** across completeness, accuracy, consistency, and timeliness
 - **Comprehensive audit logging** tracking all user actions (view, edit, share, export, delete)
@@ -46,7 +66,7 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 - **Compliance badges** (SOC 2, GDPR, HIPAA) demonstrating enterprise readiness
 - **Issue detection** with automated alerts for data quality problems
 
-### 6. **Collaboration & Sharing Hub** ⭐ (Best Use of Actionable Analytics)
+### 7. **Collaboration & Sharing Hub** ⭐ (Best Use of Actionable Analytics)
 - **Real-time commenting** with threaded discussions on dashboards
 - **Team member management** with role-based access controls (Editor/Viewer)
 - **Multi-format export** (PDF, Excel, Image) for sharing insights
@@ -54,7 +74,7 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 - **Activity tracking** showing views, comments, shares, and exports
 - **Notification system** for mentions and team updates
 
-### 7. **Advanced Data Explorer**
+### 8. **Advanced Data Explorer**
 - **Coming soon** placeholder demonstrating roadmap for multi-dimensional filtering
 - Shows vision for custom segmentation and advanced drill-down capabilities
 
@@ -80,6 +100,9 @@ This platform showcases how modern web technologies can extend and strengthen Ta
    - User authentication and context
 
 2. **Tableau Developer Platform Integration** (Demonstrated Patterns)
+   - **Embedded dashboards** with responsive design and interactive filtering
+   - **REST API integration** with authentication, workbooks, data sources, users, views
+   - **Code examples** for embedding, filtering, publishing, metadata queries
    - Semantic data layer modeling (aligned with Tableau's semantic layer)
    - Data governance framework (security, audit, quality)
    - Dashboard embedding patterns (collaboration, sharing, export)

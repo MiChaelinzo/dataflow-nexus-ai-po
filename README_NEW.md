@@ -10,6 +10,7 @@
 An enterprise-grade analytics intelligence platform built for the **Tableau Hackathon 2026** that demonstrates the future of data analytics through:
 
 - 📊 **Real-time Analytics Dashboard** with live metrics and interactive visualizations
+- 🎯 **Tableau Integration** with embedded dashboards and REST API examples
 - 🤖 **AI-Powered Insights** using GPT-4o to automatically discover patterns and opportunities
 - 🔮 **Predictive Analytics** with 14-day forecasting and confidence intervals
 - 🏷️ **Semantic Data Layer** with natural language search and business-friendly metrics
@@ -39,33 +40,40 @@ Open your browser and start exploring the platform!
 - Revenue segmentation analysis
 - Responsive design for all devices
 
-### 2. AI Insights Generator
+### 2. Tableau Integration
+- **Dashboard Embeds**: Real working examples of embedded Tableau dashboards (Sales, COVID-19, Financial, Customer Analytics)
+- **REST API Showcase**: Interactive API testing with 6+ endpoints for workbooks, data sources, users, and views
+- **Code Examples**: Complete integration patterns for embedding, filtering, publishing, and metadata queries
+- **Live Testing**: Execute mock API calls and view formatted JSON responses
+- See **[TABLEAU_INTEGRATION.md](./TABLEAU_INTEGRATION.md)** for complete documentation
+
+### 3. AI Insights Generator
 - One-click insight generation using GPT-4o
 - Confidence scoring for each recommendation
 - Categorized insights (opportunities, warnings, trends, anomalies)
 - Persistent storage for saved insights
 
-### 3. Predictive Analytics
+### 4. Predictive Analytics
 - 14-day revenue forecasting
 - Confidence interval visualization
 - Statistical modeling with accuracy metrics
 - Growth rate projections
 
-### 4. Semantic Data Layer
+### 5. Semantic Data Layer
 - Business-friendly metric catalog
 - Natural language search
 - Complete formula documentation
 - Data lineage tracking
 - Category and tag organization
 
-### 5. Data Governance & Security
+### 6. Data Governance & Security
 - Data source monitoring (status, sync, records)
 - Data quality scoring (completeness, accuracy, consistency, timeliness)
 - Comprehensive audit logging
 - Security compliance dashboard (SOC 2, GDPR, HIPAA)
 - Automated issue detection
 
-### 6. Collaboration Hub
+### 7. Collaboration Hub
 - Real-time commenting on dashboards
 - Team member management with role-based access
 - Multi-format export (PDF, Excel, Image)
@@ -95,6 +103,7 @@ This project is designed to compete in multiple prize categories:
 ## 📚 Documentation
 
 - **[HACKATHON_README.md](./HACKATHON_README.md)** - Complete feature documentation and technical details
+- **[TABLEAU_INTEGRATION.md](./TABLEAU_INTEGRATION.md)** - Comprehensive Tableau integration guide with examples
 - **[REQUIREMENTS.md](./REQUIREMENTS.md)** - Hackathon requirements checklist and compliance
 - **[PRD.md](./PRD.md)** - Product requirements and design decisions
 
@@ -108,14 +117,17 @@ Our design emphasizes:
 
 ## 🔮 Future Roadmap
 
-- Direct Tableau Embedding SDK integration
+- Connected Apps OAuth 2.0 authentication
+- Tableau Webhooks for real-time notifications
+- Tableau Dashboard Extensions for custom interactions
+- Tableau Pulse integration for intelligent insights
 - Salesforce Data 360 connections
 - Agentforce conversational analytics
 - Slack workspace integration
 - Advanced ML forecasting models
 - Custom dashboard builder
 - Real-time streaming with WebSocket
-- Native mobile applications
+- Native mobile applications with Tableau Mobile SDK
 
 ## 📄 License
 
