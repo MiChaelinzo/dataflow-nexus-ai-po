@@ -118,3 +118,28 @@ export interface Alert {
   active: boolean
   lastTriggered?: number
 }
+
+export type UserRole = 'owner' | 'admin' | 'editor' | 'viewer'
+
+export interface DigestSubscription {
+  scheduleId: string
+  enabled: boolean
+  deliveryChannel: 'email' | 'slack'
+  customFilters?: {
+    insightTypes?: string[]
+    minPriority?: string
+    minConfidence?: number
+  }
+  subscribedAt: number
+}
+
+export interface TeamMember {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+  status: 'active' | 'invited' | 'inactive'
+  joinedAt: number
+  lastActive: number
+  digestSubscriptions: DigestSubscription[]
+}
