@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -7,7 +7,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SessionRecording, SessionEvent, Annotation, AnnotationReply, Bookmark, formatDuration, getEventIcon, getEventDescription, createAnnotation, createBookmark, getCategoryColor, getCategoryIcon } from '@/lib/session-replay'
 import { useSessionPlayback } from '@/hooks/use-session-playback'
-import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks, ChatCircle, At, ShareNetwork } from '@phosphor-icons/react'
+import { useReplayAnalytics } from '@/hooks/use-replay-analytics'
+import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks, ChatCircle, At, ShareNetwork, ChartBar } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CursorPosition } from '@/lib/types'
 import { AnnotationMarker } from '@/components/AnnotationMarker'
@@ -17,6 +18,7 @@ import { AddBookmarkDialog } from '@/components/AddBookmarkDialog'
 import { AnnotationThread } from '@/components/AnnotationThread'
 import { AnnotationCard } from '@/components/AnnotationCard'
 import { ExportReplayDialog } from '@/components/ExportReplayDialog'
+import { ReplayAnalyticsDashboard } from '@/components/ReplayAnalyticsDashboard'
 import { toast } from 'sonner'
 
 interface SessionPlaybackViewerProps {
@@ -38,7 +40,7 @@ export function SessionPlaybackViewer({
 }: SessionPlaybackViewerProps) {
   const [selectedEvent, setSelectedEvent] = useState<SessionEvent | null>(null)
   const [showCursors, setShowCursors] = useState(true)
-  const [activeTab, setActiveTab] = useState<'events' | 'annotations' | 'bookmarks'>('events')
+  const [activeTab, setActiveTab] = useState<'events' | 'annotations' | 'bookmarks' | 'analytics'>('events')
   const [showAnnotationDialog, setShowAnnotationDialog] = useState(false)
   const [showBookmarkDialog, setShowBookmarkDialog] = useState(false)
   const [showExportDialog, setShowExportDialog] = useState(false)
@@ -67,9 +69,36 @@ export function SessionPlaybackViewer({
     onEventPlay: handleEventPlay
   })
 
+  const {
+    currentView,
+    allViews,
+    trackInteraction,
+    updatePlaybackPosition
+  } = useReplayAnalytics({
+    sessionId: localRecording.id,
+    sessionDuration: localRecording.duration,
+    viewerId: currentUserId,
+    viewerName: currentUserName,
+    viewerColor: currentUserColor,
+    enabled: true
+  })
+
+  useEffect(() => {
+    updatePlaybackPosition(playbackState.currentTime)
+  }, [playbackState.currentTime, updatePlaybackPosition])
+
+  useEffect(() => {
+    if (playbackState.isPlaying) {
+      trackInteraction('play', playbackState.currentTime)
+    } else if (playbackState.isPaused) {
+      trackInteraction('pause', playbackState.currentTime)
+    }
+  }, [playbackState.isPlaying, playbackState.isPaused])
+
   const handleSeek = (value: number[]) => {
     const time = (value[0] / 100) * localRecording.duration
     seek(time)
+    trackInteraction('seek', time, { from: playbackState.currentTime, to: time })
   }
 
   const handleSeekToTime = (timestamp: number) => {
@@ -79,6 +108,7 @@ export function SessionPlaybackViewer({
 
   const handleSpeedChange = (speed: 0.5 | 1 | 1.5 | 2) => {
     setSpeed(speed)
+    trackInteraction('speed-change', playbackState.currentTime, { speed })
   }
 
   const handleAddAnnotation = (title: string, category: Annotation['category'], description?: string) => {
@@ -100,6 +130,7 @@ export function SessionPlaybackViewer({
     
     setLocalRecording(updatedRecording)
     onUpdateRecording?.(updatedRecording)
+    trackInteraction('add-annotation', playbackState.currentTime, { category, title })
     toast.success('Annotation added', {
       description: `Marked at ${formatDuration(playbackState.currentTime)}`
     })
@@ -123,6 +154,7 @@ export function SessionPlaybackViewer({
     
     setLocalRecording(updatedRecording)
     onUpdateRecording?.(updatedRecording)
+    trackInteraction('add-bookmark', playbackState.currentTime, { label })
     toast.success('Bookmark added', {
       description: label
     })
@@ -168,6 +200,7 @@ export function SessionPlaybackViewer({
 
     setLocalRecording(updatedRecording)
     onUpdateRecording?.(updatedRecording)
+    trackInteraction('add-reply', playbackState.currentTime, { annotationId })
     
     if (selectedAnnotation?.id === annotationId) {
       setSelectedAnnotation({
@@ -444,7 +477,7 @@ export function SessionPlaybackViewer({
           </div>
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="flex-1 flex flex-col">
-            <TabsList className="w-full grid grid-cols-3 rounded-none border-b border-border/50">
+            <TabsList className="w-full grid grid-cols-4 rounded-none border-b border-border/50">
               <TabsTrigger value="events" className="gap-2">
                 <ListChecks size={16} />
                 Events
@@ -456,6 +489,10 @@ export function SessionPlaybackViewer({
               <TabsTrigger value="bookmarks" className="gap-2">
                 <BookmarkSimple size={16} />
                 Marks
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="gap-2">
+                <ChartBar size={16} />
+                Stats
               </TabsTrigger>
             </TabsList>
 
@@ -653,6 +690,38 @@ export function SessionPlaybackViewer({
                         })}
                     </AnimatePresence>
                   )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="analytics" className="flex-1 m-0 overflow-hidden">
+              <ScrollArea className="h-full">
+                <div className="p-4">
+                  {currentView && (
+                    <div className="mb-4 p-3 rounded-lg bg-accent/10 border border-accent/30">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Your engagement score:</span>
+                        <span className="font-bold font-mono text-accent text-lg">
+                          {currentView.engagementScore}/100
+                        </span>
+                      </div>
+                      <div className="mt-2 h-2 bg-secondary rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${currentView.engagementScore}%` }}
+                          transition={{ duration: 0.6 }}
+                          className="h-full bg-gradient-to-r from-accent to-metric-purple"
+                        />
+                      </div>
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        {currentView.completionRate.toFixed(0)}% watched • {currentView.interactions.length} interactions
+                      </div>
+                    </div>
+                  )}
+                  <ReplayAnalyticsDashboard 
+                    recording={localRecording}
+                    views={allViews}
+                  />
                 </div>
               </ScrollArea>
             </TabsContent>

@@ -2,8 +2,10 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { SessionRecording, formatDuration, formatTimestamp } from '@/lib/session-replay'
-import { Play, Trash, Clock, Users, Eye, Note, BookmarkSimple, ShareNetwork } from '@phosphor-icons/react'
+import { ReplayView, calculateReplayAnalytics } from '@/lib/replay-analytics'
+import { Play, Trash, Clock, Users, Eye, Note, BookmarkSimple, ShareNetwork, ChartBar, TrendUp } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
+import { useKV } from '@github/spark/hooks'
 
 interface SessionRecordingCardProps {
   recording: SessionRecording
@@ -13,11 +15,21 @@ interface SessionRecordingCardProps {
 }
 
 export function SessionRecordingCard({ recording, onPlay, onDelete, onExport }: SessionRecordingCardProps) {
+  const [allViews] = useKV<ReplayView[]>('replay-views', [])
+  
   const participantCount = recording.participants.length
   const eventCount = recording.events.length
   const viewsCount = recording.metadata.views.length
   const annotationCount = recording.annotations?.length || 0
   const bookmarkCount = recording.bookmarks?.length || 0
+  
+  const sessionViews = (allViews || []).filter(v => v.sessionId === recording.id)
+  const hasAnalytics = sessionViews.length > 0
+  
+  let analytics: ReturnType<typeof calculateReplayAnalytics> | null = null
+  if (hasAnalytics) {
+    analytics = calculateReplayAnalytics(recording.id, recording.duration, sessionViews)
+  }
 
   return (
     <motion.div
@@ -81,6 +93,34 @@ export function SessionRecordingCard({ recording, onPlay, onDelete, onExport }: 
                 </div>
               )}
             </div>
+
+            {hasAnalytics && analytics && (
+              <div className="mb-3 p-3 rounded-lg bg-gradient-to-r from-accent/10 to-transparent border border-accent/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <ChartBar size={16} weight="duotone" className="text-accent" />
+                  <span className="text-sm font-semibold text-accent">Analytics Available</span>
+                </div>
+                <div className="grid grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <div className="text-muted-foreground">Total Views</div>
+                    <div className="font-semibold font-mono">{analytics.totalViews}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground">Avg Watch Time</div>
+                    <div className="font-semibold font-mono">{formatDuration(analytics.averageDuration)}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground">Completion</div>
+                    <div className="font-semibold font-mono flex items-center gap-1">
+                      {analytics.averageCompletionRate.toFixed(0)}%
+                      {analytics.averageCompletionRate >= 75 && (
+                        <TrendUp size={12} weight="bold" className="text-success" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {recording.metadata.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-3">
