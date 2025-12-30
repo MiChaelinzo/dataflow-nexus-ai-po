@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SessionRecording, SessionEvent, Annotation, AnnotationReply, Bookmark, formatDuration, getEventIcon, getEventDescription, createAnnotation, createBookmark, getCategoryColor, getCategoryIcon } from '@/lib/session-replay'
 import { useSessionPlayback } from '@/hooks/use-session-playback'
-import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks, ChatCircle, At } from '@phosphor-icons/react'
+import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks, ChatCircle, At, ShareNetwork } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CursorPosition } from '@/lib/types'
 import { AnnotationMarker } from '@/components/AnnotationMarker'
@@ -16,6 +16,7 @@ import { AddAnnotationDialog } from '@/components/AddAnnotationDialog'
 import { AddBookmarkDialog } from '@/components/AddBookmarkDialog'
 import { AnnotationThread } from '@/components/AnnotationThread'
 import { AnnotationCard } from '@/components/AnnotationCard'
+import { ExportReplayDialog } from '@/components/ExportReplayDialog'
 import { toast } from 'sonner'
 
 interface SessionPlaybackViewerProps {
@@ -40,6 +41,7 @@ export function SessionPlaybackViewer({
   const [activeTab, setActiveTab] = useState<'events' | 'annotations' | 'bookmarks'>('events')
   const [showAnnotationDialog, setShowAnnotationDialog] = useState(false)
   const [showBookmarkDialog, setShowBookmarkDialog] = useState(false)
+  const [showExportDialog, setShowExportDialog] = useState(false)
   const [localRecording, setLocalRecording] = useState(recording)
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null)
   const [showThreadPanel, setShowThreadPanel] = useState(false)
@@ -319,10 +321,16 @@ export function SessionPlaybackViewer({
                 </div>
               </div>
             </div>
-            <Button onClick={onClose} variant="ghost" size="sm" className="gap-2">
-              <X size={20} />
-              Close
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => setShowExportDialog(true)} variant="outline" size="sm" className="gap-2">
+                <ShareNetwork size={16} weight="duotone" />
+                Export
+              </Button>
+              <Button onClick={onClose} variant="ghost" size="sm" className="gap-2">
+                <X size={20} />
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -804,6 +812,12 @@ export function SessionPlaybackViewer({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ExportReplayDialog
+        open={showExportDialog}
+        onOpenChange={setShowExportDialog}
+        recording={localRecording}
+      />
     </div>
   )
 }

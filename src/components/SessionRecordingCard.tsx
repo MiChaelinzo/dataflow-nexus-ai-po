@@ -2,16 +2,17 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { SessionRecording, formatDuration, formatTimestamp } from '@/lib/session-replay'
-import { Play, Trash, Clock, Users, Eye, Note, BookmarkSimple } from '@phosphor-icons/react'
+import { Play, Trash, Clock, Users, Eye, Note, BookmarkSimple, ShareNetwork } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
 interface SessionRecordingCardProps {
   recording: SessionRecording
   onPlay: (recording: SessionRecording) => void
   onDelete: (sessionId: string) => void
+  onExport?: (recording: SessionRecording) => void
 }
 
-export function SessionRecordingCard({ recording, onPlay, onDelete }: SessionRecordingCardProps) {
+export function SessionRecordingCard({ recording, onPlay, onDelete, onExport }: SessionRecordingCardProps) {
   const participantCount = recording.participants.length
   const eventCount = recording.events.length
   const viewsCount = recording.metadata.views.length
@@ -119,6 +120,17 @@ export function SessionRecordingCard({ recording, onPlay, onDelete }: SessionRec
               <Play size={16} weight="fill" />
               Play
             </Button>
+            {onExport && (
+              <Button
+                onClick={() => onExport(recording)}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
+                <ShareNetwork size={16} weight="duotone" />
+                Export
+              </Button>
+            )}
             <Button
               onClick={() => onDelete(recording.id)}
               variant="ghost"

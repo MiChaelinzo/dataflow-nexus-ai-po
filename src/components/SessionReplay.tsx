@@ -10,10 +10,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { useSessionRecorder } from '@/hooks/use-session-recorder'
 import { SessionRecordingCard } from '@/components/SessionRecordingCard'
 import { SessionPlaybackViewer } from '@/components/SessionPlaybackViewer'
+import { ExportReplayDialog } from '@/components/ExportReplayDialog'
 import { SessionRecording, createSessionEvent } from '@/lib/session-replay'
 import { MentionFeatureShowcase } from '@/components/MentionFeatureShowcase'
 import { MentionTestingCard } from '@/components/MentionTestingCard'
-import { Record, StopCircle, Video, List, Info, Sparkle, At } from '@phosphor-icons/react'
+import { Record, StopCircle, Video, List, Info, Sparkle, At, ShareNetwork } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
@@ -32,6 +33,7 @@ export function SessionReplay({
 }: SessionReplayProps) {
   const [activeTab, setActiveTab] = useState<'record' | 'recordings'>('record')
   const [playingRecording, setPlayingRecording] = useState<SessionRecording | null>(null)
+  const [exportingRecording, setExportingRecording] = useState<SessionRecording | null>(null)
   const [showStartDialog, setShowStartDialog] = useState(false)
   const [sessionTitle, setSessionTitle] = useState('')
   const [sessionDescription, setSessionDescription] = useState('')
@@ -156,6 +158,10 @@ export function SessionReplay({
     updateRecordingMetadata(updatedRecording.id, updatedRecording)
   }
 
+  const handleExportRecording = (recording: SessionRecording) => {
+    setExportingRecording(recording)
+  }
+
   const sortedRecordings = [...(recordings || [])].sort((a, b) => b.startTime - a.startTime)
 
   return (
@@ -244,7 +250,7 @@ export function SessionReplay({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
             >
               <Card className="p-6">
                 <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center mb-4">
@@ -273,6 +279,16 @@ export function SessionReplay({
                 <h3 className="font-semibold mb-2">Event Timeline</h3>
                 <p className="text-sm text-muted-foreground">
                   View detailed timeline of all events with user attribution and timestamps.
+                </p>
+              </Card>
+
+              <Card className="p-6 bg-gradient-to-br from-accent/10 via-card to-warning/10 border-accent/30">
+                <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center mb-4">
+                  <ShareNetwork size={20} weight="duotone" className="text-accent" />
+                </div>
+                <h3 className="font-semibold mb-2">Export & Share</h3>
+                <p className="text-sm text-muted-foreground">
+                  Generate shareable links or export as JSON/video with annotations included.
                 </p>
               </Card>
             </motion.div>
@@ -326,9 +342,9 @@ export function SessionReplay({
                       4
                     </div>
                     <div>
-                      <h4 className="font-medium mb-1">Share & Learn</h4>
+                      <h4 className="font-medium mb-1">Export & Share</h4>
                       <p className="text-sm text-muted-foreground">
-                        Use recordings for training, documentation, or reviewing complex workflows. Perfect for async collaboration.
+                        Generate shareable links with password protection and expiration. Export as JSON for archival or future video export.
                       </p>
                     </div>
                   </div>
@@ -406,6 +422,7 @@ export function SessionReplay({
                     recording={recording}
                     onPlay={handlePlayRecording}
                     onDelete={handleDeleteRecording}
+                    onExport={handleExportRecording}
                   />
                 ))}
               </AnimatePresence>
@@ -463,6 +480,14 @@ export function SessionReplay({
           currentUserId={currentUserId}
           currentUserName={currentUserName}
           currentUserColor={currentUserColor}
+        />
+      )}
+
+      {exportingRecording && (
+        <ExportReplayDialog
+          open={!!exportingRecording}
+          onOpenChange={(open) => !open && setExportingRecording(null)}
+          recording={exportingRecording}
         />
       )}
     </>
