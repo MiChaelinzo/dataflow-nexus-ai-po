@@ -31,8 +31,17 @@
 - Revenue segmentation by customer segments (Enterprise, Mid-Market, SMB, Startup)
 - Everything is responsive and works beautifully on mobile devices
 
-### **[1:30-2:30] AI-Powered Insights**
-- Navigate to AI Insights tab
+### **[1:30-2:00] Tableau Pulse - AI-Driven Insights** ⭐ NEW!
+- Navigate to Pulse tab - this is Tableau's future of insights delivery
+- See pre-loaded insights already waiting: revenue surge, churn improvement, satisfaction peak
+- Each insight shows: priority level, confidence score, and actionable recommendations
+- Filter by All/Unread/Bookmarked to manage your insight feed
+- Click "Generate Insight" - watch AI create a new personalized insight
+- Click any insight to see full details with suggested actions and related metrics
+- This is proactive analytics - insights come to you, not the other way around
+
+### **[2:00-2:45] AI-Powered Insights Generator**
+- Navigate to AI Insights tab (different from Pulse - more exploratory)
 - Click "Generate Insights" - watch the AI analyze our metrics
 - Uses GPT-4o to automatically discover patterns and opportunities
 - Generates 4 insights with confidence scores
@@ -41,7 +50,7 @@
 - Can save insights for later review
 - This demonstrates how AI can democratize analytics
 
-### **[2:30-3:15] Semantic Data Layer**
+### **[2:45-3:30] Semantic Data Layer**
 - Navigate to Semantic tab
 - Business-friendly metric catalog - no SQL required
 - Natural language search: "show me revenue metrics"
@@ -51,7 +60,7 @@
 - This is aligned with Tableau's semantic layer vision
 - Enables self-service analytics for non-technical users
 
-### **[3:15-4:00] Data Governance**
+### **[3:30-4:15] Data Governance**
 - Navigate to Governance tab
 - Four sections: Data Sources, Quality, Audit, Security
 - Data Sources: 4 connected sources with status monitoring
@@ -60,7 +69,7 @@
 - Security: SOC 2, GDPR, HIPAA compliance dashboards
 - This demonstrates enterprise-ready data management
 
-### **[4:00-4:45] Collaboration Features**
+### **[4:15-4:45] Collaboration Features**
 - Navigate to Collaborate tab
 - Real-time commenting on dashboards
 - Team member management with role-based access
@@ -88,6 +97,7 @@
 ### **Primary: Grand Prize**
 **Why We Should Win:**
 - Most comprehensive submission covering multiple innovation areas
+- **Tableau Pulse integration** showcasing AI-driven proactive insights
 - Production-quality code and design
 - Real AI integration with GPT-4o
 - Novel semantic search capabilities
@@ -114,6 +124,8 @@
 
 ### **Additional: Best Use of Actionable Analytics** ⭐⭐⭐
 **Why We Should Win:**
+- **Tableau Pulse** delivering proactive AI insights with specific actions
+- Smart prioritization with confidence scoring
 - Real-time team collaboration
 - Multi-format export integration
 - AI-generated actionable insights
@@ -133,13 +145,14 @@
 ## 📊 Technical Highlights
 
 ### **Innovation Points**
-1. ✅ AI-powered insight generation using GPT-4o
-2. ✅ Semantic layer with natural language search
-3. ✅ Comprehensive data governance framework
-4. ✅ Real-time collaboration features
-5. ✅ Predictive analytics with confidence intervals
-6. ✅ Interactive visualizations with D3.js
-7. ✅ Production-ready architecture
+1. ✅ **Tableau Pulse** - AI-driven proactive insights delivery
+2. ✅ AI-powered insight generation using GPT-4o
+3. ✅ Semantic layer with natural language search
+4. ✅ Comprehensive data governance framework
+5. ✅ Real-time collaboration features
+6. ✅ Predictive analytics with confidence intervals
+7. ✅ Interactive visualizations with D3.js
+8. ✅ Production-ready architecture
 
 ### **Technical Excellence**
 - TypeScript for type safety
@@ -220,6 +233,9 @@
 ├── src/
 │   ├── components/           # All React components
 │   │   ├── ui/              # Shadcn components
+│   │   ├── TableauEmbed.tsx
+│   │   ├── TableauAPIShowcase.tsx
+│   │   ├── TableauPulse.tsx     # NEW: Tableau Pulse integration
 │   │   ├── DataGovernance.tsx
 │   │   ├── SemanticLayer.tsx
 │   │   ├── CollaborationHub.tsx
@@ -236,6 +252,7 @@
 ├── PRD.md                   # Product requirements
 ├── README_NEW.md            # Project overview
 ├── HACKATHON_README.md      # Full documentation
+├── TABLEAU_PULSE.md         # Tableau Pulse feature documentation
 ├── REQUIREMENTS.md          # Requirements checklist
 └── SUBMISSION.md            # This file
 ```
@@ -284,6 +301,7 @@
 This project represents a comprehensive vision for the future of analytics platforms. It's not just a collection of features - it's a thoughtfully designed system that addresses real business needs while demonstrating technical excellence.
 
 **What makes it special:**
+- **Tableau Pulse implementation** - unique proactive insights delivery
 - Production-ready code quality
 - Genuine AI integration (not mocked)
 - Enterprise-grade features

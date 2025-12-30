@@ -12,6 +12,7 @@ import { SemanticLayer } from '@/components/SemanticLayer'
 import { CollaborationHub } from '@/components/CollaborationHub'
 import { TableauEmbed } from '@/components/TableauEmbed'
 import { TableauAPIShowcase } from '@/components/TableauAPIShowcase'
+import { TableauPulse } from '@/components/TableauPulse'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
@@ -66,7 +67,7 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-[1400px] grid-cols-4 lg:grid-cols-8 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1600px] grid-cols-4 lg:grid-cols-9 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -74,6 +75,10 @@ function App() {
               <TabsTrigger value="tableau" className="gap-2 py-3">
                 <ChartLineUp size={18} weight="duotone" />
                 <span className="hidden sm:inline">Tableau</span>
+              </TabsTrigger>
+              <TabsTrigger value="pulse" className="gap-2 py-3">
+                <Sparkle size={18} weight="duotone" />
+                <span className="hidden sm:inline">Pulse</span>
               </TabsTrigger>
               <TabsTrigger value="insights" className="gap-2 py-3">
                 <Sparkle size={18} weight="duotone" />
@@ -213,6 +218,10 @@ function App() {
                   <TableauAPIShowcase />
                 </TabsContent>
               </Tabs>
+            </TabsContent>
+
+            <TabsContent value="pulse" className="space-y-6">
+              <TableauPulse metrics={metrics} />
             </TabsContent>
 
             <TabsContent value="insights" className="space-y-6">

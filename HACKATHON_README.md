@@ -24,6 +24,17 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 - **Persistent storage** allowing users to save and revisit important discoveries
 - **Real-time generation** with progress indicators and smooth animations
 
+### 2.5. **Tableau Pulse - AI-Driven Insights Delivery** ⭐ NEW!
+- **Proactive insight surfacing** automatically delivers relevant insights to users
+- **Smart prioritization** with high/medium/low priority levels based on business impact
+- **Confidence scoring** (75-99%) shows reliability of each insight
+- **Actionable recommendations** provide specific next steps for each insight
+- **Insight feed management** with filtering (All/Unread/Bookmarked)
+- **Detailed insight view** with related metrics, suggested actions, and context
+- **Persistent storage** maintains complete insight history
+- **One-click generation** creates new AI insights from current metrics
+- **Five insight types**: Achievement, Opportunity, Trend, Alert, Anomaly
+
 ### 3. **Tableau Integration Examples** ⭐ (Best Product Extensibility)
 - **Dashboard Embedding**: Real working examples of embedded Tableau dashboards
   - Sales Performance Dashboard with regional breakdown
@@ -133,8 +144,9 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 ## 🎨 Alignment with Judging Criteria
 
 ### **Innovation & Creativity (40%)**
+- **Tableau Pulse implementation** demonstrating AI-driven proactive insights delivery
 - **Unique semantic search** allowing natural language queries on metrics
-- **AI-powered insight generation** that automatically surfaces patterns
+- **AI-powered insight generation** that automatically surfaces patterns with confidence scoring
 - **Comprehensive data governance** rarely seen in demo projects
 - **Real-time collaboration** features integrated into analytics workflow
 - **Multi-layered approach** combining ML, semantic modeling, and governance
@@ -165,7 +177,7 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 ## 🏆 Prize Category Alignment
 
 ### **Grand Prize** - Overall Most Innovative and Creative Solution
-Our platform demonstrates innovation across multiple dimensions: AI-powered insights, semantic modeling, data governance, and collaboration - all integrated into a cohesive, extensible platform.
+Our platform demonstrates innovation across multiple dimensions: **Tableau Pulse integration** for proactive insights, AI-powered insights, semantic modeling, data governance, and collaboration - all integrated into a cohesive, extensible platform showcasing the future of analytics.
 
 ### **Best Data Layer Implementation** ⭐
 - Comprehensive data source monitoring and management
@@ -182,6 +194,8 @@ Our platform demonstrates innovation across multiple dimensions: AI-powered insi
 - Category-based organization for easy navigation
 
 ### **Best Use of Actionable Analytics** ⭐
+- **Tableau Pulse** delivering AI insights with specific recommended actions
+- Proactive insight delivery with priority-based filtering
 - Real-time commenting and team collaboration
 - Multi-format export (PDF, Excel, Image) for workflow integration
 - Email sharing with notifications
@@ -220,7 +234,9 @@ Our platform demonstrates innovation across multiple dimensions: AI-powered insi
    - Activity notifications
 
 4. **AI & ML (Tableau Einstein / Pulse)**
-   - Automated insight generation
+   - **Tableau Pulse integration** with proactive insight delivery
+   - Automated insight generation with prioritization
+   - Confidence scoring and actionable recommendations
    - Anomaly detection
    - Predictive analytics
    - Natural language interactions
@@ -248,10 +264,12 @@ npm run build
 ### **Usage**
 1. Open the application in your browser
 2. Explore the **Dashboard** tab for live metrics
-3. Navigate to **AI Insights** and click "Generate Insights" to see AI analysis
-4. Try the **Semantic** tab to search metrics using natural language
-5. Check **Governance** for data quality monitoring and audit logs
-6. Use **Collaborate** to add comments and share dashboards
+3. Navigate to **Pulse** tab to see Tableau Pulse AI-driven insights delivery
+4. Click "Generate Insight" to create new AI-powered insights
+5. Try the **AI Insights** tab for traditional insight generation
+6. Explore the **Semantic** tab to search metrics using natural language
+7. Check **Governance** for data quality monitoring and audit logs
+8. Use **Collaborate** to add comments and share dashboards
 
 ---
 
@@ -326,9 +344,10 @@ Built with ❤️ for the Tableau Hackathon 2026
 This project demonstrates enterprise-grade analytics platform capabilities designed to showcase Tableau Developer Platform integration opportunities.
 
 **Key Differentiators:**
+- ✅ **Tableau Pulse integration** for AI-driven insights delivery
 - ✅ Comprehensive data governance and security
 - ✅ Semantic data layer with natural language search
-- ✅ AI-powered insight generation
+- ✅ AI-powered insight generation with confidence scoring
 - ✅ Real-time collaboration features
 - ✅ Production-ready code quality
 - ✅ Extensible architecture for Tableau integration

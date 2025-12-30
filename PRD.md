@@ -19,6 +19,13 @@ This is a comprehensive analytics platform featuring real-time dashboards, AI-po
 - **Progression**: User sees overview → Clicks metric card → Drills into detailed view → Explores trends → Discovers insights
 - **Success criteria**: Smooth animations, responsive interactions, clear data hierarchy
 
+### Tableau Pulse - AI-Driven Insights Delivery
+- **Functionality**: Proactive AI-powered insights surfaced automatically with prioritization, confidence scoring, and actionable recommendations
+- **Purpose**: Demonstrates Tableau Pulse integration - the future of AI-driven analytics delivery that surfaces insights automatically
+- **Trigger**: Insights appear on page load; user can generate new insights or filter by unread/bookmarked
+- **Progression**: View feed → Read insight detail → See confidence & priority → Get suggested actions → Bookmark important → Share with team
+- **Success criteria**: Real-time insight generation using LLM, persistent feed with filtering, clear prioritization with actionable recommendations
+
 ### AI Insight Generator
 - **Functionality**: Uses LLM to analyze displayed data and generate actionable business insights
 - **Purpose**: Showcases the intersection of AI and analytics - the future of data interpretation
