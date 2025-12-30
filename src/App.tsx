@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera, FileText, ArrowsLeftRight } from '@phosphor-icons/react'
+import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera, FileText, ArrowsLeftRight, SunHorizon } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { PredictionChart } from '@/components/PredictionChart'
@@ -18,6 +18,7 @@ import { MentionNotifications } from '@/components/MentionNotifications'
 import { ReportBuilder } from '@/components/ReportBuilder'
 import { ComparisonReport } from '@/components/ComparisonReport'
 import { YoYComparison } from '@/components/YoYComparison'
+import { SeasonalInsights } from '@/components/SeasonalInsights'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { motion } from 'framer-motion'
@@ -104,6 +105,10 @@ function App() {
                 <Sparkle size={18} weight="duotone" />
                 <span className="hidden sm:inline">AI Insights</span>
               </TabsTrigger>
+              <TabsTrigger value="seasonal" className="gap-2 py-3">
+                <SunHorizon size={18} weight="duotone" />
+                <span className="hidden sm:inline">Seasonal</span>
+              </TabsTrigger>
               <TabsTrigger value="predictions" className="gap-2 py-3">
                 <TrendUp size={18} weight="duotone" />
                 <span className="hidden sm:inline">Predictions</span>
@@ -131,10 +136,6 @@ function App() {
               <TabsTrigger value="comparison" className="gap-2 py-3">
                 <ArrowsLeftRight size={18} weight="duotone" />
                 <span className="hidden sm:inline">Compare</span>
-              </TabsTrigger>
-              <TabsTrigger value="explorer" className="gap-2 py-3">
-                <Funnel size={18} weight="duotone" />
-                <span className="hidden sm:inline">Explorer</span>
               </TabsTrigger>
             </TabsList>
             
@@ -210,8 +211,32 @@ function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.4 }}
-                className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
               >
+                <Card className="p-6 bg-gradient-to-br from-warning/10 via-card to-primary/10 border-warning/20">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-warning/20 flex items-center justify-center">
+                        <SunHorizon size={24} weight="fill" className="text-warning" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Discover Seasonal Patterns
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        AI analyzes historical data to detect seasonal trends and provides automated recommendations for peak and low periods.
+                      </p>
+                      <Badge 
+                        className="cursor-pointer bg-warning text-background hover:bg-warning/90"
+                        onClick={() => setActiveTab('seasonal')}
+                      >
+                        View Seasonal Insights →
+                      </Badge>
+                    </div>
+                  </div>
+                </Card>
+
                 <Card className="p-6 bg-gradient-to-br from-accent/10 via-card to-metric-purple/10 border-accent/20">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
@@ -259,30 +284,6 @@ function App() {
                     </div>
                   </div>
                 </Card>
-
-                <Card className="p-6 bg-gradient-to-br from-primary/10 via-card to-accent/10 border-primary/20">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
-                        <ArrowsLeftRight size={24} weight="fill" className="text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">
-                        Compare time periods
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Analyze metrics side-by-side across different time periods to identify trends and patterns.
-                      </p>
-                      <Badge 
-                        className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
-                        onClick={() => setActiveTab('comparison')}
-                      >
-                        Compare Metrics →
-                      </Badge>
-                    </div>
-                  </div>
-                </Card>
               </motion.div>
             </TabsContent>
             
@@ -307,6 +308,10 @@ function App() {
 
             <TabsContent value="insights" className="space-y-6">
               <InsightGenerator metrics={metrics} />
+            </TabsContent>
+            
+            <TabsContent value="seasonal" className="space-y-6">
+              <SeasonalInsights metrics={metrics} />
             </TabsContent>
             
             <TabsContent value="predictions" className="space-y-6">
@@ -352,16 +357,6 @@ function App() {
               </motion.div>
             </TabsContent>
             
-            <TabsContent value="explorer" className="space-y-6">
-              <Card className="p-12 text-center border-dashed">
-                <Funnel size={64} weight="thin" className="text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Advanced Data Explorer</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Interactive data exploration with multi-dimensional filtering, custom segmentation, and export capabilities coming soon.
-                </p>
-              </Card>
-            </TabsContent>
-
             <TabsContent value="semantic" className="space-y-6">
               <SemanticLayer />
             </TabsContent>

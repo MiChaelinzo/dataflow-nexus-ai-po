@@ -40,6 +40,13 @@ This is a comprehensive analytics platform featuring real-time dashboards, AI-po
 - **Progression**: User requests insight → AI analyzes patterns → Insights appear with confidence scores → User can save/share insights
 - **Success criteria**: Relevant insights generated within 3 seconds, presented clearly with supporting data
 
+### AI-Powered Seasonal Insights & Recommendations
+- **Functionality**: Automatically detects seasonal patterns in historical data, classifies seasonality strength, identifies peak/low periods, and generates automated recommendations with quarterly forecasts
+- **Purpose**: Enables proactive business planning by surfacing seasonal trends and providing actionable recommendations for upcoming quarters
+- **Trigger**: Auto-analyzes on load or user clicks "Refresh Analysis"
+- **Progression**: View current period summary → Explore priority recommendations → Review seasonal patterns → Check quarterly forecasts → Mark recommendations as applied → Track implementation
+- **Success criteria**: Accurate seasonal detection with 60-95% confidence, relevant recommendations with specific action items, clear quarterly forecasts with trend indicators
+
 ### Predictive Analytics Visualizer
 - **Functionality**: Displays forecasting models with confidence intervals and scenario analysis
 - **Purpose**: Demonstrates forward-looking analytics capabilities

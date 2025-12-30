@@ -58,6 +58,20 @@ Want to see our collaboration features in action immediately?
 - **One-click generation** creates new AI insights from current metrics
 - **Five insight types**: Achievement, Opportunity, Trend, Alert, Anomaly
 
+### 2.6. **AI-Powered Seasonal Insights** ⭐ NEW!
+- **Automatic seasonal pattern detection** analyzes historical data to identify quarterly trends
+- **Seasonality classification** categorizes patterns as Strong, Moderate, or Weak
+- **Peak and low season identification** pinpoints best and worst performing quarters
+- **Automated recommendations** generates 4 types: Opportunity, Risk, Optimization, Planning
+- **Priority-based actions** with High/Medium/Low priority levels and impact assessments
+- **Quarterly forecasting** predicts next 4 quarters with confidence scores
+- **Specific action items** provides 4-5 concrete steps per recommendation
+- **Recommendation tracking** mark as "applied" with persistent storage
+- **Volatility analysis** calculates metric stability and variation
+- **Interactive pattern cards** expandable details with peak/low averages
+- **Three-tab interface** Actions, Patterns, and Forecasts views
+- **Summary dashboard** shows current period, strong patterns count, and priority actions
+
 ### 3. **Tableau Integration Examples** ⭐ (Best Product Extensibility)
 - **Dashboard Embedding**: Real working examples of embedded Tableau dashboards
   - Sales Performance Dashboard with regional breakdown

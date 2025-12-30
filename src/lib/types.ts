@@ -182,3 +182,39 @@ export interface SeasonalTrend {
   changePercent: number
   trend: 'up' | 'down' | 'neutral'
 }
+
+export interface SeasonalPattern {
+  id: string
+  metricName: string
+  metricId: string
+  seasonality: 'strong' | 'moderate' | 'weak'
+  peakSeason: string
+  lowSeason: string
+  avgPeakValue: number
+  avgLowValue: number
+  volatility: number
+  confidence: number
+}
+
+export interface SeasonalRecommendation {
+  id: string
+  title: string
+  description: string
+  type: 'opportunity' | 'risk' | 'optimization' | 'planning'
+  priority: 'high' | 'medium' | 'low'
+  impact: string
+  actionItems: string[]
+  season: string
+  confidence: number
+  timestamp: number
+  applied?: boolean
+}
+
+export interface SeasonalForecast {
+  period: string
+  metric: string
+  forecast: number
+  confidence: number
+  trend: 'up' | 'down' | 'neutral'
+  recommendation?: string
+}
