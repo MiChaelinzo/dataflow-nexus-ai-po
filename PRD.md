@@ -1,16 +1,23 @@
 # Planning Guide
 
-An enterprise-grade analytics intelligence platform built to showcase the future of Tableau integration - combining real-time metrics, AI-powered insights, semantic data modeling, and actionable analytics in a stunning visual interface. This platform demonstrates extensibility, data governance, and workflow integration capabilities that align with Tableau's Developer Platform vision.
+An enterprise-grade analytics intelligence platform built to showcase the future of Tableau integration - combining real-time metrics, AI-powered insights, semantic data modeling, and actionable analytics in a stunning visual interface with GitHub authentication and personalized user dashboards. This platform demonstrates extensibility, data governance, workflow integration, and secure user-specific experiences that align with Tableau's Developer Platform vision.
 
 **Experience Qualities**:
-1. **Enterprise-Ready** - Professional-grade analytics with robust data governance, security controls, and audit trails
+1. **Enterprise-Ready** - Professional-grade analytics with robust data governance, security controls, audit trails, and authenticated user access
 2. **Intelligent** - AI-enhanced insights with semantic understanding surface automatically, guiding users to what matters most
 3. **Actionable** - Data integrated into workflows with smart recommendations, alerts, and automated actions
 
 **Complexity Level**: Complex Application (advanced functionality, likely with multiple views)
-This is a comprehensive analytics platform featuring real-time dashboards, AI-powered insights, semantic data layer, predictive modeling, data governance controls, collaboration features, and custom dashboard builder - demonstrating enterprise-grade analytics capabilities suitable for Tableau integration.
+This is a comprehensive analytics platform featuring GitHub authentication, personalized user dashboards, real-time analytics dashboards, AI-powered insights, semantic data layer, predictive modeling, data governance controls, collaboration features, and custom dashboard builder - demonstrating enterprise-grade analytics capabilities suitable for Tableau integration.
 
 ## Essential Features
+
+### GitHub Authentication & User Management
+- **Functionality**: Secure authentication using GitHub OAuth integration, personalized user profiles with avatars, activity tracking, and role-based access
+- **Purpose**: Demonstrates enterprise security patterns and personalized user experiences essential for modern analytics platforms
+- **Trigger**: User lands on platform → sees login screen → authenticates with GitHub → accesses personalized dashboard
+- **Progression**: View login page → Click "Sign in with GitHub" → Authenticate → Access personalized dashboard → View profile with stats and activity
+- **Success criteria**: Seamless authentication flow, secure session management, persistent user preferences, activity history tracking
 
 ### Live Analytics Dashboard
 - **Functionality**: Real-time visualization of key performance metrics with interactive charts and trend analysis

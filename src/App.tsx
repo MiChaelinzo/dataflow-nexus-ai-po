@@ -1,9 +1,24 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera, FileText, ArrowsLeftRight, SunHorizon, House } from '@phosphor-icons/react'
+import { 
+  ChartBar, 
+  Sparkle, 
+  TrendUp, 
+  Funnel, 
+  Shield, 
+  Function, 
+  Users, 
+  ChartLineUp, 
+  VideoCamera, 
+  FileText, 
+  ArrowsLeftRight, 
+  SunHorizon, 
+  House, 
+  UserCircle 
+} from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { PredictionChart } from '@/components/PredictionChart'
@@ -21,6 +36,8 @@ import { ComparisonReport } from '@/components/ComparisonReport'
 import { YoYComparison } from '@/components/YoYComparison'
 import { SeasonalInsights } from '@/components/SeasonalInsights'
 import { WelcomePage } from '@/components/WelcomePage'
+import { AuthGate } from '@/components/AuthGate'
+import { UserProfile, useUserActivity, useUserStats } from '@/components/UserProfile'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { motion } from 'framer-motion'
@@ -29,10 +46,20 @@ import { LiveCursors } from '@/components/LiveCursor'
 import { PresenceIndicator } from '@/components/PresenceIndicator'
 import { useCollaboration } from '@/hooks/use-collaboration'
 import { useKV } from '@github/spark/hooks'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 function App() {
   const [showWelcome, setShowWelcome] = useKV<boolean>('welcome-page-seen', true)
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [user, setUser] = useState<{ login: string; avatarUrl: string; isOwner: boolean } | null>(null)
   
   const metrics = useMemo(() => generateMetrics(), [])
   const timeSeriesData = useMemo(() => generateTimeSeriesData(30), [])
@@ -45,6 +72,26 @@ function App() {
     currentView: activeTab,
     enabled: true
   })
+  
+  const { trackActivity } = useUserActivity()
+  const { incrementStat } = useUserStats()
+  
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userInfo = await window.spark.user()
+        setUser(userInfo)
+      } catch (error) {
+        console.error('Failed to load user:', error)
+      }
+    }
+    
+    loadUser()
+  }, [])
+  
+  useEffect(() => {
+    trackActivity('view', `Viewed ${activeTab} tab`, activeTab)
+  }, [activeTab, trackActivity])
   
   const handleGetStarted = () => {
     setShowWelcome(false)
@@ -60,56 +107,84 @@ function App() {
   }
   
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="grid-background fixed inset-0 opacity-30" />
-      
-      <div className="relative z-10">
-        <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
-          <div className="max-w-[1600px] mx-auto px-6 py-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <motion.h1 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="text-3xl font-bold tracking-tight"
+    <AuthGate>
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="grid-background fixed inset-0 opacity-30" />
+        
+        <div className="relative z-10">
+          <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
+            <div className="max-w-[1600px] mx-auto px-6 py-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <motion.h1 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-3xl font-bold tracking-tight"
+                  >
+                    Analytics Intelligence Platform
+                  </motion.h1>
+                  <motion.p 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-muted-foreground mt-1"
+                  >
+                    Real-time insights powered by AI and advanced analytics
+                  </motion.p>
+                </div>
+                
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-3"
                 >
-                  Analytics Intelligence Platform
-                </motion.h1>
-                <motion.p 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-muted-foreground mt-1"
-                >
-                  Real-time insights powered by AI and advanced analytics
-                </motion.p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowWelcome(true)}
+                    className="gap-2"
+                  >
+                    <House size={16} weight="duotone" />
+                    <span className="hidden sm:inline">Welcome</span>
+                  </Button>
+                  <MentionNotifications currentUserId={currentUser.userId} />
+                  <PresenceIndicator users={activeUsers} />
+                  <Badge className="text-sm px-4 py-2 bg-accent/20 text-accent border-accent/30 gap-2">
+                    <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                    Live Data
+                  </Badge>
+                  
+                  {user && (
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <Button variant="ghost" size="sm" className="gap-2 h-10 px-3">
+                          <Avatar className="w-6 h-6">
+                            <AvatarImage src={user.avatarUrl} alt={user.login} />
+                            <AvatarFallback className="text-xs">
+                              {user.login[0].toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="hidden md:inline">{user.login}</span>
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+                        <SheetHeader>
+                          <SheetTitle>User Profile</SheetTitle>
+                          <SheetDescription>
+                            Your activity and statistics
+                          </SheetDescription>
+                        </SheetHeader>
+                        <div className="mt-6">
+                          <UserProfile />
+                        </div>
+                      </SheetContent>
+                    </Sheet>
+                  )}
+                </motion.div>
               </div>
-              
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="flex items-center gap-3"
-              >
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowWelcome(true)}
-                  className="gap-2"
-                >
-                  <House size={16} weight="duotone" />
-                  <span className="hidden sm:inline">Welcome</span>
-                </Button>
-                <MentionNotifications currentUserId={currentUser.userId} />
-                <PresenceIndicator users={activeUsers} />
-                <Badge className="text-sm px-4 py-2 bg-accent/20 text-accent border-accent/30 gap-2">
-                  <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                  Live Data
-                </Badge>
-              </motion.div>
             </div>
-          </div>
-        </header>
+          </header>
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -448,6 +523,7 @@ function App() {
       <LiveCursors cursors={cursors} />
       <Toaster />
     </div>
+    </AuthGate>
   )
 }
 

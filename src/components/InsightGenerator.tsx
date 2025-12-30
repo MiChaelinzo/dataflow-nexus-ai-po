@@ -8,6 +8,7 @@ import { Insight, Metric } from '@/lib/types'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useUserActivity, useUserStats } from './UserProfile'
 
 interface InsightGeneratorProps {
   metrics: Metric[]
@@ -17,6 +18,8 @@ export function InsightGenerator({ metrics }: InsightGeneratorProps) {
   const [insights, setInsights] = useKV<Insight[]>('analytics-insights', [])
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState(0)
+  const { trackActivity } = useUserActivity()
+  const { incrementStat } = useUserStats()
   
   const generateInsights = async () => {
     setIsGenerating(true)
@@ -81,6 +84,9 @@ Return format:
       setInsights(newInsights)
       setProgress(100)
       
+      incrementStat('insightsGenerated')
+      trackActivity('insight', `Generated ${newInsights.length} AI insights`, 'AI Insights')
+      
       toast.success('Insights generated successfully', {
         description: `Generated ${newInsights.length} actionable insights from your data`
       })
@@ -104,6 +110,8 @@ Return format:
         insight.id === id ? { ...insight, saved: !insight.saved } : insight
       )
     })
+    incrementStat('bookmarksCount')
+    trackActivity('bookmark', 'Bookmarked an insight', 'AI Insights')
   }
   
   return (

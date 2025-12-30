@@ -39,6 +39,7 @@ import { ScheduledReportsManager } from './ScheduledReportsManager'
 import { DateRangeFilter } from './DateRangeFilter'
 import { useKV } from '@github/spark/hooks'
 import { format } from 'date-fns'
+import { useUserActivity, useUserStats } from './UserProfile'
 
 interface ReportBuilderProps {
   metrics: Metric[]
@@ -66,6 +67,8 @@ export function ReportBuilder({
   })
   const [isExporting, setIsExporting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const { trackActivity } = useUserActivity()
+  const { incrementStat } = useUserStats()
 
   const safeTemplates = templates || defaultReportTemplates
 
@@ -112,11 +115,15 @@ export function ReportBuilder({
             }
           })
           exportToCSV(csvData, `${filename}.csv`)
+          incrementStat('reportsCreated')
+          trackActivity('report', `Exported ${template.name} as CSV`, 'Reports')
           toast.success('CSV exported successfully')
           break
 
         case 'json':
           exportToJSON(reportData, `${filename}.json`)
+          incrementStat('reportsCreated')
+          trackActivity('report', `Exported ${template.name} as JSON`, 'Reports')
           toast.success('JSON exported successfully')
           break
 
@@ -128,6 +135,8 @@ export function ReportBuilder({
             printWindow.document.close()
             setTimeout(() => {
               printWindow.print()
+              incrementStat('reportsCreated')
+              trackActivity('report', `Exported ${template.name} as PDF`, 'Reports')
               toast.success('PDF print dialog opened')
             }, 500)
           }
