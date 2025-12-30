@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SessionRecording, SessionEvent, Annotation, AnnotationReply, Bookmark, formatDuration, getEventIcon, getEventDescription, createAnnotation, createBookmark, getCategoryColor, getCategoryIcon } from '@/lib/session-replay'
 import { useSessionPlayback } from '@/hooks/use-session-playback'
-import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks, ChatCircle } from '@phosphor-icons/react'
+import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks, ChatCircle, At } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CursorPosition } from '@/lib/types'
 import { AnnotationMarker } from '@/components/AnnotationMarker'
@@ -499,6 +499,28 @@ export function SessionPlaybackViewer({
             <TabsContent value="annotations" className="flex-1 m-0">
               <ScrollArea className="h-full">
                 <div className="p-4 space-y-3">
+                  {annotations.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-accent/10 border border-accent/30 rounded-lg p-3 mb-3"
+                    >
+                      <div className="flex items-start gap-2">
+                        <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <At size={12} weight="bold" className="text-accent" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs font-medium text-accent mb-1">
+                            💡 Try @mentions in replies
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Click any annotation to open its thread. Type @ in replies to mention team members and send them notifications.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  
                   {annotations.length === 0 ? (
                     <div className="text-center py-8">
                       <Note size={48} weight="thin" className="text-muted-foreground mx-auto mb-2" />

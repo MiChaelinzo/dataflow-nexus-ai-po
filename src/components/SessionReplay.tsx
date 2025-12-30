@@ -11,6 +11,8 @@ import { useSessionRecorder } from '@/hooks/use-session-recorder'
 import { SessionRecordingCard } from '@/components/SessionRecordingCard'
 import { SessionPlaybackViewer } from '@/components/SessionPlaybackViewer'
 import { SessionRecording } from '@/lib/session-replay'
+import { MentionFeatureShowcase } from '@/components/MentionFeatureShowcase'
+import { MentionTestingCard } from '@/components/MentionTestingCard'
 import { Record, StopCircle, Video, List, Info, Sparkle } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
@@ -166,6 +168,22 @@ export function SessionReplay({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+            >
+              <MentionTestingCard />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <MentionFeatureShowcase />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
             >
               <Card className="p-6">
@@ -202,7 +220,7 @@ export function SessionReplay({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.25 }}
             >
               <Card className="p-6">
                 <h3 className="font-semibold mb-4">How It Works</h3>

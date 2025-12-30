@@ -98,7 +98,19 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 - **Training & documentation** perfect for onboarding and workflow review
 - **Performance optimized** with event throttling and batch saving
 
-### 9. **Advanced Data Explorer**
+### 9. **Annotation Threading with @Mentions** ⭐ NEW! (Innovation & Collaboration)
+- **Threaded discussions** on annotation markers in session recordings
+- **@mention autocomplete** with smart filtering and keyboard navigation
+- **Real-time notifications** delivered to mentioned team members
+- **Visual highlighting** of mentions with user color coding
+- **Notification system** with badge counts and notification center
+- **Persistent mentions** stored in KV storage across sessions
+- **Multi-user mentions** support multiple people in one message
+- **Context preservation** notifications include annotation title and preview
+- **Keyboard shortcuts** for power users (arrows, Enter, Cmd+Enter)
+- **Mobile-friendly** touch-optimized selection interface
+
+### 10. **Advanced Data Explorer**
 - **Coming soon** placeholder demonstrating roadmap for multi-dimensional filtering
 - Shows vision for custom segmentation and advanced drill-down capabilities
 
@@ -284,6 +296,22 @@ npm run build
 6. Explore the **Semantic** tab to search metrics using natural language
 7. Check **Governance** for data quality monitoring and audit logs
 8. Use **Collaborate** to add comments and share dashboards
+9. Visit **Replay** tab to test session recording and **@mentions** feature
+
+### **Testing @Mentions Feature** ⭐
+The @mentions feature is fully documented and ready to test:
+
+**Quick Test (2 minutes)**:
+1. Navigate to the **Replay** tab
+2. Follow the visual testing guide displayed on the page
+3. Create or play a recording
+4. Add an annotation and type `@` in the reply box
+5. See autocomplete, select a user, and verify notifications
+
+**Documentation**:
+- 📄 **[MENTIONS_TESTING_SUMMARY.md](./MENTIONS_TESTING_SUMMARY.md)** - Quick start guide
+- 📄 **[MENTIONS_TESTING_GUIDE.md](./MENTIONS_TESTING_GUIDE.md)** - Comprehensive testing
+- 📄 **[MENTIONS_FEATURE_DOCS.md](./MENTIONS_FEATURE_DOCS.md)** - Technical documentation
 
 ---
 
