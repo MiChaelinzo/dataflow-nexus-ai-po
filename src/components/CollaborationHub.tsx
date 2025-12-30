@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ShareNetwork, ChatCircle, Bell, Export, Users, PaperPlaneTilt, UserList, CalendarBlank, Cursor } from '@phosphor-icons/react'
+import { ShareNetwork, ChatCircle, Bell, Export, Users, PaperPlaneTilt, UserList, CalendarBlank, Cursor, At } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Comment, UserPresence } from '@/lib/types'
 import { useKV } from '@github/spark/hooks'
@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { TeamManagement } from '@/components/TeamManagement'
 import { RoleBasedDigests } from '@/components/RoleBasedDigests'
 import { CollaborationPanel } from '@/components/CollaborationPanel'
+import { MentionFeatureShowcase } from '@/components/MentionFeatureShowcase'
 
 const mockComments: Comment[] = [
   {
@@ -141,10 +142,14 @@ export function CollaborationHub({
       </motion.div>
 
       <Tabs defaultValue="live" className="w-full">
-        <TabsList className="grid w-full max-w-2xl grid-cols-5">
+        <TabsList className="grid w-full max-w-3xl grid-cols-6">
           <TabsTrigger value="live" className="gap-2">
             <Cursor size={16} weight="duotone" />
             Live
+          </TabsTrigger>
+          <TabsTrigger value="mentions" className="gap-2">
+            <At size={16} weight="duotone" />
+            Mentions
           </TabsTrigger>
           <TabsTrigger value="comments" className="gap-2">
             <ChatCircle size={16} weight="duotone" />
@@ -166,6 +171,10 @@ export function CollaborationHub({
 
         <TabsContent value="live" className="mt-6">
           <CollaborationPanel activeUsers={activeUsers} currentUser={currentUser} />
+        </TabsContent>
+
+        <TabsContent value="mentions" className="mt-6">
+          <MentionFeatureShowcase />
         </TabsContent>
 
         <TabsContent value="comments" className="mt-6">

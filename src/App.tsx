@@ -14,6 +14,7 @@ import { TableauEmbed } from '@/components/TableauEmbed'
 import { TableauAPIShowcase } from '@/components/TableauAPIShowcase'
 import { TableauPulse } from '@/components/TableauPulse'
 import { SessionReplay } from '@/components/SessionReplay'
+import { MentionNotifications } from '@/components/MentionNotifications'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
@@ -66,6 +67,7 @@ function App() {
                 transition={{ delay: 0.2 }}
                 className="flex items-center gap-3"
               >
+                <MentionNotifications currentUserId={currentUser.userId} />
                 <PresenceIndicator users={activeUsers} />
                 <Badge className="text-sm px-4 py-2 bg-accent/20 text-accent border-accent/30 gap-2">
                   <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />

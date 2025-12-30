@@ -1,15 +1,16 @@
 import { useState } from 'react'
-import { Annotation, AnnotationReply, getCategoryColor, getCategoryIcon, formatTimestamp, createAnnotationReply } from '@/lib/session-replay'
+import { Annotation, AnnotationReply, getCategoryColor, getCategoryIcon, formatTimestamp, createAnnotationReply, extractMentions } from '@/lib/session-replay'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Avatar } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
-import { ChatCircle, CheckCircle, PaperPlaneRight, Trash, Pencil, X } from '@phosphor-icons/react'
+import { ChatCircle, CheckCircle, PaperPlaneRight, Trash, X } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
+import { MentionInput } from '@/components/MentionInput'
+import { useKV } from '@github/spark/hooks'
+import { createMentionNotification } from '@/components/MentionNotifications'
 
 interface AnnotationThreadProps {
   annotation: Annotation
@@ -20,6 +21,7 @@ interface AnnotationThreadProps {
   currentUserId: string
   currentUserName: string
   currentUserColor: string
+  availableUsers: Array<{ userId: string; userName: string; userColor: string }>
   onClose?: () => void
 }
 
@@ -32,6 +34,7 @@ export function AnnotationThread({
   currentUserId,
   currentUserName,
   currentUserColor,
+  availableUsers,
   onClose
 }: AnnotationThreadProps) {
   const [replyContent, setReplyContent] = useState('')
@@ -42,23 +45,55 @@ export function AnnotationThread({
   const icon = getCategoryIcon(annotation.category)
   const replies = annotation.replies || []
 
-  const handleAddReply = () => {
+  const sendMentionNotifications = async (mentions: string[], replyContent: string) => {
+    for (const mentionedUserName of mentions) {
+      const mentionedUser = availableUsers.find(
+        u => u.userName.toLowerCase() === mentionedUserName.toLowerCase()
+      )
+      
+      if (mentionedUser && mentionedUser.userId !== currentUserId) {
+        const notification = createMentionNotification(
+          mentionedUser.userId,
+          currentUserName,
+          currentUserColor,
+          annotation.id,
+          annotation.title,
+          replyContent
+        )
+
+        const storageKey = `mentions-${mentionedUser.userId}`
+        const existingNotifications = await window.spark.kv.get<any[]>(storageKey) || []
+        await window.spark.kv.set(storageKey, [...existingNotifications, notification])
+      }
+    }
+  }
+
+  const handleAddReply = async () => {
     if (!replyContent.trim()) {
       toast.error('Reply cannot be empty')
       return
     }
 
+    const mentions = extractMentions(replyContent)
     const reply = createAnnotationReply(
       annotation.id,
       currentUserId,
       currentUserName,
       currentUserColor,
-      replyContent
+      replyContent,
+      mentions
     )
 
     onAddReply(annotation.id, reply)
+    
+    if (mentions.length > 0) {
+      await sendMentionNotifications(mentions, replyContent)
+      toast.success(`Reply added and ${mentions.length} ${mentions.length === 1 ? 'person' : 'people'} notified`)
+    } else {
+      toast.success('Reply added')
+    }
+    
     setReplyContent('')
-    toast.success('Reply added')
   }
 
   const handleDeleteReply = (replyId: string) => {
@@ -191,7 +226,26 @@ export function AnnotationThread({
                         </Button>
                       )}
                     </div>
-                    <p className="text-sm whitespace-pre-wrap pl-8">{reply.content}</p>
+                    <div className="whitespace-pre-wrap pl-8 text-sm">
+                      {reply.content.split(/(@\w+)/g).map((part, i) => {
+                        if (part.startsWith('@')) {
+                          const userName = part.substring(1)
+                          const mentionedUser = availableUsers.find(
+                            u => u.userName.toLowerCase() === userName.toLowerCase()
+                          )
+                          return (
+                            <span
+                              key={i}
+                              className="text-accent font-medium bg-accent/10 px-1 rounded"
+                              style={mentionedUser ? { color: mentionedUser.userColor } : undefined}
+                            >
+                              {part}
+                            </span>
+                          )
+                        }
+                        return <span key={i}>{part}</span>
+                      })}
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -212,12 +266,13 @@ export function AnnotationThread({
                 {currentUserName.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 space-y-2">
-                <Textarea
-                  placeholder="Add a reply... (Cmd/Ctrl+Enter to send)"
+                <MentionInput
                   value={replyContent}
-                  onChange={(e) => setReplyContent(e.target.value)}
+                  onChange={setReplyContent}
                   onKeyDown={handleKeyDown}
+                  placeholder="Add a reply... Type @ to mention someone (Cmd/Ctrl+Enter to send)"
                   rows={3}
+                  availableUsers={availableUsers}
                   className="resize-none"
                 />
                 <div className="flex justify-between items-center">

@@ -734,6 +734,11 @@ export function SessionPlaybackViewer({
               currentUserId={currentUserId}
               currentUserName={currentUserName}
               currentUserColor={currentUserColor}
+              availableUsers={localRecording.participants.map(p => ({
+                userId: p.userId,
+                userName: p.userName,
+                userColor: p.userColor
+              }))}
               onClose={handleCloseThread}
             />
           </motion.div>

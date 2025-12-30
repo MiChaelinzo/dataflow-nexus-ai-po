@@ -15,6 +15,7 @@ export interface AnnotationReply {
   userName: string
   userColor: string
   content: string
+  mentions?: string[]
   createdAt: number
   editedAt?: number
 }
@@ -251,7 +252,8 @@ export function createAnnotationReply(
   userId: string,
   userName: string,
   userColor: string,
-  content: string
+  content: string,
+  mentions?: string[]
 ): AnnotationReply {
   return {
     id: `rpl-${Date.now()}-${Math.random().toString(36).substring(7)}`,
@@ -260,6 +262,23 @@ export function createAnnotationReply(
     userName,
     userColor,
     content,
+    mentions,
     createdAt: Date.now()
   }
+}
+
+export function extractMentions(content: string): string[] {
+  const mentionRegex = /@(\w+)/g
+  const mentions: string[] = []
+  let match
+
+  while ((match = mentionRegex.exec(content)) !== null) {
+    mentions.push(match[1])
+  }
+
+  return [...new Set(mentions)]
+}
+
+export function renderContentWithMentions(content: string): string {
+  return content.replace(/@(\w+)/g, '<span class="mention">@$1</span>')
 }
