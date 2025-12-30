@@ -11,7 +11,8 @@ import {
   Trash,
   Eye,
   Calendar,
-  Sparkle
+  Sparkle,
+  CalendarBlank
 } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 import {
@@ -21,7 +22,8 @@ import {
   exportToCSV,
   exportToJSON,
   generateReportData,
-  formatReportForPrint
+  formatReportForPrint,
+  DateRange
 } from '@/lib/report-export'
 import { Metric, ChartDataPoint, PredictionData, Insight } from '@/lib/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -34,7 +36,9 @@ import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { ReportPreview } from './ReportPreview'
 import { ScheduledReportsManager } from './ScheduledReportsManager'
+import { DateRangeFilter } from './DateRangeFilter'
 import { useKV } from '@github/spark/hooks'
+import { format } from 'date-fns'
 
 interface ReportBuilderProps {
   metrics: Metric[]
@@ -165,6 +169,34 @@ export function ReportBuilder({
     }))
   }
 
+  const handleDateRangeChange = (templateId: string, dateRange: DateRange) => {
+    setTemplates((currentTemplates) => (currentTemplates || []).map(template => {
+      if (template.id === templateId) {
+        return {
+          ...template,
+          dateRange,
+          lastModified: Date.now()
+        }
+      }
+      return template
+    }))
+    toast.success('Date range updated')
+  }
+
+  const handleDynamicTimeChange = (templateId: string, enabled: boolean) => {
+    setTemplates((currentTemplates) => (currentTemplates || []).map(template => {
+      if (template.id === templateId) {
+        return {
+          ...template,
+          dynamicTimeEnabled: enabled,
+          lastModified: Date.now()
+        }
+      }
+      return template
+    }))
+    toast.success(`Dynamic time ${enabled ? 'enabled' : 'disabled'}`)
+  }
+
   return (
     <div className="space-y-6">
       <motion.div
@@ -175,7 +207,7 @@ export function ReportBuilder({
         <div>
           <h2 className="text-2xl font-bold">Analytics Reports</h2>
           <p className="text-muted-foreground mt-1">
-            Export comprehensive reports with charts and insights
+            Export comprehensive reports with charts, insights, and customizable date ranges
           </p>
         </div>
 
@@ -209,6 +241,38 @@ export function ReportBuilder({
         </div>
       </motion.div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <Card className="p-6 bg-gradient-to-br from-accent/10 via-card to-primary/5 border-accent/20">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center">
+                <CalendarBlank size={24} weight="fill" className="text-accent" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold mb-2">
+                Dynamic Date Ranges & Time Periods
+              </h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                All report templates now support customizable date ranges with dynamic time periods. 
+                Enable dynamic mode to automatically use the latest data when generating reports.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline">Last 7 Days</Badge>
+                <Badge variant="outline">Last 30 Days</Badge>
+                <Badge variant="outline">This Month</Badge>
+                <Badge variant="outline">This Quarter</Badge>
+                <Badge variant="outline">Custom Range</Badge>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+
       <Tabs defaultValue="templates" className="space-y-6">
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="templates" className="gap-2">
@@ -235,6 +299,19 @@ export function ReportBuilder({
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold mb-1">{template.name}</h3>
                       <p className="text-sm text-muted-foreground">{template.description}</p>
+                      {template.dateRange && (
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="outline" className="gap-1 text-xs">
+                            <CalendarBlank size={12} weight="duotone" />
+                            {format(template.dateRange.startDate, 'MMM d')} - {format(template.dateRange.endDate, 'MMM d, yyyy')}
+                          </Badge>
+                          {template.dynamicTimeEnabled && (
+                            <Badge variant="secondary" className="text-xs">
+                              Dynamic
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
                     {template.id !== 'executive-summary' && template.id !== 'detailed-analytics' && (
                       <Button
@@ -285,33 +362,45 @@ export function ReportBuilder({
                           Configure
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[80vh]">
+                      <DialogContent className="max-w-4xl max-h-[90vh]">
                         <DialogHeader>
                           <DialogTitle>Configure {template.name}</DialogTitle>
                           <DialogDescription>
-                            Select which sections to include in this report
+                            Customize sections and date range settings for this report
                           </DialogDescription>
                         </DialogHeader>
                         
-                        <ScrollArea className="h-[400px] pr-4">
-                          <div className="space-y-4">
-                            {template.sections.map(section => (
-                              <div
-                                key={section.id}
-                                className="flex items-start gap-3 p-4 border rounded-lg"
-                              >
-                                <Switch
-                                  checked={section.enabled}
-                                  onCheckedChange={() => handleToggleSection(template.id, section.id)}
-                                />
-                                <div className="flex-1">
-                                  <p className="font-medium">{section.title}</p>
-                                  <p className="text-sm text-muted-foreground">
-                                    Type: {section.type}
-                                  </p>
-                                </div>
+                        <ScrollArea className="h-[600px] pr-4">
+                          <div className="space-y-6">
+                            <DateRangeFilter
+                              dateRange={template.dateRange}
+                              dynamicTimeEnabled={template.dynamicTimeEnabled}
+                              onDateRangeChange={(dateRange) => handleDateRangeChange(template.id, dateRange)}
+                              onDynamicTimeChange={(enabled) => handleDynamicTimeChange(template.id, enabled)}
+                            />
+
+                            <Card className="p-6">
+                              <h3 className="text-lg font-semibold mb-4">Report Sections</h3>
+                              <div className="space-y-4">
+                                {template.sections.map(section => (
+                                  <div
+                                    key={section.id}
+                                    className="flex items-start gap-3 p-4 border rounded-lg hover:border-accent/50 transition-colors"
+                                  >
+                                    <Switch
+                                      checked={section.enabled}
+                                      onCheckedChange={() => handleToggleSection(template.id, section.id)}
+                                    />
+                                    <div className="flex-1">
+                                      <p className="font-medium">{section.title}</p>
+                                      <p className="text-sm text-muted-foreground">
+                                        Type: {section.type}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
+                            </Card>
                           </div>
                         </ScrollArea>
 

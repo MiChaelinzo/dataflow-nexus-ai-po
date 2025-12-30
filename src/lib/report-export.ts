@@ -1,5 +1,13 @@
 import { Metric, ChartDataPoint, PredictionData, Insight } from './types'
 
+export type DateRangePreset = 'today' | 'yesterday' | 'last-7-days' | 'last-30-days' | 'last-90-days' | 'this-month' | 'last-month' | 'this-quarter' | 'last-quarter' | 'this-year' | 'last-year' | 'custom'
+
+export interface DateRange {
+  startDate: Date
+  endDate: Date
+  preset: DateRangePreset
+}
+
 export interface ReportSection {
   id: string
   type: 'metrics' | 'timeseries' | 'predictions' | 'insights' | 'category' | 'text'
@@ -18,6 +26,8 @@ export interface ReportTemplate {
   description: string
   sections: ReportSection[]
   theme: 'light' | 'dark' | 'professional'
+  dateRange?: DateRange
+  dynamicTimeEnabled: boolean
   createdAt: number
   lastModified: number
 }
@@ -43,6 +53,75 @@ export interface ScheduledReport {
   enabled: boolean
   lastRun?: number
   nextRun: number
+}
+
+export function getDateRangeFromPreset(preset: DateRangePreset): DateRange {
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const endDate = new Date(today)
+  endDate.setHours(23, 59, 59, 999)
+  
+  let startDate = new Date(today)
+  
+  switch (preset) {
+    case 'today':
+      break
+    case 'yesterday':
+      startDate.setDate(startDate.getDate() - 1)
+      endDate.setTime(startDate.getTime())
+      endDate.setHours(23, 59, 59, 999)
+      break
+    case 'last-7-days':
+      startDate.setDate(startDate.getDate() - 6)
+      break
+    case 'last-30-days':
+      startDate.setDate(startDate.getDate() - 29)
+      break
+    case 'last-90-days':
+      startDate.setDate(startDate.getDate() - 89)
+      break
+    case 'this-month':
+      startDate.setDate(1)
+      break
+    case 'last-month':
+      startDate.setMonth(startDate.getMonth() - 1)
+      startDate.setDate(1)
+      endDate.setDate(0)
+      break
+    case 'this-quarter':
+      const currentQuarter = Math.floor(now.getMonth() / 3)
+      startDate.setMonth(currentQuarter * 3)
+      startDate.setDate(1)
+      break
+    case 'last-quarter':
+      const lastQuarter = Math.floor(now.getMonth() / 3) - 1
+      if (lastQuarter < 0) {
+        startDate.setFullYear(startDate.getFullYear() - 1)
+        startDate.setMonth(9)
+      } else {
+        startDate.setMonth(lastQuarter * 3)
+      }
+      startDate.setDate(1)
+      endDate.setMonth(startDate.getMonth() + 3)
+      endDate.setDate(0)
+      break
+    case 'this-year':
+      startDate.setMonth(0)
+      startDate.setDate(1)
+      break
+    case 'last-year':
+      startDate.setFullYear(startDate.getFullYear() - 1)
+      startDate.setMonth(0)
+      startDate.setDate(1)
+      endDate.setFullYear(endDate.getFullYear() - 1)
+      endDate.setMonth(11)
+      endDate.setDate(31)
+      break
+    case 'custom':
+      break
+  }
+  
+  return { startDate, endDate, preset }
 }
 
 export const defaultReportTemplates: ReportTemplate[] = [
@@ -73,6 +152,8 @@ export const defaultReportTemplates: ReportTemplate[] = [
       }
     ],
     theme: 'professional',
+    dateRange: getDateRangeFromPreset('last-30-days'),
+    dynamicTimeEnabled: true,
     createdAt: Date.now(),
     lastModified: Date.now()
   },
@@ -110,15 +191,111 @@ export const defaultReportTemplates: ReportTemplate[] = [
       }
     ],
     theme: 'light',
+    dateRange: getDateRangeFromPreset('last-90-days'),
+    dynamicTimeEnabled: true,
     createdAt: Date.now(),
     lastModified: Date.now()
   },
   {
-    id: 'custom-report',
-    name: 'Custom Report',
-    description: 'Build your own report with selected components',
-    sections: [],
+    id: 'weekly-snapshot',
+    name: 'Weekly Performance Snapshot',
+    description: 'Weekly overview with key metrics and trends',
+    sections: [
+      {
+        id: 'metrics',
+        type: 'metrics',
+        title: 'Weekly Performance',
+        enabled: true,
+        config: { metrics: ['revenue', 'customers', 'conversion'] }
+      },
+      {
+        id: 'timeseries',
+        type: 'timeseries',
+        title: 'Week Over Week Trend',
+        enabled: true,
+        config: { chartType: 'line' }
+      }
+    ],
     theme: 'light',
+    dateRange: getDateRangeFromPreset('last-7-days'),
+    dynamicTimeEnabled: true,
+    createdAt: Date.now(),
+    lastModified: Date.now()
+  },
+  {
+    id: 'monthly-summary',
+    name: 'Monthly Business Summary',
+    description: 'Complete monthly performance report',
+    sections: [
+      {
+        id: 'metrics',
+        type: 'metrics',
+        title: 'Monthly KPIs',
+        enabled: true,
+        config: { metrics: ['revenue', 'customers', 'conversion', 'churn'] }
+      },
+      {
+        id: 'timeseries',
+        type: 'timeseries',
+        title: 'Monthly Trends',
+        enabled: true,
+        config: { chartType: 'area' }
+      },
+      {
+        id: 'category',
+        type: 'category',
+        title: 'Revenue Breakdown',
+        enabled: true,
+        config: { chartType: 'bar' }
+      },
+      {
+        id: 'insights',
+        type: 'insights',
+        title: 'Key Insights',
+        enabled: true
+      }
+    ],
+    theme: 'professional',
+    dateRange: getDateRangeFromPreset('this-month'),
+    dynamicTimeEnabled: true,
+    createdAt: Date.now(),
+    lastModified: Date.now()
+  },
+  {
+    id: 'quarterly-review',
+    name: 'Quarterly Business Review',
+    description: 'Comprehensive quarterly performance analysis',
+    sections: [
+      {
+        id: 'all-metrics',
+        type: 'metrics',
+        title: 'Quarterly Performance',
+        enabled: true,
+        config: { metrics: ['revenue', 'customers', 'conversion', 'churn', 'avg-order', 'satisfaction'] }
+      },
+      {
+        id: 'timeseries',
+        type: 'timeseries',
+        title: 'Quarterly Trends',
+        enabled: true,
+        config: { chartType: 'area' }
+      },
+      {
+        id: 'predictions',
+        type: 'predictions',
+        title: 'Next Quarter Forecast',
+        enabled: true
+      },
+      {
+        id: 'insights',
+        type: 'insights',
+        title: 'Strategic Insights',
+        enabled: true
+      }
+    ],
+    theme: 'professional',
+    dateRange: getDateRangeFromPreset('this-quarter'),
+    dynamicTimeEnabled: true,
     createdAt: Date.now(),
     lastModified: Date.now()
   }
@@ -218,11 +395,24 @@ export function generateReportData(
   predictionData: PredictionData,
   insights: Insight[]
 ): any {
+  const dateRange = template.dynamicTimeEnabled && template.dateRange
+    ? getDateRangeFromPreset(template.dateRange.preset)
+    : template.dateRange
+
   const report: any = {
     title: template.name,
     generatedAt: new Date().toISOString(),
+    dateRange: dateRange ? {
+      start: dateRange.startDate.toISOString(),
+      end: dateRange.endDate.toISOString(),
+      preset: dateRange.preset
+    } : undefined,
     sections: []
   }
+
+  const filteredTimeSeriesData = dateRange
+    ? filterDataByDateRange(timeSeriesData, dateRange)
+    : timeSeriesData
 
   template.sections.forEach(section => {
     if (!section.enabled) return
@@ -249,7 +439,7 @@ export function generateReportData(
         report.sections.push({
           title: section.title,
           type: 'timeseries',
-          data: timeSeriesData
+          data: filteredTimeSeriesData
         })
         break
 
@@ -290,7 +480,19 @@ export function generateReportData(
   return report
 }
 
+function filterDataByDateRange(data: ChartDataPoint[], dateRange: DateRange): ChartDataPoint[] {
+  return data.filter(point => {
+    const pointDate = new Date(point.label)
+    if (isNaN(pointDate.getTime())) return true
+    return pointDate >= dateRange.startDate && pointDate <= dateRange.endDate
+  })
+}
+
 export function formatReportForPrint(report: any): string {
+  const dateRangeText = report.dateRange
+    ? `${new Date(report.dateRange.start).toLocaleDateString()} - ${new Date(report.dateRange.end).toLocaleDateString()}`
+    : ''
+
   let html = `
     <!DOCTYPE html>
     <html>
@@ -325,6 +527,12 @@ export function formatReportForPrint(report: any): string {
         .timestamp {
           color: #6b7280;
           font-size: 14px;
+        }
+        .date-range {
+          color: #3b82f6;
+          font-size: 14px;
+          font-weight: 600;
+          margin-top: 4px;
         }
         .metrics-grid {
           display: grid;
@@ -404,6 +612,7 @@ export function formatReportForPrint(report: any): string {
       <div class="header">
         <h1>${report.title}</h1>
         <p class="timestamp">Generated on ${new Date(report.generatedAt).toLocaleString()}</p>
+        ${dateRangeText ? `<p class="date-range">Report Period: ${dateRangeText}</p>` : ''}
       </div>
   `
 
