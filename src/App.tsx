@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera, FileText, ArrowsLeftRight, SunHorizon } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera, FileText, ArrowsLeftRight, SunHorizon, House } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { PredictionChart } from '@/components/PredictionChart'
@@ -19,6 +20,7 @@ import { ReportBuilder } from '@/components/ReportBuilder'
 import { ComparisonReport } from '@/components/ComparisonReport'
 import { YoYComparison } from '@/components/YoYComparison'
 import { SeasonalInsights } from '@/components/SeasonalInsights'
+import { WelcomePage } from '@/components/WelcomePage'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { motion } from 'framer-motion'
@@ -29,6 +31,7 @@ import { useCollaboration } from '@/hooks/use-collaboration'
 import { useKV } from '@github/spark/hooks'
 
 function App() {
+  const [showWelcome, setShowWelcome] = useKV<boolean>('welcome-page-seen', true)
   const [activeTab, setActiveTab] = useState('dashboard')
   
   const metrics = useMemo(() => generateMetrics(), [])
@@ -42,6 +45,19 @@ function App() {
     currentView: activeTab,
     enabled: true
   })
+  
+  const handleGetStarted = () => {
+    setShowWelcome(false)
+  }
+  
+  if (showWelcome) {
+    return (
+      <>
+        <WelcomePage onGetStarted={handleGetStarted} />
+        <Toaster />
+      </>
+    )
+  }
   
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -75,6 +91,15 @@ function App() {
                 transition={{ delay: 0.2 }}
                 className="flex items-center gap-3"
               >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowWelcome(true)}
+                  className="gap-2"
+                >
+                  <House size={16} weight="duotone" />
+                  <span className="hidden sm:inline">Welcome</span>
+                </Button>
                 <MentionNotifications currentUserId={currentUser.userId} />
                 <PresenceIndicator users={activeUsers} />
                 <Badge className="text-sm px-4 py-2 bg-accent/20 text-accent border-accent/30 gap-2">
