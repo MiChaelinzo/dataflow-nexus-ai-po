@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera, FileText } from '@phosphor-icons/react'
+import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera, FileText, ArrowsLeftRight } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { PredictionChart } from '@/components/PredictionChart'
@@ -16,6 +16,7 @@ import { TableauPulse } from '@/components/TableauPulse'
 import { SessionReplay } from '@/components/SessionReplay'
 import { MentionNotifications } from '@/components/MentionNotifications'
 import { ReportBuilder } from '@/components/ReportBuilder'
+import { ComparisonReport } from '@/components/ComparisonReport'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { motion } from 'framer-motion'
@@ -85,7 +86,7 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-[1600px] grid-cols-5 lg:grid-cols-11 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1600px] grid-cols-6 lg:grid-cols-12 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -125,6 +126,10 @@ function App() {
               <TabsTrigger value="reports" className="gap-2 py-3">
                 <FileText size={18} weight="duotone" />
                 <span className="hidden sm:inline">Reports</span>
+              </TabsTrigger>
+              <TabsTrigger value="comparison" className="gap-2 py-3">
+                <ArrowsLeftRight size={18} weight="duotone" />
+                <span className="hidden sm:inline">Compare</span>
               </TabsTrigger>
               <TabsTrigger value="explorer" className="gap-2 py-3">
                 <Funnel size={18} weight="duotone" />
@@ -204,7 +209,7 @@ function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.4 }}
-                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                className="grid grid-cols-1 lg:grid-cols-3 gap-6"
               >
                 <Card className="p-6 bg-gradient-to-br from-accent/10 via-card to-metric-purple/10 border-accent/20">
                   <div className="flex items-start gap-4">
@@ -249,6 +254,30 @@ function App() {
                         onClick={() => setActiveTab('collaborate')}
                       >
                         View Collaboration →
+                      </Badge>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-6 bg-gradient-to-br from-primary/10 via-card to-accent/10 border-primary/20">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <ArrowsLeftRight size={24} weight="fill" className="text-primary" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Compare time periods
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Analyze metrics side-by-side across different time periods to identify trends and patterns.
+                      </p>
+                      <Badge 
+                        className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
+                        onClick={() => setActiveTab('comparison')}
+                      >
+                        Compare Metrics →
                       </Badge>
                     </div>
                   </div>
@@ -360,6 +389,13 @@ function App() {
                 categoryData={categoryData}
                 predictionData={predictionData}
                 insights={insights || []}
+              />
+            </TabsContent>
+
+            <TabsContent value="comparison" className="space-y-6">
+              <ComparisonReport
+                metrics={metrics}
+                timeSeriesData={timeSeriesData}
               />
             </TabsContent>
           </Tabs>
