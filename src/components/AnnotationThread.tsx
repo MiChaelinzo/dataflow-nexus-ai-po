@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { ChatCircle, CheckCircle, PaperPlaneRight, Trash, X } from '@phosphor-icons/react'
+import { ChatCircle, CheckCircle, PaperPlaneRight, Trash, X, At } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { MentionInput } from '@/components/MentionInput'
@@ -88,7 +88,11 @@ export function AnnotationThread({
     
     if (mentions.length > 0) {
       await sendMentionNotifications(mentions, replyContent)
-      toast.success(`Reply added and ${mentions.length} ${mentions.length === 1 ? 'person' : 'people'} notified`)
+      const mentionedNames = mentions.map(m => `@${m}`).join(', ')
+      toast.success('🎉 Reply sent with mentions!', {
+        description: `Notified ${mentions.length} ${mentions.length === 1 ? 'person' : 'people'}: ${mentionedNames}`,
+        duration: 5000
+      })
     } else {
       toast.success('Reply added')
     }
@@ -258,6 +262,28 @@ export function AnnotationThread({
         <>
           <Separator />
           <div className="p-4 space-y-3">
+            {replies.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-accent/10 border border-accent/30 rounded-lg p-3 mb-2"
+              >
+                <div className="flex items-start gap-2">
+                  <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <At size={12} weight="bold" className="text-accent" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-accent mb-1">
+                      💬 Start the conversation
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Type @ followed by a name to mention someone. Try <span className="font-mono bg-card px-1 rounded">@Alice</span>, <span className="font-mono bg-card px-1 rounded">@Bob</span>, or <span className="font-mono bg-card px-1 rounded">@Charlie</span>
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            
             <div className="flex items-start gap-3">
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 mt-1"
@@ -276,7 +302,8 @@ export function AnnotationThread({
                   className="resize-none"
                 />
                 <div className="flex justify-between items-center">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <At size={12} />
                     Press Cmd/Ctrl+Enter to send
                   </p>
                   <Button

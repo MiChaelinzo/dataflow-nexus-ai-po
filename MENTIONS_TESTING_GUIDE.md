@@ -12,6 +12,25 @@ This guide walks through testing the @mentions feature in annotation replies wit
 
 ## Step-by-Step Testing Instructions
 
+### Quick Start: Use Demo Recording (Recommended)
+**⚡ Fastest way to test @mentions without waiting for a real recording:**
+
+1. Navigate to the **"Replay"** tab
+2. Look for the **"Test @Mentions Feature"** card at the top
+3. Click **"Start Demo Recording with Sample Data"** button
+4. Switch to the **"Recordings"** tab
+5. Click **"Play"** on the demo recording titled "🎯 Demo Session - Test @Mentions Here"
+6. Skip to **Step 4** below to start adding annotations
+
+**The demo recording includes:**
+- ✅ Pre-configured sample users (Alice, Bob, Charlie + you)
+- ✅ Multiple events and interactions
+- ✅ Ready for immediate annotation and @mention testing
+
+---
+
+### Alternative: Create Your Own Recording
+
 ### Step 1: Navigate to the Replay Tab
 1. Open the Analytics Intelligence Platform
 2. Click on the **"Replay"** tab (last tab with VideoCamera icon)
@@ -51,6 +70,15 @@ This guide walks through testing the @mentions feature in annotation replies wit
    - Each user shown with avatar circle (colored background)
    - User name and user ID displayed
    - Up to 5 suggestions shown
+
+**💡 Demo Recording Users:**
+If you're using the demo recording, you'll see these participants available for @mention:
+- **@Alice** (purple avatar) - user-001
+- **@Bob** (blue avatar) - user-002
+- **@Charlie** (green avatar) - user-003
+- **@YourUsername** - your current user
+
+Try typing `@Alice` or `@Bob` to see the autocomplete in action!
 
 ### Step 7: Test @Mentions - Filtering
 1. Continue typing after `@` (e.g., `@User`)

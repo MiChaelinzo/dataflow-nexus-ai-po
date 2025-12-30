@@ -414,7 +414,11 @@ export function SessionPlaybackViewer({
                 onClick={() => setShowAnnotationDialog(true)}
                 size="sm"
                 variant="outline"
-                className="gap-2 flex-1"
+                className={`gap-2 flex-1 ${
+                  localRecording.metadata.title.includes('Demo') && annotations.length === 0
+                    ? 'animate-pulse border-accent/50 bg-accent/10 hover:bg-accent/20'
+                    : ''
+                }`}
               >
                 <Note size={16} weight="duotone" />
                 Add Annotation
@@ -499,6 +503,40 @@ export function SessionPlaybackViewer({
             <TabsContent value="annotations" className="flex-1 m-0">
               <ScrollArea className="h-full">
                 <div className="p-4 space-y-3">
+                  {annotations.length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-gradient-to-br from-accent/10 via-accent/5 to-metric-purple/10 border border-accent/30 rounded-lg p-4 mb-3"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                          <At size={20} weight="bold" className="text-accent" />
+                        </div>
+                        <div className="flex-1 space-y-3">
+                          <div>
+                            <p className="text-sm font-semibold text-accent mb-1">
+                              🚀 Test @Mentions Feature
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Add your first annotation to this recording, then use @ in replies to mention team members and trigger notifications.
+                            </p>
+                          </div>
+                          <div className="bg-card/50 rounded-lg p-3 border border-border/50 space-y-2">
+                            <p className="text-xs font-medium">Quick Steps:</p>
+                            <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                              <li>Click "Add Annotation" button above</li>
+                              <li>Create an annotation at any timestamp</li>
+                              <li>Click the annotation to open the thread</li>
+                              <li>Type @ in the reply box to mention participants</li>
+                              <li>Send the reply and watch notifications appear!</li>
+                            </ol>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  
                   {annotations.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}

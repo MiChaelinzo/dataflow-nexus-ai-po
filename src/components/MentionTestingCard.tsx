@@ -1,9 +1,17 @@
+import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { At, ArrowDown, ArrowUp, Keyboard, CheckCircle } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { At, ArrowDown, ArrowUp, Keyboard, CheckCircle, PlayCircle, Sparkle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
-export function MentionTestingCard() {
+interface MentionTestingCardProps {
+  onStartDemoRecording?: () => void
+}
+
+export function MentionTestingCard({ onStartDemoRecording }: MentionTestingCardProps) {
+  const [showDemo, setShowDemo] = useState(false)
+
   return (
     <Card className="p-6 border-accent/30 bg-gradient-to-br from-accent/5 via-card to-background">
       <div className="space-y-4">
@@ -12,8 +20,9 @@ export function MentionTestingCard() {
             <At size={20} weight="fill" className="text-accent" />
             Test @Mentions Feature
           </h3>
-          <Badge className="bg-accent/20 text-accent border-accent/30">
-            Quick Guide
+          <Badge className="bg-accent/20 text-accent border-accent/30 gap-1">
+            <Sparkle size={12} weight="fill" />
+            Interactive Guide
           </Badge>
         </div>
 
@@ -165,6 +174,47 @@ export function MentionTestingCard() {
             Each mentioned user will receive a separate notification with context.
           </p>
         </div>
+
+        {onStartDemoRecording && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Button
+              onClick={onStartDemoRecording}
+              className="w-full gap-2 bg-gradient-to-r from-accent to-metric-purple hover:opacity-90"
+              size="lg"
+            >
+              <PlayCircle size={20} weight="fill" />
+              Start Demo Recording with Sample Data
+            </Button>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Creates a test recording with sample participants ready for @mention testing
+            </p>
+          </motion.div>
+        )}
+
+        {showDemo && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="bg-success/10 border border-success/30 rounded-lg p-4"
+          >
+            <div className="flex items-start gap-3">
+              <CheckCircle size={20} weight="fill" className="text-success flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-success mb-2">
+                  Ready to Test!
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  The demo recording is ready. Navigate to the "Recordings" tab to play it, 
+                  add annotations, and test @mentions in replies.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </Card>
   )

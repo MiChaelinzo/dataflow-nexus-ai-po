@@ -8,6 +8,29 @@ This platform showcases how modern web technologies can extend and strengthen Ta
 
 ---
 
+## 🚀 Quick Start: Test @Mentions Feature in 30 Seconds!
+
+Want to see our collaboration features in action immediately? 
+
+```
+1. Navigate to REPLAY tab (last tab)
+              ↓
+2. Click "Start Demo Recording with Sample Data"
+              ↓
+3. Click "Recordings" tab → Click "Play" on demo
+              ↓
+4. Click "Add Annotation" → Open thread → Type @Alice
+              ↓
+         🎉 SUCCESS! 
+   See autocomplete, send mention, get notification!
+```
+
+📖 **Step-by-Step Guide**: [TEST_MENTIONS_NOW.md](./TEST_MENTIONS_NOW.md) - Complete with screenshots  
+📖 **Quick Reference**: [MENTIONS_QUICK_TEST.md](./MENTIONS_QUICK_TEST.md) - 2-minute guide  
+📖 **Full Documentation**: [MENTIONS_TESTING_GUIDE.md](./MENTIONS_TESTING_GUIDE.md) - Comprehensive testing
+
+---
+
 ## 🚀 Key Features & Functionality
 
 ### 1. **Real-Time Analytics Dashboard**

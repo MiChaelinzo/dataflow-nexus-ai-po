@@ -32,9 +32,16 @@ export function SessionRecordingCard({ recording, onPlay, onDelete }: SessionRec
                 <Play size={24} weight="fill" className="text-accent" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg mb-1 truncate">
-                  {recording.metadata.title}
-                </h3>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-lg truncate">
+                    {recording.metadata.title}
+                  </h3>
+                  {recording.metadata.tags.includes('demo') && (
+                    <Badge className="bg-gradient-to-r from-accent to-metric-purple text-white border-0 text-xs">
+                      ✨ Demo
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-sm text-muted-foreground">
                   {formatTimestamp(recording.startTime)} • {formatDuration(recording.duration)}
                 </p>

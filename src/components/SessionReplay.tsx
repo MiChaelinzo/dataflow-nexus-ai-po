@@ -10,10 +10,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { useSessionRecorder } from '@/hooks/use-session-recorder'
 import { SessionRecordingCard } from '@/components/SessionRecordingCard'
 import { SessionPlaybackViewer } from '@/components/SessionPlaybackViewer'
-import { SessionRecording } from '@/lib/session-replay'
+import { SessionRecording, createSessionEvent } from '@/lib/session-replay'
 import { MentionFeatureShowcase } from '@/components/MentionFeatureShowcase'
 import { MentionTestingCard } from '@/components/MentionTestingCard'
-import { Record, StopCircle, Video, List, Info, Sparkle } from '@phosphor-icons/react'
+import { Record, StopCircle, Video, List, Info, Sparkle, At } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
@@ -51,6 +51,66 @@ export function SessionReplay({
     currentUserColor,
     currentView
   })
+
+  const createDemoRecording = () => {
+    const now = Date.now()
+    const durationMs = 60000 // 60 second demo
+    
+    const demoUsers = [
+      { userId: 'user-001', userName: 'Alice', userColor: 'oklch(0.60 0.18 290)' },
+      { userId: 'user-002', userName: 'Bob', userColor: 'oklch(0.65 0.15 195)' },
+      { userId: 'user-003', userName: 'Charlie', userColor: 'oklch(0.65 0.15 145)' },
+      { userId: currentUserId, userName: currentUserName, userColor: currentUserColor }
+    ]
+    
+    const events = [
+      createSessionEvent('interaction', demoUsers[0].userId, demoUsers[0].userName, demoUsers[0].userColor, 
+        { description: 'Started session', action: 'start' }),
+      createSessionEvent('tab-change', demoUsers[0].userId, demoUsers[0].userName, demoUsers[0].userColor,
+        { tab: 'dashboard', from: 'replay' }),
+      createSessionEvent('cursor', demoUsers[0].userId, demoUsers[0].userName, demoUsers[0].userColor,
+        { x: 150, y: 200 }),
+      createSessionEvent('click', demoUsers[0].userId, demoUsers[0].userName, demoUsers[0].userColor,
+        { x: 150, y: 200, target: 'BUTTON', id: 'insight-btn' }),
+      createSessionEvent('tab-change', demoUsers[1].userId, demoUsers[1].userName, demoUsers[1].userColor,
+        { tab: 'insights', from: 'dashboard' }),
+      createSessionEvent('cursor', demoUsers[1].userId, demoUsers[1].userName, demoUsers[1].userColor,
+        { x: 400, y: 300 }),
+      createSessionEvent('interaction', demoUsers[2].userId, demoUsers[2].userName, demoUsers[2].userColor,
+        { description: 'Generated AI insights', action: 'generate' }),
+    ]
+    
+    events.forEach((event, i) => {
+      event.timestamp = now + (i * 8000)
+    })
+    
+    const demoRecording: SessionRecording = {
+      id: `demo-session-${now}`,
+      startTime: now,
+      endTime: now + durationMs,
+      duration: durationMs,
+      events: events,
+      participants: demoUsers.map((user, i) => ({
+        ...user,
+        joinedAt: now + (i * 5000),
+        leftAt: now + durationMs
+      })),
+      metadata: {
+        title: '🎯 Demo Session - Test @Mentions Here',
+        description: 'Sample recording with multiple participants for testing @mention functionality',
+        tags: ['demo', 'tutorial', 'mentions'],
+        views: ['dashboard', 'insights', 'replay']
+      },
+      annotations: [],
+      bookmarks: []
+    }
+    
+    updateRecordingMetadata(demoRecording.id, demoRecording)
+    setActiveTab('recordings')
+    toast.success('Demo recording created!', {
+      description: 'Switch to Recordings tab to test @mentions'
+    })
+  }
 
   const handleStartRecording = () => {
     if (!sessionTitle.trim()) {
@@ -169,7 +229,7 @@ export function SessionReplay({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <MentionTestingCard />
+              <MentionTestingCard onStartDemoRecording={createDemoRecording} />
             </motion.div>
 
             <motion.div
@@ -279,17 +339,65 @@ export function SessionReplay({
 
           <TabsContent value="recordings" className="space-y-4 mt-6">
             {sortedRecordings.length === 0 ? (
-              <Card className="p-12 text-center border-dashed">
-                <Video size={64} weight="thin" className="text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Recordings Yet</h3>
-                <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                  Start recording a collaboration session to capture cursor movements, interactions, and team activity.
-                </p>
-                <Button onClick={() => setShowStartDialog(true)} className="gap-2">
-                  <Record size={18} weight="fill" />
-                  Start First Recording
-                </Button>
-              </Card>
+              <div className="space-y-4">
+                <Card className="p-12 text-center border-dashed">
+                  <Video size={64} weight="thin" className="text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No Recordings Yet</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                    Start recording a collaboration session to capture cursor movements, interactions, and team activity.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                    <Button onClick={() => setShowStartDialog(true)} className="gap-2">
+                      <Record size={18} weight="fill" />
+                      Start First Recording
+                    </Button>
+                    <Button 
+                      onClick={createDemoRecording} 
+                      variant="outline" 
+                      className="gap-2 border-accent/30 hover:bg-accent/10"
+                    >
+                      <Sparkle size={18} weight="fill" className="text-accent" />
+                      Create Demo for @Mention Testing
+                    </Button>
+                  </div>
+                </Card>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <Card className="p-6 bg-gradient-to-br from-accent/10 via-card to-metric-purple/10 border-accent/30">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                        <At size={24} weight="fill" className="text-accent" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold mb-2">
+                          Want to Test @Mentions Right Away?
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Create a demo recording pre-populated with multiple participants. Perfect for testing @mentions in annotation replies and seeing notifications in action!
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                          <div className="bg-card/50 rounded-lg p-3 border border-border/50">
+                            <div className="font-semibold mb-1">✅ Multiple Users</div>
+                            <div className="text-muted-foreground">Demo includes Alice, Bob, Charlie + you</div>
+                          </div>
+                          <div className="bg-card/50 rounded-lg p-3 border border-border/50">
+                            <div className="font-semibold mb-1">⚡ Instant Setup</div>
+                            <div className="text-muted-foreground">No recording needed, ready to use</div>
+                          </div>
+                          <div className="bg-card/50 rounded-lg p-3 border border-border/50">
+                            <div className="font-semibold mb-1">🎯 Test @Mentions</div>
+                            <div className="text-muted-foreground">Add annotations and mention users</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              </div>
             ) : (
               <AnimatePresence mode="popLayout">
                 {sortedRecordings.map((recording) => (
