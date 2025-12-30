@@ -5,15 +5,17 @@ import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { SessionRecording, SessionEvent, Annotation, Bookmark, formatDuration, getEventIcon, getEventDescription, createAnnotation, createBookmark, getCategoryColor, getCategoryIcon } from '@/lib/session-replay'
+import { SessionRecording, SessionEvent, Annotation, AnnotationReply, Bookmark, formatDuration, getEventIcon, getEventDescription, createAnnotation, createBookmark, getCategoryColor, getCategoryIcon } from '@/lib/session-replay'
 import { useSessionPlayback } from '@/hooks/use-session-playback'
-import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks } from '@phosphor-icons/react'
+import { Play, Pause, Stop, FastForward, Rewind, X, Note, BookmarkSimple, ListChecks, ChatCircle } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CursorPosition } from '@/lib/types'
 import { AnnotationMarker } from '@/components/AnnotationMarker'
 import { BookmarkMarker } from '@/components/BookmarkMarker'
 import { AddAnnotationDialog } from '@/components/AddAnnotationDialog'
 import { AddBookmarkDialog } from '@/components/AddBookmarkDialog'
+import { AnnotationThread } from '@/components/AnnotationThread'
+import { AnnotationCard } from '@/components/AnnotationCard'
 import { toast } from 'sonner'
 
 interface SessionPlaybackViewerProps {
@@ -39,6 +41,8 @@ export function SessionPlaybackViewer({
   const [showAnnotationDialog, setShowAnnotationDialog] = useState(false)
   const [showBookmarkDialog, setShowBookmarkDialog] = useState(false)
   const [localRecording, setLocalRecording] = useState(recording)
+  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null)
+  const [showThreadPanel, setShowThreadPanel] = useState(false)
 
   const annotations = localRecording.annotations || []
   const bookmarks = localRecording.bookmarks || []
@@ -144,6 +148,132 @@ export function SessionPlaybackViewer({
     toast.success('Bookmark deleted')
   }
 
+  const handleAddReply = (annotationId: string, reply: AnnotationReply) => {
+    const updatedAnnotations = annotations.map(ann => {
+      if (ann.id === annotationId) {
+        return {
+          ...ann,
+          replies: [...(ann.replies || []), reply]
+        }
+      }
+      return ann
+    })
+
+    const updatedRecording = {
+      ...localRecording,
+      annotations: updatedAnnotations
+    }
+
+    setLocalRecording(updatedRecording)
+    onUpdateRecording?.(updatedRecording)
+    
+    if (selectedAnnotation?.id === annotationId) {
+      setSelectedAnnotation({
+        ...selectedAnnotation,
+        replies: [...(selectedAnnotation.replies || []), reply]
+      })
+    }
+  }
+
+  const handleDeleteReply = (annotationId: string, replyId: string) => {
+    const updatedAnnotations = annotations.map(ann => {
+      if (ann.id === annotationId) {
+        return {
+          ...ann,
+          replies: (ann.replies || []).filter(r => r.id !== replyId)
+        }
+      }
+      return ann
+    })
+
+    const updatedRecording = {
+      ...localRecording,
+      annotations: updatedAnnotations
+    }
+
+    setLocalRecording(updatedRecording)
+    onUpdateRecording?.(updatedRecording)
+
+    if (selectedAnnotation?.id === annotationId) {
+      setSelectedAnnotation({
+        ...selectedAnnotation,
+        replies: (selectedAnnotation.replies || []).filter(r => r.id !== replyId)
+      })
+    }
+  }
+
+  const handleResolveAnnotation = (annotationId: string) => {
+    const updatedAnnotations = annotations.map(ann => {
+      if (ann.id === annotationId) {
+        return {
+          ...ann,
+          resolved: true,
+          resolvedBy: currentUserName,
+          resolvedAt: Date.now()
+        }
+      }
+      return ann
+    })
+
+    const updatedRecording = {
+      ...localRecording,
+      annotations: updatedAnnotations
+    }
+
+    setLocalRecording(updatedRecording)
+    onUpdateRecording?.(updatedRecording)
+
+    if (selectedAnnotation?.id === annotationId) {
+      setSelectedAnnotation({
+        ...selectedAnnotation,
+        resolved: true,
+        resolvedBy: currentUserName,
+        resolvedAt: Date.now()
+      })
+    }
+  }
+
+  const handleUnresolveAnnotation = (annotationId: string) => {
+    const updatedAnnotations = annotations.map(ann => {
+      if (ann.id === annotationId) {
+        return {
+          ...ann,
+          resolved: false,
+          resolvedBy: undefined,
+          resolvedAt: undefined
+        }
+      }
+      return ann
+    })
+
+    const updatedRecording = {
+      ...localRecording,
+      annotations: updatedAnnotations
+    }
+
+    setLocalRecording(updatedRecording)
+    onUpdateRecording?.(updatedRecording)
+
+    if (selectedAnnotation?.id === annotationId) {
+      setSelectedAnnotation({
+        ...selectedAnnotation,
+        resolved: false,
+        resolvedBy: undefined,
+        resolvedAt: undefined
+      })
+    }
+  }
+
+  const handleAnnotationClick = (annotation: Annotation) => {
+    setSelectedAnnotation(annotation)
+    setShowThreadPanel(true)
+  }
+
+  const handleCloseThread = () => {
+    setShowThreadPanel(false)
+    setSelectedAnnotation(null)
+  }
+
   const cursorEvents = currentEvents.filter(e => e.type === 'cursor') as (SessionEvent & { data: { x: number; y: number } })[]
   const latestCursorsByUser = new Map<string, CursorPosition>()
   
@@ -167,9 +297,27 @@ export function SessionPlaybackViewer({
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold">{localRecording.metadata.title}</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {localRecording.events.length} events • {localRecording.participants.length} participants • {annotations.length} annotations • {bookmarks.length} bookmarks
-              </p>
+              <div className="flex items-center gap-3 mt-1">
+                <p className="text-sm text-muted-foreground">
+                  {localRecording.events.length} events • {localRecording.participants.length} participants
+                </p>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs gap-1">
+                    <Note size={12} weight="fill" />
+                    {annotations.length} annotations
+                  </Badge>
+                  {annotations.filter(a => !a.resolved).length > 0 && (
+                    <Badge variant="secondary" className="text-xs gap-1 bg-warning/20 text-warning border-warning/40">
+                      <ChatCircle size={12} weight="fill" />
+                      {annotations.filter(a => !a.resolved).length} open
+                    </Badge>
+                  )}
+                  <Badge variant="secondary" className="text-xs gap-1">
+                    <BookmarkSimple size={12} weight="fill" />
+                    {bookmarks.length} bookmarks
+                  </Badge>
+                </div>
+              </div>
             </div>
             <Button onClick={onClose} variant="ghost" size="sm" className="gap-2">
               <X size={20} />
@@ -355,6 +503,7 @@ export function SessionPlaybackViewer({
                     <div className="text-center py-8">
                       <Note size={48} weight="thin" className="text-muted-foreground mx-auto mb-2" />
                       <p className="text-sm text-muted-foreground">No annotations yet</p>
+                      <p className="text-xs text-muted-foreground mt-1">Mark important moments and start discussions</p>
                     </div>
                   ) : (
                     <AnimatePresence mode="popLayout">
@@ -362,54 +511,15 @@ export function SessionPlaybackViewer({
                         .sort((a, b) => a.timestamp - b.timestamp)
                         .map((annotation) => {
                           const relativeTime = annotation.timestamp - localRecording.startTime
-                          const color = getCategoryColor(annotation.category)
-                          const icon = getCategoryIcon(annotation.category)
                           
                           return (
-                            <motion.div
+                            <AnnotationCard
                               key={annotation.id}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                            >
-                              <button
-                                onClick={() => handleSeekToTime(annotation.timestamp)}
-                                className="w-full text-left p-3 rounded-lg border border-border/50 hover:border-accent/40 bg-card/50 hover:bg-accent/5 transition-all"
-                              >
-                                <div className="space-y-2">
-                                  <div className="flex items-start justify-between gap-2">
-                                    <Badge 
-                                      className="text-xs"
-                                      style={{ 
-                                        backgroundColor: `${color}20`,
-                                        color: color,
-                                        borderColor: `${color}40`
-                                      }}
-                                    >
-                                      {icon} {annotation.category}
-                                    </Badge>
-                                    <span className="text-xs font-mono text-muted-foreground">
-                                      {formatDuration(relativeTime)}
-                                    </span>
-                                  </div>
-                                  <h4 className="font-semibold text-sm">{annotation.title}</h4>
-                                  {annotation.description && (
-                                    <p className="text-xs text-muted-foreground line-clamp-2">
-                                      {annotation.description}
-                                    </p>
-                                  )}
-                                  <div className="flex items-center gap-2">
-                                    <div
-                                      className="w-3 h-3 rounded-full"
-                                      style={{ backgroundColor: annotation.userColor }}
-                                    />
-                                    <span className="text-xs text-muted-foreground">
-                                      {annotation.userName}
-                                    </span>
-                                  </div>
-                                </div>
-                              </button>
-                            </motion.div>
+                              annotation={annotation}
+                              relativeTime={relativeTime}
+                              onClick={() => handleAnnotationClick(annotation)}
+                              onSeek={handleSeekToTime}
+                            />
                           )
                         })}
                     </AnimatePresence>
@@ -504,6 +614,7 @@ export function SessionPlaybackViewer({
                           onSeek={handleSeekToTime}
                           onDelete={handleDeleteAnnotation}
                           canDelete={annotation.userId === currentUserId}
+                          onClick={() => handleAnnotationClick(annotation)}
                         />
                       )
                     })}
@@ -604,6 +715,30 @@ export function SessionPlaybackViewer({
         onAdd={handleAddBookmark}
         currentTime={formatDuration(playbackState.currentTime)}
       />
+
+      <AnimatePresence>
+        {showThreadPanel && selectedAnnotation && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed right-0 top-0 bottom-0 w-[500px] bg-background border-l border-border/50 shadow-2xl z-[60]"
+          >
+            <AnnotationThread
+              annotation={selectedAnnotation}
+              onAddReply={handleAddReply}
+              onDeleteReply={handleDeleteReply}
+              onResolve={handleResolveAnnotation}
+              onUnresolve={handleUnresolveAnnotation}
+              currentUserId={currentUserId}
+              currentUserName={currentUserName}
+              currentUserColor={currentUserColor}
+              onClose={handleCloseThread}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

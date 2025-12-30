@@ -8,6 +8,17 @@ export interface SessionEvent {
   data: any
 }
 
+export interface AnnotationReply {
+  id: string
+  annotationId: string
+  userId: string
+  userName: string
+  userColor: string
+  content: string
+  createdAt: number
+  editedAt?: number
+}
+
 export interface Annotation {
   id: string
   sessionId: string
@@ -19,6 +30,10 @@ export interface Annotation {
   description?: string
   category: 'important' | 'question' | 'issue' | 'highlight' | 'note'
   createdAt: number
+  replies?: AnnotationReply[]
+  resolved?: boolean
+  resolvedBy?: string
+  resolvedAt?: number
 }
 
 export interface Bookmark {
@@ -228,5 +243,23 @@ export function getCategoryIcon(category: Annotation['category']): string {
     case 'highlight': return '⭐'
     case 'note': return '📝'
     default: return '📌'
+  }
+}
+
+export function createAnnotationReply(
+  annotationId: string,
+  userId: string,
+  userName: string,
+  userColor: string,
+  content: string
+): AnnotationReply {
+  return {
+    id: `rpl-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+    annotationId,
+    userId,
+    userName,
+    userColor,
+    content,
+    createdAt: Date.now()
   }
 }
