@@ -18,13 +18,15 @@ import {
   ShareNetwork,
   ChartLine,
   Warning,
-  SlackLogo
+  SlackLogo,
+  CalendarBlank
 } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 import { Metric } from '@/lib/types'
 import { SlackIntegration, SlackNotificationRule } from '@/components/SlackIntegration'
+import { DigestScheduler } from '@/components/DigestScheduler'
 
 interface PulseInsight {
   id: string
@@ -344,7 +346,7 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
       </motion.div>
 
       <Tabs value={activeView} onValueChange={(v) => setActiveView(v as any)} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+        <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-6">
           <TabsTrigger value="insights" className="gap-2">
             <Bell size={16} weight="duotone" />
             Insights
@@ -353,6 +355,10 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
                 {unreadCount}
               </Badge>
             )}
+          </TabsTrigger>
+          <TabsTrigger value="digests" className="gap-2">
+            <CalendarBlank size={16} weight="duotone" />
+            Digests
           </TabsTrigger>
           <TabsTrigger value="slack" className="gap-2">
             <SlackLogo size={16} weight="fill" />
@@ -652,6 +658,10 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
           </AnimatePresence>
         </div>
       </div>
+        </TabsContent>
+
+        <TabsContent value="digests">
+          <DigestScheduler />
         </TabsContent>
 
         <TabsContent value="slack">
