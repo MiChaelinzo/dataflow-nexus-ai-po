@@ -17,7 +17,9 @@ import {
   ArrowsLeftRight, 
   SunHorizon, 
   House, 
-  UserCircle 
+  UserCircle,
+  SquaresFour,
+  ShareNetwork
 } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
@@ -38,6 +40,8 @@ import { SeasonalInsights } from '@/components/SeasonalInsights'
 import { WelcomePage } from '@/components/WelcomePage'
 import { AuthGate } from '@/components/AuthGate'
 import { UserProfile, useUserActivity, useUserStats } from '@/components/UserProfile'
+import { WorkspaceManager } from '@/components/WorkspaceManager'
+import { SharedDashboards } from '@/components/SharedDashboards'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { motion } from 'framer-motion'
@@ -188,10 +192,18 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-[1600px] grid-cols-6 lg:grid-cols-12 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1600px] grid-cols-7 lg:grid-cols-14 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger value="workspaces" className="gap-2 py-3">
+                <SquaresFour size={18} weight="duotone" />
+                <span className="hidden sm:inline">Workspaces</span>
+              </TabsTrigger>
+              <TabsTrigger value="shared" className="gap-2 py-3">
+                <ShareNetwork size={18} weight="duotone" />
+                <span className="hidden sm:inline">Shared</span>
               </TabsTrigger>
               <TabsTrigger value="tableau" className="gap-2 py-3">
                 <ChartLineUp size={18} weight="duotone" />
@@ -384,7 +396,39 @@ function App() {
                     </div>
                   </div>
                 </Card>
+                
+                <Card className="p-6 bg-gradient-to-br from-metric-purple/10 via-card to-accent/10 border-metric-purple/20">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-metric-purple/20 flex items-center justify-center">
+                        <ShareNetwork size={24} weight="fill" className="text-metric-purple" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Share dashboards with your team
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Create shared dashboards, manage permissions, and collaborate across workspaces.
+                      </p>
+                      <Badge 
+                        className="cursor-pointer bg-metric-purple text-white hover:bg-metric-purple/90"
+                        onClick={() => setActiveTab('shared')}
+                      >
+                        View Shared Dashboards →
+                      </Badge>
+                    </div>
+                  </div>
+                </Card>
               </motion.div>
+            </TabsContent>
+            
+            <TabsContent value="workspaces" className="space-y-6">
+              <WorkspaceManager />
+            </TabsContent>
+            
+            <TabsContent value="shared" className="space-y-6">
+              <SharedDashboards />
             </TabsContent>
             
             <TabsContent value="tableau" className="space-y-6">

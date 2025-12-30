@@ -72,6 +72,35 @@ Want to see our collaboration features in action immediately?
 - **Three-tab interface** Actions, Patterns, and Forecasts views
 - **Summary dashboard** shows current period, strong patterns count, and priority actions
 
+### 2.7. **Multi-User Workspaces & Shared Dashboards** ⭐ NEW!
+- **Workspace Management**: Create personal, team, or organization-wide workspaces
+  - Color-coded workspaces with custom names and descriptions
+  - Three visibility levels: Private, Shared, Public
+  - Member management with role-based access control
+  - Favorites and recent activity tracking
+  - Workspace duplication for quick setup
+- **Shared Dashboard System**: Comprehensive dashboard sharing and collaboration
+  - Four permission levels: Viewer, Commenter, Editor, Admin
+  - Email-based invitation system
+  - Shareable links with copy-to-clipboard functionality
+  - Dashboard tagging and organization
+  - View and comment tracking
+- **Access Request Management**: Self-service access workflows
+  - Users can request access to private dashboards
+  - Owners approve/reject requests with one click
+  - Request history and status tracking
+  - Automatic notifications for access changes
+- **Team Collaboration**: Built for multi-user environments
+  - Track workspace and dashboard activity
+  - See who has access to what content
+  - Manage permissions at workspace and dashboard level
+  - Audit trail for all sharing actions
+- **Usage Analytics**: Monitor engagement and adoption
+  - Dashboard view counts
+  - Comment activity tracking
+  - Member activity timestamps
+  - Popular content identification
+
 ### 3. **Tableau Integration Examples** ⭐ (Best Product Extensibility)
 - **Dashboard Embedding**: Real working examples of embedded Tableau dashboards
   - Sales Performance Dashboard with regional breakdown
