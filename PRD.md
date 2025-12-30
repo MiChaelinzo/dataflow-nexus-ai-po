@@ -89,6 +89,13 @@ This is a comprehensive analytics platform featuring real-time dashboards, AI-po
 - **Progression**: Create view → Share with team → Add annotations → Receive feedback → Track engagement → Export insights
 - **Success criteria**: Instant sharing, threaded comments, activity tracking
 
+### Session Replay & Recording
+- **Functionality**: Record and playback collaboration sessions with cursor tracking, click events, tab changes, and full interaction timeline
+- **Purpose**: Demonstrates advanced collaboration analytics for training, documentation, and workflow review - shows "who did what, when"
+- **Trigger**: User clicks "Start Recording" or selects a saved recording to playback
+- **Progression**: Start recording → Capture collaboration activities → Stop recording → Browse saved sessions → Play recording → Control playback (play/pause/seek/speed) → Review event timeline → Share insights
+- **Success criteria**: Smooth 60fps recording, accurate cursor tracking, intuitive playback controls, detailed event timeline with user attribution
+
 ### Custom Dashboard Builder
 - **Functionality**: Drag-and-drop dashboard creation with template library and custom visualizations
 - **Purpose**: Shows extensibility and customization capabilities of the platform

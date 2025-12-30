@@ -1,7 +1,7 @@
 # Real-Time Collaboration Features
 
 ## Overview
-The Analytics Intelligence Platform now includes comprehensive real-time collaboration capabilities, allowing team members to work together seamlessly while analyzing data and exploring insights.
+The Analytics Intelligence Platform now includes comprehensive real-time collaboration capabilities, allowing team members to work together seamlessly while analyzing data and exploring insights. This includes live cursor tracking, presence indicators, and session replay for reviewing past collaboration sessions.
 
 ## Key Features
 
@@ -22,6 +22,15 @@ The Analytics Intelligence Platform now includes comprehensive real-time collabo
 - **Last seen timestamps**: Know when users were last active
 - **Automatic cleanup**: Inactive users (5+ minutes) are automatically removed
 - **Presence heartbeat**: Activity updates every 10 seconds
+
+### 🎬 Session Replay & Recording (NEW!)
+- **Full session recording**: Capture all collaboration activities for later review
+- **Cursor playback**: Watch exactly how team members navigated and collaborated
+- **Event timeline**: Detailed log of clicks, scrolls, tab changes, and interactions
+- **Playback controls**: Play, pause, seek, and adjust speed (0.5x to 2x)
+- **Multi-user visualization**: See all participants' cursors during replay
+- **Training & documentation**: Perfect for onboarding and workflow analysis
+- **Persistent storage**: Recordings saved for future reference
 
 ### 🎨 Visual Design
 - **Distinct user colors**: 8 carefully chosen colors from the oklch palette

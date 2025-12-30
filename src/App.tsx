@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp } from '@phosphor-icons/react'
+import { ChartBar, Sparkle, TrendUp, Funnel, Shield, Function, Users, ChartLineUp, VideoCamera } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { PredictionChart } from '@/components/PredictionChart'
@@ -13,6 +13,7 @@ import { CollaborationHub } from '@/components/CollaborationHub'
 import { TableauEmbed } from '@/components/TableauEmbed'
 import { TableauAPIShowcase } from '@/components/TableauAPIShowcase'
 import { TableauPulse } from '@/components/TableauPulse'
+import { SessionReplay } from '@/components/SessionReplay'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
@@ -77,7 +78,7 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-[1600px] grid-cols-4 lg:grid-cols-9 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1600px] grid-cols-5 lg:grid-cols-10 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -109,6 +110,10 @@ function App() {
               <TabsTrigger value="collaborate" className="gap-2 py-3">
                 <Users size={18} weight="duotone" />
                 <span className="hidden sm:inline">Collaborate</span>
+              </TabsTrigger>
+              <TabsTrigger value="replay" className="gap-2 py-3">
+                <VideoCamera size={18} weight="duotone" />
+                <span className="hidden sm:inline">Replay</span>
               </TabsTrigger>
               <TabsTrigger value="explorer" className="gap-2 py-3">
                 <Funnel size={18} weight="duotone" />
@@ -326,6 +331,15 @@ function App() {
 
             <TabsContent value="collaborate" className="space-y-6">
               <CollaborationHub activeUsers={activeUsers} currentUser={currentUser} />
+            </TabsContent>
+
+            <TabsContent value="replay" className="space-y-6">
+              <SessionReplay
+                currentUserId={currentUser.userId}
+                currentUserName={currentUser.userName}
+                currentUserColor={currentUser.userColor}
+                currentView={activeTab}
+              />
             </TabsContent>
           </Tabs>
         </main>
