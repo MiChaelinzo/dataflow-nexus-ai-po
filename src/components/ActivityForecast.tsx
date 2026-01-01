@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   ChartLineUp,
   TrendUp,
@@ -24,11 +23,9 @@ import {
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { WorkspaceActivity } from '@/components/WorkspaceActivityFeed'
-import { generateActivityForecast, generateForecastInsights } from '@/lib/activity-forecasting'
+import { generateForecast, generateInsights } from '@/lib/activity-forecasting'
 import { format } from 'date-fns'
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -50,13 +47,28 @@ export function ActivityForecast() {
   const [activities] = useKV<WorkspaceActivity[]>('workspace-activities', [])
   const [forecastDays, setForecastDays] = useState<string>('14')
   
-  const { forecast, metrics, hourlyPatterns, weekdayPatterns } = useMemo(() => {
-    return generateActivityForecast(activities || [], parseInt(forecastDays))
+  const { forecast, metrics } = useMemo(() => {
+    return generateForecast(activities || [], parseInt(forecastDays))
   }, [activities, forecastDays])
 
+  const { hourlyPatterns, weekdayPatterns } = metrics
+
+  // Calculate derived metrics that aren't in the raw metrics object
+  const totalPredictedActivities = useMemo(() => 
+    forecast.reduce((sum, day) => sum + day.predicted, 0), 
+  [forecast])
+
+  const avgDailyPredicted = useMemo(() => 
+    forecast.length ? Math.round(totalPredictedActivities / forecast.length) : 0, 
+  [forecast, totalPredictedActivities])
+
+  const peakDayData = useMemo(() => 
+    weekdayPatterns.find(p => p.label === metrics.peakDay),
+  [weekdayPatterns, metrics.peakDay])
+
   const insights = useMemo(() => {
-    return generateForecastInsights(metrics, hourlyPatterns, weekdayPatterns)
-  }, [metrics, hourlyPatterns, weekdayPatterns])
+    return generateInsights(metrics)
+  }, [metrics])
 
   const chartData = useMemo(() => {
     return forecast.map(f => ({
@@ -79,8 +91,8 @@ export function ActivityForecast() {
 
   const weekdayChartData = useMemo(() => {
     return weekdayPatterns.map(p => ({
-      day: p.dayName.substring(0, 3),
-      fullDay: p.dayName,
+      day: p.label.substring(0, 3),
+      fullDay: p.label,
       activity: p.avgActivity
     }))
   }, [weekdayPatterns])
@@ -141,7 +153,7 @@ export function ActivityForecast() {
             </p>
             <Target size={20} weight="duotone" className="text-accent" />
           </div>
-          <p className="text-2xl font-bold font-mono">{metrics.totalPredictedActivities}</p>
+          <p className="text-2xl font-bold font-mono">{totalPredictedActivities}</p>
           <p className="text-xs text-muted-foreground mt-1">
             Over next {forecastDays} days
           </p>
@@ -154,7 +166,7 @@ export function ActivityForecast() {
             </p>
             <ChartBar size={20} weight="duotone" className="text-metric-purple" />
           </div>
-          <p className="text-2xl font-bold font-mono">{metrics.avgDailyPredicted}</p>
+          <p className="text-2xl font-bold font-mono">{avgDailyPredicted}</p>
           <p className="text-xs text-muted-foreground mt-1">
             Expected per day
           </p>
@@ -183,7 +195,7 @@ export function ActivityForecast() {
             </p>
             <Lightning size={20} weight="duotone" className="text-warning" />
           </div>
-          <p className="text-2xl font-bold font-mono text-warning">{metrics.confidence}%</p>
+          <p className="text-2xl font-bold font-mono text-warning">{metrics.confidence.toFixed(0)}%</p>
           <p className="text-xs text-muted-foreground mt-1">
             Model accuracy
           </p>
@@ -307,9 +319,9 @@ export function ActivityForecast() {
             <p className="text-sm">
               <span className="font-semibold text-metric-purple">Peak Hour: </span>
               <span className="text-foreground">
-                {hourlyPatterns.find(p => p.hour === metrics.peakHour.hour)?.label || 'N/A'}
+                {metrics.peakHour.label}
               </span>
-              <span className="text-muted-foreground"> ({metrics.peakHour.count} avg activities)</span>
+              <span className="text-muted-foreground"> ({metrics.peakHour.count.toFixed(1)} avg activities)</span>
             </p>
           </div>
         </Card>
@@ -350,8 +362,8 @@ export function ActivityForecast() {
           <div className="mt-4 p-3 rounded-lg bg-accent/10 border border-accent/20">
             <p className="text-sm">
               <span className="font-semibold text-accent">Peak Day: </span>
-              <span className="text-foreground">{metrics.peakDay.day}</span>
-              <span className="text-muted-foreground"> ({metrics.peakDay.count} predicted)</span>
+              <span className="text-foreground">{metrics.peakDay}</span>
+              <span className="text-muted-foreground"> ({peakDayData?.avgActivity.toFixed(1) || 0} avg)</span>
             </p>
           </div>
         </Card>
