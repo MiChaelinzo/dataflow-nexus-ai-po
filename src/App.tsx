@@ -45,6 +45,7 @@ import { WorkspaceManager } from '@/components/WorkspaceManager'
 import { SharedDashboards } from '@/components/SharedDashboards'
 import { WorkspaceActivityFeed } from '@/components/WorkspaceActivityFeed'
 import { ActivityHeatmap } from '@/components/ActivityHeatmap'
+import { TrendComparisonCharts } from '@/components/TrendComparisonCharts'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData, generateSampleActivities } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { WorkspaceActivity } from '@/components/WorkspaceActivityFeed'
@@ -451,6 +452,7 @@ function App() {
             
             <TabsContent value="activity" className="space-y-6">
               <ActivityHeatmap />
+              <TrendComparisonCharts />
               <WorkspaceActivityFeed limit={100} showFilters={true} />
             </TabsContent>
             
