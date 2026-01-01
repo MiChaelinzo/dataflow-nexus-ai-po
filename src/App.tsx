@@ -44,6 +44,7 @@ import { UserProfile, useUserActivity, useUserStats } from '@/components/UserPro
 import { WorkspaceManager } from '@/components/WorkspaceManager'
 import { SharedDashboards } from '@/components/SharedDashboards'
 import { WorkspaceActivityFeed } from '@/components/WorkspaceActivityFeed'
+import { ActivityHeatmap } from '@/components/ActivityHeatmap'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData, generateSampleActivities } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { WorkspaceActivity } from '@/components/WorkspaceActivityFeed'
@@ -449,6 +450,7 @@ function App() {
             </TabsContent>
             
             <TabsContent value="activity" className="space-y-6">
+              <ActivityHeatmap />
               <WorkspaceActivityFeed limit={100} showFilters={true} />
             </TabsContent>
             
