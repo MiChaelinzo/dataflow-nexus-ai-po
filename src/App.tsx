@@ -46,6 +46,7 @@ import { SharedDashboards } from '@/components/SharedDashboards'
 import { WorkspaceActivityFeed } from '@/components/WorkspaceActivityFeed'
 import { ActivityHeatmap } from '@/components/ActivityHeatmap'
 import { TrendComparisonCharts } from '@/components/TrendComparisonCharts'
+import { ActivityForecast } from '@/components/ActivityForecast'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData, generateSampleActivities } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { WorkspaceActivity } from '@/components/WorkspaceActivityFeed'
@@ -439,6 +440,30 @@ function App() {
                     </div>
                   </div>
                 </Card>
+                
+                <Card className="p-6 bg-gradient-to-br from-primary/10 via-card to-accent/10 border-primary/20">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <ChartLineUp size={24} weight="fill" className="text-primary" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Predict future activity trends
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        AI-powered forecasting analyzes historical patterns to predict engagement trends up to 60 days ahead.
+                      </p>
+                      <Badge 
+                        className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
+                        onClick={() => setActiveTab('activity')}
+                      >
+                        View Activity Forecast →
+                      </Badge>
+                    </div>
+                  </div>
+                </Card>
               </motion.div>
             </TabsContent>
             
@@ -451,6 +476,7 @@ function App() {
             </TabsContent>
             
             <TabsContent value="activity" className="space-y-6">
+              <ActivityForecast />
               <ActivityHeatmap />
               <TrendComparisonCharts />
               <WorkspaceActivityFeed limit={100} showFilters={true} />
