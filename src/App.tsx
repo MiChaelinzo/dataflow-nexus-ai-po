@@ -19,7 +19,8 @@ import {
   House, 
   UserCircle,
   SquaresFour,
-  ShareNetwork
+  ShareNetwork,
+  Pulse
 } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
@@ -42,8 +43,10 @@ import { AuthGate } from '@/components/AuthGate'
 import { UserProfile, useUserActivity, useUserStats } from '@/components/UserProfile'
 import { WorkspaceManager } from '@/components/WorkspaceManager'
 import { SharedDashboards } from '@/components/SharedDashboards'
-import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData } from '@/lib/data'
+import { WorkspaceActivityFeed } from '@/components/WorkspaceActivityFeed'
+import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData, generateSampleActivities } from '@/lib/data'
 import { Insight } from '@/lib/types'
+import { WorkspaceActivity } from '@/components/WorkspaceActivityFeed'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
 import { LiveCursors } from '@/components/LiveCursor'
@@ -64,6 +67,8 @@ function App() {
   const [showWelcome, setShowWelcome] = useKV<boolean>('welcome-page-seen', true)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [user, setUser] = useState<{ login: string; avatarUrl: string; isOwner: boolean } | null>(null)
+  const [activitiesInitialized, setActivitiesInitialized] = useKV<boolean>('activities-initialized', false)
+  const [activities, setActivities] = useKV<WorkspaceActivity[]>('workspace-activities', [])
   
   const metrics = useMemo(() => generateMetrics(), [])
   const timeSeriesData = useMemo(() => generateTimeSeriesData(30), [])
@@ -92,6 +97,14 @@ function App() {
     
     loadUser()
   }, [])
+  
+  useEffect(() => {
+    if (!activitiesInitialized) {
+      const sampleActivities = generateSampleActivities()
+      setActivities(() => sampleActivities)
+      setActivitiesInitialized(true)
+    }
+  }, [activitiesInitialized, setActivities, setActivitiesInitialized])
   
   useEffect(() => {
     trackActivity('view', `Viewed ${activeTab} tab`, activeTab)
@@ -192,7 +205,7 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-[1600px] grid-cols-7 lg:grid-cols-14 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1600px] grid-cols-7 lg:grid-cols-15 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -204,6 +217,10 @@ function App() {
               <TabsTrigger value="shared" className="gap-2 py-3">
                 <ShareNetwork size={18} weight="duotone" />
                 <span className="hidden sm:inline">Shared</span>
+              </TabsTrigger>
+              <TabsTrigger value="activity" className="gap-2 py-3">
+                <Pulse size={18} weight="duotone" />
+                <span className="hidden sm:inline">Activity</span>
               </TabsTrigger>
               <TabsTrigger value="tableau" className="gap-2 py-3">
                 <ChartLineUp size={18} weight="duotone" />
@@ -429,6 +446,10 @@ function App() {
             
             <TabsContent value="shared" className="space-y-6">
               <SharedDashboards />
+            </TabsContent>
+            
+            <TabsContent value="activity" className="space-y-6">
+              <WorkspaceActivityFeed limit={100} showFilters={true} />
             </TabsContent>
             
             <TabsContent value="tableau" className="space-y-6">

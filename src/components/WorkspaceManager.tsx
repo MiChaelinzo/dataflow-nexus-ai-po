@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -28,11 +28,13 @@ import {
   SquaresFour,
   Crown,
   Eye,
-  Buildings
+  Buildings,
+  Pulse
 } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
+import { WorkspaceActivityFeed, useWorkspaceActivity } from '@/components/WorkspaceActivityFeed'
 
 export interface Workspace {
   id: string
@@ -67,6 +69,21 @@ export function WorkspaceManager() {
     name: 'You',
     email: 'you@company.com'
   })
+  const { addActivity } = useWorkspaceActivity()
+  const [user, setUser] = useState<{ login: string; avatarUrl: string } | null>(null)
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userInfo = await window.spark.user()
+        setUser(userInfo)
+      } catch (error) {
+        console.error('Failed to load user:', error)
+      }
+    }
+    
+    loadUser()
+  }, [])
 
   const [newWorkspace, setNewWorkspace] = useState({
     name: '',
@@ -145,6 +162,23 @@ export function WorkspaceManager() {
 
     setWorkspaces(current => [...(current || []), workspace])
     
+    addActivity({
+      workspaceId: workspace.id,
+      workspaceName: workspace.name,
+      userId: currentUser?.id || 'user-1',
+      userName: user?.login || currentUser?.name || 'You',
+      userAvatar: user?.avatarUrl,
+      action: 'created',
+      targetType: 'workspace',
+      targetId: workspace.id,
+      targetName: workspace.name,
+      details: `Created new ${workspace.type} workspace with ${workspace.visibility} visibility`,
+      metadata: {
+        type: workspace.type,
+        visibility: workspace.visibility
+      }
+    })
+    
     toast.success('Workspace created!', {
       description: `${workspace.name} is ready to use`
     })
@@ -161,11 +195,29 @@ export function WorkspaceManager() {
   }
 
   const handleToggleFavorite = (workspaceId: string) => {
+    const workspace = (workspaces || []).find(ws => ws.id === workspaceId)
+    const isFavoriting = !workspace?.isFavorite
+    
     setWorkspaces(current =>
       (current || []).map(ws =>
         ws.id === workspaceId ? { ...ws, isFavorite: !ws.isFavorite } : ws
       )
     )
+    
+    if (workspace) {
+      addActivity({
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+        userId: currentUser?.id || 'user-1',
+        userName: user?.login || currentUser?.name || 'You',
+        userAvatar: user?.avatarUrl,
+        action: isFavoriting ? 'favorited' : 'unfavorited',
+        targetType: 'workspace',
+        targetId: workspace.id,
+        targetName: workspace.name
+      })
+    }
+    
     toast.success('Favorites updated')
   }
 
@@ -176,6 +228,18 @@ export function WorkspaceManager() {
     setWorkspaces(current =>
       (current || []).filter(ws => ws.id !== workspaceId)
     )
+    
+    addActivity({
+      workspaceId: workspace.id,
+      workspaceName: workspace.name,
+      userId: currentUser?.id || 'user-1',
+      userName: user?.login || currentUser?.name || 'You',
+      userAvatar: user?.avatarUrl,
+      action: 'deleted',
+      targetType: 'workspace',
+      targetId: workspace.id,
+      targetName: workspace.name
+    })
     
     if (selectedWorkspace?.id === workspaceId) {
       setSelectedWorkspace(null)
@@ -196,6 +260,23 @@ export function WorkspaceManager() {
     }
 
     setWorkspaces(current => [...(current || []), duplicate])
+    
+    addActivity({
+      workspaceId: duplicate.id,
+      workspaceName: duplicate.name,
+      userId: currentUser?.id || 'user-1',
+      userName: user?.login || currentUser?.name || 'You',
+      userAvatar: user?.avatarUrl,
+      action: 'duplicated',
+      targetType: 'workspace',
+      targetId: duplicate.id,
+      targetName: duplicate.name,
+      details: `Duplicated from "${workspace.name}"`,
+      metadata: {
+        originalId: workspace.id,
+        originalName: workspace.name
+      }
+    })
     
     toast.success('Workspace duplicated', {
       description: `Created ${duplicate.name}`
@@ -598,8 +679,12 @@ export function WorkspaceManager() {
               </DialogHeader>
 
               <Tabs defaultValue="overview" className="w-full mt-4">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="activity" className="gap-2">
+                    <Pulse size={14} weight="duotone" />
+                    Activity
+                  </TabsTrigger>
                   <TabsTrigger value="members">Members ({selectedWorkspace.members.length})</TabsTrigger>
                   <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
@@ -641,6 +726,15 @@ export function WorkspaceManager() {
                       </div>
                     </div>
                   </Card>
+                </TabsContent>
+
+                <TabsContent value="activity" className="mt-4">
+                  <WorkspaceActivityFeed 
+                    workspaceId={selectedWorkspace.id}
+                    limit={20}
+                    showFilters={false}
+                    className="space-y-4"
+                  />
                 </TabsContent>
 
                 <TabsContent value="members" className="mt-4">

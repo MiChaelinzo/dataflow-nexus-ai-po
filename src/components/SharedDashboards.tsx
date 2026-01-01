@@ -38,6 +38,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
+import { useWorkspaceActivity } from '@/components/WorkspaceActivityFeed'
 
 export interface SharedDashboard {
   id: string
@@ -93,6 +94,7 @@ export function SharedDashboards() {
     name: 'You',
     email: 'you@company.com'
   })
+  const { addActivity } = useWorkspaceActivity()
 
   const [newDashboard, setNewDashboard] = useState({
     name: '',
@@ -172,6 +174,22 @@ export function SharedDashboards() {
 
     setDashboards(current => [...(current || []), dashboard])
     
+    addActivity({
+      workspaceId: dashboard.workspaceId,
+      workspaceName: dashboard.workspaceName,
+      userId: currentUser?.id || 'user-1',
+      userName: currentUser?.name || 'You',
+      action: 'created',
+      targetType: 'dashboard',
+      targetId: dashboard.id,
+      targetName: dashboard.name,
+      details: `Created new dashboard with ${dashboard.visibility} visibility`,
+      metadata: {
+        visibility: dashboard.visibility,
+        tags: dashboard.tags.join(', ')
+      }
+    })
+    
     toast.success('Dashboard created!', {
       description: `${dashboard.name} is ready to use`
     })
@@ -218,6 +236,22 @@ export function SharedDashboards() {
       )
     )
 
+    addActivity({
+      workspaceId: selectedDashboard.workspaceId,
+      workspaceName: selectedDashboard.workspaceName,
+      userId: currentUser?.id || 'user-1',
+      userName: currentUser?.name || 'You',
+      action: 'shared',
+      targetType: 'dashboard',
+      targetId: selectedDashboard.id,
+      targetName: selectedDashboard.name,
+      details: `Shared with ${shareEmail} as ${shareRole}`,
+      metadata: {
+        sharedWith: shareEmail,
+        role: shareRole
+      }
+    })
+
     toast.success('Dashboard shared!', {
       description: `${shareEmail} now has ${shareRole} access`
     })
@@ -228,11 +262,28 @@ export function SharedDashboards() {
   }
 
   const handleToggleFavorite = (dashboardId: string) => {
+    const dashboard = (dashboards || []).find(d => d.id === dashboardId)
+    const isFavoriting = !dashboard?.isFavorite
+    
     setDashboards(current =>
       (current || []).map(dash =>
         dash.id === dashboardId ? { ...dash, isFavorite: !dash.isFavorite } : dash
       )
     )
+    
+    if (dashboard) {
+      addActivity({
+        workspaceId: dashboard.workspaceId,
+        workspaceName: dashboard.workspaceName,
+        userId: currentUser?.id || 'user-1',
+        userName: currentUser?.name || 'You',
+        action: isFavoriting ? 'favorited' : 'unfavorited',
+        targetType: 'dashboard',
+        targetId: dashboard.id,
+        targetName: dashboard.name
+      })
+    }
+    
     toast.success('Favorites updated')
   }
 
@@ -243,6 +294,17 @@ export function SharedDashboards() {
     setDashboards(current =>
       (current || []).filter(d => d.id !== dashboardId)
     )
+    
+    addActivity({
+      workspaceId: dashboard.workspaceId,
+      workspaceName: dashboard.workspaceName,
+      userId: currentUser?.id || 'user-1',
+      userName: currentUser?.name || 'You',
+      action: 'deleted',
+      targetType: 'dashboard',
+      targetId: dashboard.id,
+      targetName: dashboard.name
+    })
     
     if (selectedDashboard?.id === dashboardId) {
       setSelectedDashboard(null)
@@ -273,6 +335,22 @@ export function SharedDashboards() {
     }
 
     setDashboards(current => [...(current || []), duplicate])
+    
+    addActivity({
+      workspaceId: duplicate.workspaceId,
+      workspaceName: duplicate.workspaceName,
+      userId: currentUser?.id || 'user-1',
+      userName: currentUser?.name || 'You',
+      action: 'duplicated',
+      targetType: 'dashboard',
+      targetId: duplicate.id,
+      targetName: duplicate.name,
+      details: `Duplicated from "${dashboard.name}"`,
+      metadata: {
+        originalId: dashboard.id,
+        originalName: dashboard.name
+      }
+    })
     
     toast.success('Dashboard duplicated', {
       description: `Created ${duplicate.name}`

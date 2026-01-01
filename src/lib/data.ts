@@ -1,4 +1,5 @@
 import { Metric, ChartDataPoint, PredictionData, YoYDataPoint, SeasonalTrend } from './types'
+import { WorkspaceActivity } from '@/components/WorkspaceActivityFeed'
 
 export function generateMetrics(): Metric[] {
   return [
@@ -236,4 +237,192 @@ export function calculateSeasonalTrends(yoyData: YoYDataPoint[]): SeasonalTrend[
       trend: changePercent > 0 ? 'up' : changePercent < 0 ? 'down' : 'neutral'
     }
   })
+}
+
+export function generateSampleActivities(): WorkspaceActivity[] {
+  const now = Date.now()
+  const users = [
+    { id: 'user-1', name: 'Sarah Chen', avatar: undefined },
+    { id: 'user-2', name: 'Michael Rodriguez', avatar: undefined },
+    { id: 'user-3', name: 'Emily Johnson', avatar: undefined },
+    { id: 'user-4', name: 'David Kim', avatar: undefined },
+    { id: 'user-5', name: 'Jessica Williams', avatar: undefined }
+  ]
+  
+  const workspaces = [
+    { id: 'ws-1', name: 'Marketing Analytics' },
+    { id: 'ws-2', name: 'Sales Performance' },
+    { id: 'ws-3', name: 'Product Insights' },
+    { id: 'ws-4', name: 'Customer Success' }
+  ]
+  
+  const dashboards = [
+    'Q4 Revenue Dashboard',
+    'Customer Engagement Metrics',
+    'Sales Pipeline Analysis',
+    'Marketing Campaign Performance',
+    'Product Usage Analytics',
+    'Regional Performance Report'
+  ]
+  
+  const activities: Omit<WorkspaceActivity, 'id' | 'timestamp'>[] = [
+    {
+      workspaceId: workspaces[0].id,
+      workspaceName: workspaces[0].name,
+      userId: users[0].id,
+      userName: users[0].name,
+      userAvatar: users[0].avatar,
+      action: 'created',
+      targetType: 'dashboard',
+      targetName: dashboards[0],
+      details: 'Created new revenue tracking dashboard with year-over-year comparisons',
+      metadata: { visibility: 'workspace', tags: 'revenue, quarterly, analytics' }
+    },
+    {
+      workspaceId: workspaces[1].id,
+      workspaceName: workspaces[1].name,
+      userId: users[1].id,
+      userName: users[1].name,
+      userAvatar: users[1].avatar,
+      action: 'shared',
+      targetType: 'dashboard',
+      targetName: dashboards[2],
+      details: 'Shared with 5 team members as editors',
+      metadata: { sharedWith: 'Team', role: 'editor' }
+    },
+    {
+      workspaceId: workspaces[0].id,
+      workspaceName: workspaces[0].name,
+      userId: users[2].id,
+      userName: users[2].name,
+      userAvatar: users[2].avatar,
+      action: 'commented',
+      targetType: 'dashboard',
+      targetName: dashboards[0],
+      details: 'Added comment: "Great insights! Can we add conversion rate trends?"'
+    },
+    {
+      workspaceId: workspaces[2].id,
+      workspaceName: workspaces[2].name,
+      userId: users[3].id,
+      userName: users[3].name,
+      userAvatar: users[3].avatar,
+      action: 'created',
+      targetType: 'workspace',
+      targetName: workspaces[2].name,
+      details: 'Created new team workspace for product analytics',
+      metadata: { type: 'team', visibility: 'private' }
+    },
+    {
+      workspaceId: workspaces[1].id,
+      workspaceName: workspaces[1].name,
+      userId: users[4].id,
+      userName: users[4].name,
+      userAvatar: users[4].avatar,
+      action: 'viewed',
+      targetType: 'dashboard',
+      targetName: dashboards[1],
+      details: 'Viewed customer engagement dashboard'
+    },
+    {
+      workspaceId: workspaces[0].id,
+      workspaceName: workspaces[0].name,
+      userId: users[0].id,
+      userName: users[0].name,
+      userAvatar: users[0].avatar,
+      action: 'generated',
+      targetType: 'insight',
+      targetName: 'Revenue Forecast Analysis',
+      details: 'Generated AI insights showing 23% growth prediction for next quarter',
+      metadata: { confidence: '87%', trend: 'positive' }
+    },
+    {
+      workspaceId: workspaces[3].id,
+      workspaceName: workspaces[3].name,
+      userId: users[1].id,
+      userName: users[1].name,
+      userAvatar: users[1].avatar,
+      action: 'joined',
+      targetType: 'workspace',
+      targetName: workspaces[3].name,
+      details: 'Joined workspace as an editor'
+    },
+    {
+      workspaceId: workspaces[1].id,
+      workspaceName: workspaces[1].name,
+      userId: users[2].id,
+      userName: users[2].name,
+      userAvatar: users[2].avatar,
+      action: 'favorited',
+      targetType: 'dashboard',
+      targetName: dashboards[3],
+      details: 'Added to favorites for quick access'
+    },
+    {
+      workspaceId: workspaces[2].id,
+      workspaceName: workspaces[2].name,
+      userId: users[3].id,
+      userName: users[3].name,
+      userAvatar: users[3].avatar,
+      action: 'edited',
+      targetType: 'dashboard',
+      targetName: dashboards[4],
+      details: 'Updated product usage metrics and added new visualizations',
+      metadata: { charts_added: 3, filters_updated: 2 }
+    },
+    {
+      workspaceId: workspaces[0].id,
+      workspaceName: workspaces[0].name,
+      userId: users[4].id,
+      userName: users[4].name,
+      userAvatar: users[4].avatar,
+      action: 'exported',
+      targetType: 'report',
+      targetName: 'Monthly Performance Report',
+      details: 'Exported report as PDF with annotations',
+      metadata: { format: 'PDF', pages: 12 }
+    },
+    {
+      workspaceId: workspaces[1].id,
+      workspaceName: workspaces[1].name,
+      userId: users[0].id,
+      userName: users[0].name,
+      userAvatar: users[0].avatar,
+      action: 'duplicated',
+      targetType: 'dashboard',
+      targetName: dashboards[2],
+      details: 'Created copy for regional analysis',
+      metadata: { originalName: dashboards[2] }
+    },
+    {
+      workspaceId: workspaces[3].id,
+      workspaceName: workspaces[3].name,
+      userId: users[1].id,
+      userName: users[1].name,
+      userAvatar: users[1].avatar,
+      action: 'invited',
+      targetType: 'member',
+      targetName: 'Alex Thompson',
+      details: 'Invited new team member as viewer',
+      metadata: { role: 'viewer' }
+    },
+    {
+      workspaceId: workspaces[2].id,
+      workspaceName: workspaces[2].name,
+      userId: users[2].id,
+      userName: users[2].name,
+      userAvatar: users[2].avatar,
+      action: 'recorded',
+      targetType: 'session',
+      targetName: 'Product Demo Session',
+      details: 'Recorded analytics walkthrough session (12 min)',
+      metadata: { duration: '12:34', annotations: 8 }
+    }
+  ]
+  
+  return activities.map((activity, index) => ({
+    ...activity,
+    id: `activity-${Date.now()}-${index}`,
+    timestamp: now - (activities.length - index) * 3600000 - Math.random() * 1800000
+  }))
 }
