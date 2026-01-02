@@ -1,41 +1,41 @@
 import { useEffect, useRef } from 'react'
 
-interface TrailPoint {
-  x: number
+  y: number
+  opacity: 
   y: number
   timestamp: number
   opacity: number
 }
 
 export function MouseTrail() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const trailPoints = useRef<TrailPoint[]>([])
-  const mousePos = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
-  const animationFrameId = useRef<number | undefined>(undefined)
+  const mousePos = useRef({ x: 0, y: 0 })
+  const animationFrameId = useRef<number>()
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    }
+    resizeCanvas()
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+      mousePos.current = { x: e.
+      trailPoints.current.push({
+        y: e.clientY,
+     
+
+        trailPoint
     }
 
-    resizeCanvas()
-    window.addEventListener('resize', resizeCanvas)
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mousePos.current = { x: e.clientX, y: e.clientY }
+
       
-      trailPoints.current.push({
-        x: e.clientX,
-        y: e.clientY,
-        timestamp: Date.now(),
-        opacity: 1
+      trailPoints.current = trai
+        return age < 
+
+        ctx.strokeStyle = 'okl
+        ctx.lineCa
       })
 
       if (trailPoints.current.length > 30) {
@@ -74,61 +74,61 @@ export function MouseTrail() {
             point.x, point.y,
             nextPoint.x, nextPoint.y
           )
-          gradient.addColorStop(0, `oklch(0.70 0.15 195 / ${opacity * 0.3})`)
-          gradient.addColorStop(1, `oklch(0.60 0.18 290 / ${opacity * 0.5})`)
-          
-          ctx.strokeStyle = gradient
           
           ctx.beginPath()
-          ctx.moveTo(point.x, point.y)
-          ctx.lineTo(nextPoint.x, nextPoint.y)
-          ctx.stroke()
-        }
-
-        trailPoints.current.forEach((point, index) => {
-          const age = now - point.timestamp
-          const opacity = Math.max(0, 1 - age / maxAge)
-          const size = 6 * opacity * (index / trailPoints.current.length)
           
-          ctx.globalAlpha = opacity * 0.4
-          
-          const gradient = ctx.createRadialGradient(
-            point.x, point.y, 0,
-            point.x, point.y, size
-          )
-          gradient.addColorStop(0, `oklch(0.70 0.15 195 / ${opacity * 0.6})`)
-          gradient.addColorStop(0.5, `oklch(0.60 0.18 290 / ${opacity * 0.3})`)
-          gradient.addColorStop(1, 'transparent')
-          
-          ctx.fillStyle = gradient
-          ctx.beginPath()
-          ctx.arc(point.x, point.y, size, 0, Math.PI * 2)
-          ctx.fill()
-        })
       }
+      ctx.
+      animationFrameId.cu
 
-      ctx.globalAlpha = 1
-
-      animationFrameId.current = requestAnimationFrame(animate)
-    }
-
-    window.addEventListener('mousemove', handleMouseMove)
     animate()
-
     return () => {
-      window.removeEventListener('resize', resizeCanvas)
-      window.removeEventListener('mousemove', handleMouseMove)
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current)
-      }
-    }
-  }, [])
+      win
 
-  return (
+    }
+
     <canvas
-      ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-50"
-      style={{ mixBlendMode: 'screen' }}
     />
-  )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
