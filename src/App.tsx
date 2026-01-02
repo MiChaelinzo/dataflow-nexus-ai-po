@@ -67,7 +67,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 function App() {
-  const [showWelcome, setShowWelcome] = useKV<boolean>('welcome-page-seen', true)
+  const [showWelcome, setShowWelcome] = useKV<boolean>('welcome-page-seen', false)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [user, setUser] = useState<{ login: string; avatarUrl: string; isOwner: boolean } | null>(null)
   const [activitiesInitialized, setActivitiesInitialized] = useKV<boolean>('activities-initialized', false)
