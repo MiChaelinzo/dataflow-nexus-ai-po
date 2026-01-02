@@ -67,7 +67,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 function App() {
-  const [showWelcome, setShowWelcome] = useKV<boolean>('welcome-page-seen', false)
+  const [hasSeenWelcome, setHasSeenWelcome] = useKV<boolean>('welcome-page-seen', false)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [user, setUser] = useState<{ login: string; avatarUrl: string; isOwner: boolean } | null>(null)
   const [activitiesInitialized, setActivitiesInitialized] = useKV<boolean>('activities-initialized', false)
@@ -114,10 +114,10 @@ function App() {
   }, [activeTab, trackActivity])
   
   const handleGetStarted = () => {
-    setShowWelcome(false)
+    setHasSeenWelcome(true)
   }
   
-  if (showWelcome) {
+  if (!hasSeenWelcome) {
     return (
       <>
         <WelcomePage onGetStarted={handleGetStarted} />
@@ -162,7 +162,7 @@ function App() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setShowWelcome(true)}
+                    onClick={() => setHasSeenWelcome(false)}
                     className="gap-2"
                   >
                     <House size={16} weight="duotone" />
