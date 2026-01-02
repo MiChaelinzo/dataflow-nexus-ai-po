@@ -124,6 +124,13 @@ This is a comprehensive analytics platform featuring GitHub authentication, pers
 - **Progression**: Select metric → View monthly YoY bars → Analyze seasonal trends → Identify best/worst months → Compare quarterly performance → Export insights
 - **Success criteria**: Clear visual comparison with trend indicators, actionable seasonal insights, smooth animated bar comparisons, quarter-based aggregations with performance badges
 
+### Data Export (CSV & Excel)
+- **Functionality**: Comprehensive export system supporting CSV and Excel formats for all analytics data including metrics, time series, insights, and custom reports
+- **Purpose**: Enables data portability for offline analysis, stakeholder reporting, and integration with other business tools
+- **Trigger**: User clicks export button on any dashboard section or navigates to dedicated Export Center tab
+- **Progression**: Click export → Select format (CSV/Excel) → Customize filename → Toggle headers → Confirm → Download file instantly → Track export in activity log
+- **Success criteria**: Sub-second export generation, properly formatted files with headers, support for all data types, intuitive export dialog with format preview
+
 ## Edge Case Handling
 
 - **Empty State**: Beautiful onboarding with sample data preloaded, clear CTAs to explore features

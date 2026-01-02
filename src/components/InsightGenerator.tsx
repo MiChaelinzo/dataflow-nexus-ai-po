@@ -9,6 +9,8 @@ import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUserActivity, useUserStats } from './UserProfile'
+import { ExportButton } from './ExportButton'
+import { exportInsights, ExportFormat } from '@/lib/data-export'
 
 interface InsightGeneratorProps {
   metrics: Metric[]
@@ -113,6 +115,11 @@ Return format:
     incrementStat('bookmarksCount')
     trackActivity('bookmark', 'Bookmarked an insight', 'AI Insights')
   }
+
+  const handleExportInsights = (format: ExportFormat, filename: string, includeHeaders: boolean) => {
+    exportInsights(insights || [], format, { filename, includeHeaders })
+    trackActivity('view', `Exported insights as ${format.toUpperCase()}`, 'insights')
+  }
   
   return (
     <div className="space-y-6">
@@ -128,29 +135,43 @@ Return format:
             </p>
           </div>
           
-          <Button 
-            onClick={generateInsights}
-            disabled={isGenerating}
-            size="lg"
-            className="flex-shrink-0 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-          >
-            {isGenerating ? (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                >
-                  <ArrowClockwise size={20} />
-                </motion.div>
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Sparkle size={20} weight="fill" />
-                Generate Insights
-              </>
+          <div className="flex items-center gap-2">
+            <Button 
+              onClick={generateInsights}
+              disabled={isGenerating}
+              size="lg"
+              className="flex-shrink-0 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              {isGenerating ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <ArrowClockwise size={20} />
+                  </motion.div>
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Sparkle size={20} weight="fill" />
+                  Generate Insights
+                </>
+              )}
+            </Button>
+            
+            {insights && insights.length > 0 && (
+              <ExportButton
+                onExport={handleExportInsights}
+                defaultFilename="ai-insights"
+                title="Export Insights"
+                description="Export all generated AI insights with confidence scores"
+                variant="outline"
+                size="lg"
+                label="Export"
+              />
             )}
-          </Button>
+          </div>
         </div>
         
         {isGenerating && (

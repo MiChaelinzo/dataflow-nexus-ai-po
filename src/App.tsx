@@ -20,7 +20,8 @@ import {
   UserCircle,
   SquaresFour,
   ShareNetwork,
-  Pulse
+  Pulse,
+  Download
 } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
@@ -66,6 +67,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ExportButton } from '@/components/ExportButton'
+import { DataExportPanel } from '@/components/DataExportPanel'
+import { exportMetrics, exportChartData, exportInsights, ExportFormat } from '@/lib/data-export'
 
 function App() {
   const [hasSeenWelcome, setHasSeenWelcome] = useKV<boolean>('welcome-page-seen', false)
@@ -116,6 +120,26 @@ function App() {
   
   const handleGetStarted = () => {
     setHasSeenWelcome(true)
+  }
+
+  const handleExportMetrics = (format: ExportFormat, filename: string, includeHeaders: boolean) => {
+    exportMetrics(metrics, format, { filename, includeHeaders })
+    trackActivity('view', `Exported metrics as ${format.toUpperCase()}`, 'metrics')
+  }
+
+  const handleExportTimeSeriesData = (format: ExportFormat, filename: string, includeHeaders: boolean) => {
+    exportChartData(timeSeriesData, format, { filename, includeHeaders })
+    trackActivity('view', `Exported time series data as ${format.toUpperCase()}`, 'timeseries')
+  }
+
+  const handleExportCategoryData = (format: ExportFormat, filename: string, includeHeaders: boolean) => {
+    exportChartData(categoryData, format, { filename, includeHeaders })
+    trackActivity('view', `Exported category data as ${format.toUpperCase()}`, 'category')
+  }
+
+  const handleExportInsights = (format: ExportFormat, filename: string, includeHeaders: boolean) => {
+    exportInsights(insights || [], format, { filename, includeHeaders })
+    trackActivity('view', `Exported insights as ${format.toUpperCase()}`, 'insights')
   }
   
   if (!hasSeenWelcome) {
@@ -209,7 +233,7 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-[1600px] grid-cols-7 lg:grid-cols-15 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1600px] grid-cols-7 lg:grid-cols-16 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -221,6 +245,10 @@ function App() {
               <TabsTrigger value="shared" className="gap-2 py-3">
                 <ShareNetwork size={18} weight="duotone" />
                 <span className="hidden sm:inline">Shared</span>
+              </TabsTrigger>
+              <TabsTrigger value="export" className="gap-2 py-3">
+                <Download size={18} weight="duotone" />
+                <span className="hidden sm:inline">Export</span>
               </TabsTrigger>
               <TabsTrigger value="activity" className="gap-2 py-3">
                 <Pulse size={18} weight="duotone" />
@@ -273,6 +301,24 @@ function App() {
             </TabsList>
             
             <TabsContent value="dashboard" className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Export your data in CSV or Excel format
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ExportButton
+                    onExport={handleExportMetrics}
+                    defaultFilename="metrics-overview"
+                    title="Export Metrics"
+                    description="Export all current metrics with trends and changes"
+                    label="Export Metrics"
+                  />
+                </div>
+              </div>
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -298,14 +344,39 @@ function App() {
                 transition={{ delay: 0.3, duration: 0.4 }}
                 className="grid grid-cols-1 lg:grid-cols-2 gap-6"
               >
-                <TimeSeriesChart 
-                  data={timeSeriesData}
-                  title="Revenue Trend (Last 30 Days)"
-                  color="oklch(0.70 0.15 195)"
-                />
+                <Card className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold">Revenue Trend (Last 30 Days)</h3>
+                    <ExportButton
+                      onExport={handleExportTimeSeriesData}
+                      defaultFilename="revenue-trend"
+                      title="Export Time Series"
+                      description="Export revenue trend data for the last 30 days"
+                      variant="ghost"
+                      size="sm"
+                      label="Export"
+                    />
+                  </div>
+                  <TimeSeriesChart 
+                    data={timeSeriesData}
+                    title=""
+                    color="oklch(0.70 0.15 195)"
+                  />
+                </Card>
                 
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-6">Revenue by Segment</h3>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold">Revenue by Segment</h3>
+                    <ExportButton
+                      onExport={handleExportCategoryData}
+                      defaultFilename="revenue-by-segment"
+                      title="Export Segment Data"
+                      description="Export revenue breakdown by business segment"
+                      variant="ghost"
+                      size="sm"
+                      label="Export"
+                    />
+                  </div>
                   <div className="space-y-4">
                     {categoryData.map((item, index) => {
                       const total = categoryData.reduce((sum, d) => sum + d.value, 0)
@@ -481,6 +552,15 @@ function App() {
               <ActivityHeatmap />
               <TrendComparisonCharts />
               <WorkspaceActivityFeed limit={100} showFilters={true} />
+            </TabsContent>
+            
+            <TabsContent value="export" className="space-y-6">
+              <DataExportPanel
+                metrics={metrics}
+                timeSeriesData={timeSeriesData}
+                categoryData={categoryData}
+                insights={insights || []}
+              />
             </TabsContent>
             
             <TabsContent value="tableau" className="space-y-6">
