@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { 
   ChartBar, 
   Sparkle, 
@@ -17,7 +18,9 @@ import {
   Lightning,
   Brain,
   Database,
-  ChartLineUp
+  ChartLineUp,
+  Play,
+  X
 } from '@phosphor-icons/react'
 
 interface WelcomePageProps {
@@ -26,6 +29,9 @@ interface WelcomePageProps {
 
 export function WelcomePage({ onGetStarted }: WelcomePageProps) {
   const [hoveredFeature, setHoveredFeature] = useState<string | null>(null)
+  const [showVideoModal, setShowVideoModal] = useState(false)
+  const [videoUrl, setVideoUrl] = useState('')
+  const [customVideoUrl, setCustomVideoUrl] = useState('')
 
   const features = [
     {
@@ -134,6 +140,39 @@ export function WelcomePage({ onGetStarted }: WelcomePageProps) {
     }
   ]
 
+  const getEmbedUrl = (url: string): string => {
+    if (url.includes('youtube.com/watch?v=')) {
+      const videoId = url.split('v=')[1]?.split('&')[0]
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1`
+    } else if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1]?.split('?')[0]
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1`
+    } else if (url.includes('vimeo.com/')) {
+      const videoId = url.split('vimeo.com/')[1]?.split('?')[0]
+      return `https://player.vimeo.com/video/${videoId}?autoplay=1`
+    }
+    return url
+  }
+
+  const handlePlayDemo = (url?: string) => {
+    const finalUrl = url || customVideoUrl
+    if (finalUrl) {
+      setVideoUrl(getEmbedUrl(finalUrl))
+      setShowVideoModal(true)
+    }
+  }
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showVideoModal) {
+        setShowVideoModal(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [showVideoModal])
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden">
       <div className="grid-background fixed inset-0 opacity-30" />
@@ -187,6 +226,95 @@ export function WelcomePage({ onGetStarted }: WelcomePageProps) {
                 Explore Features
               </Button>
             </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="mb-16"
+          >
+            <Card className="overflow-hidden bg-gradient-to-br from-accent/10 via-card to-metric-purple/10 border-accent/30">
+              <div className="p-8 md:p-12">
+                <div className="text-center mb-8">
+                  <Badge className="mb-4 px-4 py-2 bg-destructive/20 text-destructive border-destructive/30 text-sm">
+                    <VideoCamera size={16} weight="duotone" className="mr-2" />
+                    Platform Demo
+                  </Badge>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                    Watch the Platform in Action
+                  </h2>
+                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    See how our analytics intelligence platform combines AI-powered insights, 
+                    real-time collaboration, and comprehensive Tableau integration
+                  </p>
+                </div>
+
+                <div className="max-w-4xl mx-auto">
+                  <div className="relative aspect-video bg-secondary rounded-xl overflow-hidden border-2 border-accent/20 shadow-2xl mb-6">
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-metric-purple/20 flex items-center justify-center">
+                      <div className="text-center">
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="inline-block mb-4"
+                        >
+                          <Button
+                            size="lg"
+                            onClick={() => handlePlayDemo()}
+                            className="w-20 h-20 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-2xl"
+                          >
+                            <Play size={32} weight="fill" />
+                          </Button>
+                        </motion.div>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Click to watch demo video
+                        </p>
+                        <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle size={14} weight="fill" className="text-success" />
+                            <span>5 min overview</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle size={14} weight="fill" className="text-success" />
+                            <span>Feature showcase</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle size={14} weight="fill" className="text-success" />
+                            <span>Live demo</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-card/50 backdrop-blur-sm rounded-lg p-6 border border-border/50">
+                    <p className="text-sm text-muted-foreground mb-4 text-center">
+                      Have your own demo video? Paste the URL below:
+                    </p>
+                    <div className="flex gap-3">
+                      <Input
+                        placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+                        value={customVideoUrl}
+                        onChange={(e) => setCustomVideoUrl(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={() => handlePlayDemo()}
+                        disabled={!customVideoUrl}
+                        className="gap-2"
+                      >
+                        <Play size={16} weight="fill" />
+                        Play
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-3 text-center">
+                      Supports YouTube and Vimeo URLs
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </motion.div>
 
           <motion.div
@@ -369,6 +497,49 @@ export function WelcomePage({ onGetStarted }: WelcomePageProps) {
           </motion.div>
         </div>
       </div>
+
+      {showVideoModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-sm p-4"
+          onClick={() => setShowVideoModal(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="relative w-full max-w-6xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              size="icon"
+              variant="ghost"
+              className="absolute -top-12 right-0 text-foreground hover:text-accent"
+              onClick={() => setShowVideoModal(false)}
+            >
+              <X size={24} weight="bold" />
+            </Button>
+            
+            <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border-2 border-accent/30">
+              <iframe
+                src={videoUrl}
+                className="absolute inset-0 w-full h-full"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="Platform Demo Video"
+              />
+            </div>
+            
+            <div className="mt-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                Press ESC or click outside to close
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   )
 }
