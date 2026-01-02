@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 
-  y: number
-  opacity: 
+interface TrailPoint {
+  x: number
   y: number
   timestamp: number
   opacity: number
@@ -17,25 +17,24 @@ export function MouseTrail() {
     const canvas = canvasRef.current
     if (!canvas) return
 
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const resizeCanvas = () => {
+      if (canvas) {
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+      }
     }
     resizeCanvas()
 
-      mousePos.current = { x: e.
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY }
       trailPoints.current.push({
+        x: e.clientX,
         y: e.clientY,
-     
-
-        trailPoint
-    }
-
-
-
-      
-      trailPoints.current = trai
-        return age < 
-
-        ctx.strokeStyle = 'okl
-        ctx.lineCa
+        timestamp: Date.now(),
+        opacity: 1
       })
 
       if (trailPoints.current.length > 30) {
@@ -70,65 +69,34 @@ export function MouseTrail() {
           
           ctx.globalAlpha = opacity * 0.6
           
-          const gradient = ctx.createLinearGradient(
-            point.x, point.y,
-            nextPoint.x, nextPoint.y
-          )
-          
           ctx.beginPath()
-          
+          ctx.moveTo(point.x, point.y)
+          ctx.lineTo(nextPoint.x, nextPoint.y)
+          ctx.stroke()
+        }
       }
-      ctx.
-      animationFrameId.cu
-
-    animate()
-    return () => {
-      win
-
+      
+      ctx.globalAlpha = 1
+      animationFrameId.current = requestAnimationFrame(animate)
     }
 
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('resize', resizeCanvas)
+    animate()
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('resize', resizeCanvas)
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+      }
+    }
+  }, [])
+
+  return (
     <canvas
+      ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-50"
     />
+  )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
