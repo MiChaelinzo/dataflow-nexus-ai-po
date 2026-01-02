@@ -54,6 +54,7 @@ import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
 import { LiveCursors } from '@/components/LiveCursor'
 import { PresenceIndicator } from '@/components/PresenceIndicator'
+import { MouseTrail } from '@/components/MouseTrail'
 import { useCollaboration } from '@/hooks/use-collaboration'
 import { useKV } from '@github/spark/hooks'
 import {
@@ -616,6 +617,7 @@ function App() {
       </div>
       
       <LiveCursors cursors={cursors} />
+      <MouseTrail />
       <Toaster />
     </div>
     </AuthGate>
