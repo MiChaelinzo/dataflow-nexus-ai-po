@@ -11,7 +11,7 @@ export function MouseTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const trailPoints = useRef<TrailPoint[]>([])
   const mousePos = useRef({ x: 0, y: 0 })
-  const animationFrameId = useRef<number>()
+  const animationFrameId = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     const canvas = canvasRef.current
