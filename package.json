@@ -1,7 +1,8 @@
 {
-    "name": "spark-template",
+    "name": "analytics-intelligence-platform",
     "private": true,
-    "version": "0.0.0",
+    "version": "1.0.0",
+    "description": "Enterprise-grade analytics intelligence platform with AI-powered insights, real-time collaboration, and Tableau integration",
     "type": "module",
     "scripts": {
         "dev": "vite",
