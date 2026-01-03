@@ -196,6 +196,9 @@ Record and playback user sessions with full interaction timelines for training a
 ### 📈 Advanced Reporting
 Year-over-year comparisons, seasonal insights, automated report scheduling, and flexible export options.
 
+### 📅 Scheduled Data Exports
+Automate recurring data exports with flexible scheduling (daily/weekly/monthly), multiple format support (CSV/Excel/JSON), and automatic delivery to specified recipients. Track export history and manage schedules with pause/resume, edit, and on-demand execution capabilities.
+
 ### 💬 Slack Integration
 Configure automated notification rules to send insights and alerts directly to team channels.
 
@@ -310,6 +313,12 @@ Build custom reports with scheduling, export options, and template library.
 ### Compare
 Period-over-period and year-over-year comparison with seasonal analysis.
 
+### Export
+One-time data exports with format selection and customization options.
+
+### Scheduled
+Automated recurring exports with flexible scheduling and multi-recipient delivery.
+
 ## 🔑 Key Technologies
 
 ### Spark Runtime SDK
@@ -345,6 +354,7 @@ Additional documentation files:
 - `SLACK_INTEGRATION.md` - Slack notification setup
 - `WORKSPACES_AND_SHARING.md` - Workspace management guide
 - `SEASONAL_INSIGHTS.md` - Seasonal analysis documentation
+- `SCHEDULED_EXPORTS.md` - Automated export scheduling guide
 
 ## 🤝 Contributing
 

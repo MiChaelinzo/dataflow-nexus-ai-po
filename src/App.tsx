@@ -21,7 +21,8 @@ import {
   SquaresFour,
   ShareNetwork,
   Pulse,
-  Download
+  Download,
+  CalendarCheck
 } from '@phosphor-icons/react'
 import { MetricCard } from '@/components/MetricCard'
 import { TimeSeriesChart } from '@/components/TimeSeriesChart'
@@ -69,6 +70,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ExportButton } from '@/components/ExportButton'
 import { DataExportPanel } from '@/components/DataExportPanel'
+import { ScheduledExportManager } from '@/components/ScheduledExportManager'
 import { exportMetrics, exportChartData, exportInsights, ExportFormat } from '@/lib/data-export'
 
 function App() {
@@ -233,7 +235,7 @@ function App() {
         
         <main className="max-w-[1600px] mx-auto px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-[1600px] grid-cols-7 lg:grid-cols-16 h-auto p-1">
+            <TabsList className="grid w-full max-w-[1600px] grid-cols-7 lg:grid-cols-17 h-auto p-1">
               <TabsTrigger value="dashboard" className="gap-2 py-3">
                 <ChartBar size={18} weight="duotone" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -249,6 +251,10 @@ function App() {
               <TabsTrigger value="export" className="gap-2 py-3">
                 <Download size={18} weight="duotone" />
                 <span className="hidden sm:inline">Export</span>
+              </TabsTrigger>
+              <TabsTrigger value="scheduled" className="gap-2 py-3">
+                <CalendarCheck size={18} weight="duotone" />
+                <span className="hidden sm:inline">Scheduled</span>
               </TabsTrigger>
               <TabsTrigger value="activity" className="gap-2 py-3">
                 <Pulse size={18} weight="duotone" />
@@ -561,6 +567,10 @@ function App() {
                 categoryData={categoryData}
                 insights={insights || []}
               />
+            </TabsContent>
+            
+            <TabsContent value="scheduled" className="space-y-6">
+              <ScheduledExportManager />
             </TabsContent>
             
             <TabsContent value="tableau" className="space-y-6">
