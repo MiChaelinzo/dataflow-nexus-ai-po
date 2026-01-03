@@ -4,6 +4,22 @@
 ![React](https://img.shields.io/badge/React-19.2.0-61dafb.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-3178c6.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4.1.17-38bdf8.svg)
+![Tableau](https://img.shields.io/badge/Tableau-Cloud-E97627.svg)
+
+## 📋 Tableau Product(s) Used
+
+**☑️ Tableau Cloud** - Developer Platform & APIs  
+**☐ Tableau Next** - Not used in this submission
+
+This project demonstrates **Tableau Cloud** extensibility through:
+- ✅ Tableau Embedding API (interactive dashboard embeds)
+- ✅ Tableau REST API (workbook & data management)
+- ✅ Tableau JavaScript API (programmatic filtering)
+- ✅ Platform integration patterns
+
+**📄 Complete details**: See [TABLEAU_PRODUCTS_USED.md](./TABLEAU_PRODUCTS_USED.md)
+
+---
 
 ## 🎯 Project Overview
 

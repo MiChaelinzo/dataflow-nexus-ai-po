@@ -3,15 +3,44 @@
 ## 📋 Project Information
 
 **Project Name**: Analytics Intelligence Platform  
+**Tableau Product(s) Used**: ☑️ **Tableau Cloud** (Developer Platform & APIs)  
 **Category**: Tableau Cloud - Developer Platform Integration  
 **Team Size**: Solo Developer  
-**Development Time**: 3 Iterations
+**Development Time**: 40 Iterations
+
+### Tableau Product Declaration
+
+**Which Tableau product(s) does your submission include?**
+- ☑️ **Tableau Cloud** - YES
+- ☐ Tableau Next - NO
+
+**Do you need to provide admin credentials?** NO  
+**Do you need to provide Salesforce Org ID?** NO  
+
+This submission demonstrates **Tableau Cloud** integration using:
+- Tableau Embedding API (dashboard embeds)
+- Tableau REST API (workbook & data source management)
+- Tableau Public API (demo dashboards)
+- Tableau JavaScript API (programmatic filtering)
+
+See **[TABLEAU_PRODUCTS_USED.md](./TABLEAU_PRODUCTS_USED.md)** for complete details.
 
 ---
 
 ## 🎯 Elevator Pitch (1-2 Sentences)
 
-**An enterprise-grade analytics intelligence platform that demonstrates the future of Tableau integration - combining real-time metrics, AI-powered insights, semantic data modeling, and actionable analytics in a stunning, extensible interface.** This platform showcases how modern web technologies can extend and strengthen Tableau's analytical power through open APIs, robust data governance, semantic modeling capabilities, and seamless workflow integration.
+**An enterprise-grade analytics intelligence platform that demonstrates the future of Tableau integration - combining real-time metrics, AI-powered insights, semantic data modeling, and actionable analytics in a stunning, extensible interface.** This platform showcases how modern web technologies can extend and strengthen Tableau Cloud's analytical power through the Developer Platform APIs, robust data governance, semantic modeling capabilities, and seamless workflow integration.
+
+---
+
+## 🔐 Important: No Credentials Required
+
+**This submission uses Tableau Cloud (not Tableau Next), therefore:**
+- ❌ **No admin credentials required**
+- ❌ **No Salesforce Org ID required**  
+- ❌ **No provisioned org access needed**
+
+We demonstrate Tableau Cloud extensibility through public APIs and embedding patterns.
 
 ---
 
