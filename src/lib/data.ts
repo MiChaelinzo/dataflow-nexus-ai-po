@@ -239,31 +239,50 @@ export function calculateSeasonalTrends(yoyData: YoYDataPoint[]): SeasonalTrend[
   })
 }
 
+export const SAMPLE_USERS = [
+  { id: 'user-1', name: 'Sarah Chen', email: 'sarah.chen@company.com', avatar: undefined },
+  { id: 'user-2', name: 'Michael Rodriguez', email: 'michael.r@company.com', avatar: undefined },
+  { id: 'user-3', name: 'Emily Johnson', email: 'emily.j@company.com', avatar: undefined },
+  { id: 'user-4', name: 'David Kim', email: 'david.kim@company.com', avatar: undefined },
+  { id: 'user-5', name: 'Jessica Williams', email: 'jessica.w@company.com', avatar: undefined },
+  { id: 'user-6', name: 'Alex Thompson', email: 'alex.t@company.com', avatar: undefined },
+  { id: 'user-7', name: 'Maria Garcia', email: 'maria.g@company.com', avatar: undefined },
+  { id: 'user-8', name: 'James Liu', email: 'james.liu@company.com', avatar: undefined }
+]
+
+export const SAMPLE_WORKSPACES = [
+  { id: 'ws-1', name: 'Marketing Analytics', description: 'Track marketing campaigns and ROI' },
+  { id: 'ws-2', name: 'Sales Performance', description: 'Monitor sales pipeline and revenue' },
+  { id: 'ws-3', name: 'Product Insights', description: 'Analyze product usage and engagement' },
+  { id: 'ws-4', name: 'Customer Success', description: 'Customer health and satisfaction metrics' },
+  { id: 'ws-5', name: 'Finance Dashboard', description: 'Financial KPIs and budget tracking' },
+  { id: 'ws-6', name: 'Operations Hub', description: 'Operational efficiency metrics' }
+]
+
+export const SAMPLE_DASHBOARDS = [
+  'Q4 Revenue Dashboard',
+  'Customer Engagement Metrics',
+  'Sales Pipeline Analysis',
+  'Marketing Campaign Performance',
+  'Product Usage Analytics',
+  'Regional Performance Report',
+  'Customer Churn Analysis',
+  'Lead Generation Tracker',
+  'Social Media Analytics',
+  'Email Campaign Dashboard',
+  'Website Traffic Analysis',
+  'Conversion Funnel Report',
+  'Customer Lifetime Value',
+  'Inventory Management',
+  'Support Ticket Analytics',
+  'Employee Performance Dashboard'
+]
+
 export function generateSampleActivities(): WorkspaceActivity[] {
   const now = Date.now()
-  const users = [
-    { id: 'user-1', name: 'Sarah Chen', avatar: undefined },
-    { id: 'user-2', name: 'Michael Rodriguez', avatar: undefined },
-    { id: 'user-3', name: 'Emily Johnson', avatar: undefined },
-    { id: 'user-4', name: 'David Kim', avatar: undefined },
-    { id: 'user-5', name: 'Jessica Williams', avatar: undefined }
-  ]
-  
-  const workspaces = [
-    { id: 'ws-1', name: 'Marketing Analytics' },
-    { id: 'ws-2', name: 'Sales Performance' },
-    { id: 'ws-3', name: 'Product Insights' },
-    { id: 'ws-4', name: 'Customer Success' }
-  ]
-  
-  const dashboards = [
-    'Q4 Revenue Dashboard',
-    'Customer Engagement Metrics',
-    'Sales Pipeline Analysis',
-    'Marketing Campaign Performance',
-    'Product Usage Analytics',
-    'Regional Performance Report'
-  ]
+  const users = SAMPLE_USERS
+  const workspaces = SAMPLE_WORKSPACES
+  const dashboards = SAMPLE_DASHBOARDS
   
   const activities: Omit<WorkspaceActivity, 'id' | 'timestamp'>[] = [
     {
@@ -425,4 +444,224 @@ export function generateSampleActivities(): WorkspaceActivity[] {
     id: `activity-${Date.now()}-${index}`,
     timestamp: now - (activities.length - index) * 3600000 - Math.random() * 1800000
   }))
+}
+
+export function generateSampleWorkspaces(currentUserId: string = 'user-1', currentUserName: string = 'You') {
+  const now = Date.now()
+  const colors = [
+    'oklch(0.70 0.15 195)',
+    'oklch(0.60 0.18 290)',
+    'oklch(0.65 0.15 145)',
+    'oklch(0.70 0.15 70)',
+    'oklch(0.55 0.22 25)',
+    'oklch(0.45 0.15 250)'
+  ]
+  
+  return SAMPLE_WORKSPACES.map((ws, index) => ({
+    id: ws.id,
+    name: ws.name,
+    description: ws.description,
+    type: (index === 0 ? 'personal' : index < 4 ? 'team' : 'organization') as 'personal' | 'team' | 'organization',
+    visibility: (index < 2 ? 'private' : index < 4 ? 'shared' : 'public') as 'private' | 'shared' | 'public',
+    ownerId: index === 0 ? currentUserId : SAMPLE_USERS[index % SAMPLE_USERS.length].id,
+    ownerName: index === 0 ? currentUserName : SAMPLE_USERS[index % SAMPLE_USERS.length].name,
+    members: [
+      {
+        id: index === 0 ? currentUserId : SAMPLE_USERS[index % SAMPLE_USERS.length].id,
+        name: index === 0 ? currentUserName : SAMPLE_USERS[index % SAMPLE_USERS.length].name,
+        email: index === 0 ? 'you@company.com' : SAMPLE_USERS[index % SAMPLE_USERS.length].email,
+        role: 'owner' as const,
+        joinedAt: now - 30 * 24 * 60 * 60 * 1000
+      },
+      ...SAMPLE_USERS.slice(0, 2 + (index % 3)).map((user, idx) => ({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: (idx === 0 ? 'admin' : idx === 1 ? 'editor' : 'viewer') as 'owner' | 'admin' | 'editor' | 'viewer',
+        joinedAt: now - (20 - idx * 5) * 24 * 60 * 60 * 1000
+      }))
+    ],
+    dashboards: 3 + (index % 8),
+    createdAt: now - (45 - index * 5) * 24 * 60 * 60 * 1000,
+    lastModified: now - (index * 2) * 24 * 60 * 60 * 1000,
+    color: colors[index % colors.length],
+    isFavorite: index < 3
+  }))
+}
+
+export function generateSampleDashboards(currentUserId: string = 'user-1', currentUserName: string = 'You') {
+  const now = Date.now()
+  const visibilities = ['private', 'workspace', 'organization', 'public'] as const
+  const tags = ['revenue', 'customers', 'marketing', 'sales', 'product', 'analytics', 'quarterly', 'monthly', 'real-time', 'forecast']
+  
+  return SAMPLE_DASHBOARDS.map((dashName, index) => {
+    const workspace = SAMPLE_WORKSPACES[index % SAMPLE_WORKSPACES.length]
+    const owner = index === 0 ? { id: currentUserId, name: currentUserName, email: 'you@company.com' } : SAMPLE_USERS[index % SAMPLE_USERS.length]
+    
+    return {
+      id: `dash-${index + 1}`,
+      name: dashName,
+      description: `Comprehensive ${dashName.toLowerCase()} with interactive visualizations and real-time data`,
+      workspaceId: workspace.id,
+      workspaceName: workspace.name,
+      ownerId: owner.id,
+      ownerName: owner.name,
+      visibility: visibilities[index % visibilities.length],
+      shareLink: index % 3 === 0 ? `https://analytics.app/share/${Math.random().toString(36).substring(7)}` : undefined,
+      permissions: [
+        {
+          userId: owner.id,
+          userName: owner.name,
+          userEmail: owner.email,
+          role: 'admin' as const,
+          grantedAt: now - 30 * 24 * 60 * 60 * 1000,
+          grantedBy: owner.id
+        },
+        ...SAMPLE_USERS.slice(0, 1 + (index % 4)).map((user, idx) => ({
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          role: (idx === 0 ? 'editor' : idx === 1 ? 'commenter' : 'viewer') as 'viewer' | 'commenter' | 'editor' | 'admin',
+          grantedAt: now - (25 - idx * 5) * 24 * 60 * 60 * 1000,
+          grantedBy: owner.id
+        }))
+      ],
+      views: Math.floor(Math.random() * 5000) + 100,
+      comments: Math.floor(Math.random() * 50) + 5,
+      lastModified: now - (index * 3) * 24 * 60 * 60 * 1000,
+      createdAt: now - (60 - index * 2) * 24 * 60 * 60 * 1000,
+      isFavorite: index < 5,
+      tags: tags.slice(index % 5, (index % 5) + 3)
+    }
+  })
+}
+
+export function generateSampleScheduledExports(currentUserId: string = 'user-1', currentUserName: string = 'You') {
+  const now = Date.now()
+  const nowISO = new Date(now).toISOString()
+  
+  return [
+    {
+      id: 'export-1',
+      name: 'Daily Metrics Report',
+      description: 'Automated daily export of key performance metrics',
+      dataType: 'metrics' as const,
+      format: 'excel' as const,
+      frequency: 'daily' as const,
+      time: '09:00',
+      enabled: true,
+      recipients: ['you@company.com', 'team@company.com'],
+      lastRun: new Date(now - 24 * 60 * 60 * 1000).toISOString(),
+      nextRun: new Date(now + 3 * 60 * 60 * 1000).toISOString(),
+      createdBy: currentUserId,
+      createdAt: new Date(now - 14 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'export-2',
+      name: 'Weekly Sales Report',
+      description: 'Comprehensive weekly sales analytics export',
+      dataType: 'timeseries' as const,
+      format: 'csv' as const,
+      frequency: 'weekly' as const,
+      time: '08:00',
+      dayOfWeek: 1,
+      enabled: true,
+      recipients: ['sales-team@company.com'],
+      lastRun: new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      nextRun: new Date(now + 21 * 60 * 60 * 1000).toISOString(),
+      createdBy: SAMPLE_USERS[1].id,
+      createdAt: new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'export-3',
+      name: 'Monthly Executive Summary',
+      description: 'Full analytics report for executive team',
+      dataType: 'all' as const,
+      format: 'excel' as const,
+      frequency: 'monthly' as const,
+      time: '07:00',
+      dayOfMonth: 1,
+      enabled: true,
+      recipients: ['executives@company.com', 'board@company.com'],
+      lastRun: new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      nextRun: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: currentUserId,
+      createdAt: new Date(now - 90 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'export-4',
+      name: 'AI Insights Digest',
+      description: 'Weekly compilation of AI-generated insights',
+      dataType: 'insights' as const,
+      format: 'excel' as const,
+      frequency: 'weekly' as const,
+      time: '10:00',
+      dayOfWeek: 5,
+      enabled: true,
+      recipients: ['analytics@company.com', 'strategy@company.com'],
+      lastRun: new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      nextRun: new Date(now + 4 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: SAMPLE_USERS[3].id,
+      createdAt: new Date(now - 21 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'export-5',
+      name: 'Customer Metrics Export',
+      description: 'Daily customer engagement and satisfaction metrics',
+      dataType: 'metrics' as const,
+      format: 'csv' as const,
+      frequency: 'daily' as const,
+      time: '11:00',
+      enabled: false,
+      recipients: ['customer-success@company.com'],
+      lastRun: new Date(now - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      nextRun: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: SAMPLE_USERS[4].id,
+      createdAt: new Date(now - 45 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ]
+}
+
+export function generateSampleExportHistory() {
+  const now = Date.now()
+  const exports = [
+    { id: 'export-1', name: 'Daily Metrics Report', format: 'excel' as const, dataType: 'metrics' as const, frequency: 'daily' as const },
+    { id: 'export-2', name: 'Weekly Sales Report', format: 'csv' as const, dataType: 'timeseries' as const, frequency: 'weekly' as const },
+    { id: 'export-3', name: 'Monthly Executive Summary', format: 'excel' as const, dataType: 'all' as const, frequency: 'monthly' as const },
+    { id: 'export-4', name: 'AI Insights Digest', format: 'excel' as const, dataType: 'insights' as const, frequency: 'weekly' as const }
+  ]
+  
+  const history: Array<{
+    id: string
+    exportId: string
+    exportName: string
+    timestamp: string
+    format: 'excel' | 'csv'
+    dataType: 'metrics' | 'timeseries' | 'all' | 'insights'
+    recipientCount: number
+    status: 'success' | 'failed'
+    fileSize?: number
+    errorMessage?: string
+  }> = []
+  
+  for (let i = 0; i < 30; i++) {
+    const exportConfig = exports[i % exports.length]
+    const daysAgo = i + 1
+    const isSuccess = Math.random() > 0.05
+    
+    history.push({
+      id: crypto.randomUUID(),
+      exportId: exportConfig.id,
+      exportName: exportConfig.name,
+      timestamp: new Date(now - daysAgo * 24 * 60 * 60 * 1000).toISOString(),
+      format: exportConfig.format,
+      dataType: exportConfig.dataType,
+      recipientCount: 1 + Math.floor(Math.random() * 4),
+      status: isSuccess ? 'success' : 'failed',
+      fileSize: isSuccess ? Math.floor(Math.random() * 500000) + 50000 : undefined,
+      errorMessage: isSuccess ? undefined : 'Connection timeout - retrying in 5 minutes'
+    })
+  }
+  
+  return history.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 }

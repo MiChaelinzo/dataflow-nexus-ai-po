@@ -35,6 +35,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 import { WorkspaceActivityFeed, useWorkspaceActivity } from '@/components/WorkspaceActivityFeed'
+import { generateSampleWorkspaces } from '@/lib/data'
 
 export interface Workspace {
   id: string
@@ -62,6 +63,7 @@ export interface WorkspaceMember {
 
 export function WorkspaceManager() {
   const [workspaces, setWorkspaces] = useKV<Workspace[]>('user-workspaces', [])
+  const [workspacesInitialized, setWorkspacesInitialized] = useKV<boolean>('workspaces-initialized', false)
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [currentUser] = useKV<{ id: string; name: string; email: string }>('current-user-info', {
@@ -84,6 +86,15 @@ export function WorkspaceManager() {
     
     loadUser()
   }, [])
+
+  useEffect(() => {
+    if (!workspacesInitialized && (workspaces?.length ?? 0) === 0) {
+      const userName = user?.login || 'You'
+      const sampleWorkspaces = generateSampleWorkspaces('user-1', userName)
+      setWorkspaces(() => sampleWorkspaces)
+      setWorkspacesInitialized(true)
+    }
+  }, [workspacesInitialized, workspaces, setWorkspaces, setWorkspacesInitialized, user])
 
   const [newWorkspace, setNewWorkspace] = useState({
     name: '',

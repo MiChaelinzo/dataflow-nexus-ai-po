@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -39,6 +39,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 import { useWorkspaceActivity } from '@/components/WorkspaceActivityFeed'
+import { generateSampleDashboards } from '@/lib/data'
 
 export interface SharedDashboard {
   id: string
@@ -83,6 +84,7 @@ export interface ShareRequest {
 
 export function SharedDashboards() {
   const [dashboards, setDashboards] = useKV<SharedDashboard[]>('shared-dashboards', [])
+  const [dashboardsInitialized, setDashboardsInitialized] = useKV<boolean>('dashboards-initialized', false)
   const [shareRequests, setShareRequests] = useKV<ShareRequest[]>('share-requests', [])
   const [selectedDashboard, setSelectedDashboard] = useState<SharedDashboard | null>(null)
   const [isCreating, setIsCreating] = useState(false)
@@ -95,6 +97,29 @@ export function SharedDashboards() {
     email: 'you@company.com'
   })
   const { addActivity } = useWorkspaceActivity()
+  const [user, setUser] = useState<{ login: string; avatarUrl: string } | null>(null)
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userInfo = await window.spark.user()
+        setUser(userInfo)
+      } catch (error) {
+        console.error('Failed to load user:', error)
+      }
+    }
+    
+    loadUser()
+  }, [])
+
+  useEffect(() => {
+    if (!dashboardsInitialized && (dashboards?.length ?? 0) === 0) {
+      const userName = user?.login || 'You'
+      const sampleDashboards = generateSampleDashboards('user-1', userName)
+      setDashboards(() => sampleDashboards)
+      setDashboardsInitialized(true)
+    }
+  }, [dashboardsInitialized, dashboards, setDashboards, setDashboardsInitialized, user])
 
   const [newDashboard, setNewDashboard] = useState({
     name: '',

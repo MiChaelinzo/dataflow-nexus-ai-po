@@ -352,12 +352,88 @@ Live collaboration features track multiple users with cursor positions, active v
 
 ## 📊 Sample Data
 
-The application includes rich sample data demonstrating:
-- Historical metrics with trends and comparisons
-- Time-series data for visualization
-- User activities and collaboration events
-- Workspace configurations and team sharing
-- Generated insights with confidence scores
+The application includes rich sample data that is **automatically initialized** on first use:
+
+### Workspaces (6 pre-configured workspaces)
+- **Marketing Analytics** - Track marketing campaigns and ROI
+- **Sales Performance** - Monitor sales pipeline and revenue
+- **Product Insights** - Analyze product usage and engagement
+- **Customer Success** - Customer health and satisfaction metrics
+- **Finance Dashboard** - Financial KPIs and budget tracking
+- **Operations Hub** - Operational efficiency metrics
+
+Each workspace includes:
+- 3-10 dashboards with realistic data
+- Multiple team members with assigned roles (owner, admin, editor, viewer)
+- Activity history and collaboration records
+- Color-coded organization
+
+### Shared Dashboards (16 pre-configured dashboards)
+- Q4 Revenue Dashboard
+- Customer Engagement Metrics
+- Sales Pipeline Analysis
+- Marketing Campaign Performance
+- Product Usage Analytics
+- Regional Performance Report
+- Customer Churn Analysis
+- Lead Generation Tracker
+- Social Media Analytics
+- Email Campaign Dashboard
+- Website Traffic Analysis
+- Conversion Funnel Report
+- Customer Lifetime Value
+- Inventory Management
+- Support Ticket Analytics
+- Employee Performance Dashboard
+
+Each dashboard includes:
+- Visibility settings (private, workspace, organization, public)
+- Permission management with role-based access
+- View counts and comment statistics
+- Share links and collaboration history
+- Descriptive tags for organization
+
+### Scheduled Exports (5 pre-configured schedules)
+- **Daily Metrics Report** - Excel format, morning delivery
+- **Weekly Sales Report** - CSV format, Monday delivery
+- **Monthly Executive Summary** - Comprehensive Excel report
+- **AI Insights Digest** - Weekly compilation of insights
+- **Customer Metrics Export** - Daily engagement data (disabled example)
+
+Each scheduled export includes:
+- Flexible frequency (daily, weekly, monthly)
+- Multiple format options (CSV, Excel, JSON)
+- Multi-recipient delivery
+- Execution history and next run tracking
+- Enable/disable controls
+
+### Activity Feed (40+ sample activities)
+- Workspace creation and joins
+- Dashboard views, edits, and shares
+- Comment threads and mentions
+- Export operations
+- Insight generation events
+- Session recordings
+
+### Team Members (8 sample users)
+Pre-configured team members for collaboration features:
+- Sarah Chen (sarah.chen@company.com)
+- Michael Rodriguez (michael.r@company.com)
+- Emily Johnson (emily.j@company.com)
+- David Kim (david.kim@company.com)
+- Jessica Williams (jessica.w@company.com)
+- Alex Thompson (alex.t@company.com)
+- Maria Garcia (maria.g@company.com)
+- James Liu (james.liu@company.com)
+
+### Data Characteristics
+- **Historical metrics** with realistic trends and comparisons
+- **Time-series data** spanning 30-90 days for visualizations
+- **User activities** distributed across different times and workspaces
+- **Workspace configurations** with varied team sizes and permissions
+- **AI-generated insights** with confidence scores and categories
+
+All sample data is stored in the Spark KV persistence layer and will remain available between sessions. You can add, edit, or delete any sample data as needed.
 
 ## 🎓 Learning Resources
 

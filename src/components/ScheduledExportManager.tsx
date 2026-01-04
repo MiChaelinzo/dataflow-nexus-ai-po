@@ -33,13 +33,47 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import { generateSampleScheduledExports, generateSampleExportHistory } from '@/lib/data'
 
 export function ScheduledExportManager() {
   const [exports, setExports] = useKV<ScheduledExport[]>('scheduled-exports', [])
+  const [exportsInitialized, setExportsInitialized] = useKV<boolean>('exports-initialized', false)
   const [history, setHistory] = useKV<ExportHistory[]>('export-history', [])
+  const [historyInitialized, setHistoryInitialized] = useKV<boolean>('export-history-initialized', false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingExport, setEditingExport] = useState<ScheduledExport | undefined>()
   const [expandedExport, setExpandedExport] = useState<string | null>(null)
+  const [user, setUser] = useState<{ login: string; avatarUrl: string } | null>(null)
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userInfo = await window.spark.user()
+        setUser(userInfo)
+      } catch (error) {
+        console.error('Failed to load user:', error)
+      }
+    }
+    
+    loadUser()
+  }, [])
+
+  useEffect(() => {
+    if (!exportsInitialized && (exports?.length ?? 0) === 0) {
+      const userName = user?.login || 'You'
+      const sampleExports = generateSampleScheduledExports('user-1', userName)
+      setExports(() => sampleExports)
+      setExportsInitialized(true)
+    }
+  }, [exportsInitialized, exports, setExports, setExportsInitialized, user])
+
+  useEffect(() => {
+    if (!historyInitialized && (history?.length ?? 0) === 0) {
+      const sampleHistory = generateSampleExportHistory()
+      setHistory(() => sampleHistory)
+      setHistoryInitialized(true)
+    }
+  }, [historyInitialized, history, setHistory, setHistoryInitialized])
 
   useEffect(() => {
     const checkSchedules = setInterval(() => {
