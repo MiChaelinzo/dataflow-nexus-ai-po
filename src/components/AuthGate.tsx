@@ -4,7 +4,8 @@ import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { motion } from 'framer-motion'
-import { GithubLogo, Sparkle, ChartBar, Shield, Users, TrendUp } from '@phosphor-icons/react'
+import { GithubLogo, Sparkle, ChartBar, Shield, Users, TrendUp, Warning } from '@phosphor-icons/react'
+import { useKV } from '@github/spark/hooks'
 
 interface UserInfo {
   avatarUrl: string
@@ -18,24 +19,79 @@ interface AuthGateProps {
   children: React.ReactNode
 }
 
+const CACHE_DURATION = 5 * 60 * 1000
+const MAX_RETRIES = 3
+const INITIAL_RETRY_DELAY = 1000
+
 export function AuthGate({ children }: AuthGateProps) {
   const [user, setUser] = useState<UserInfo | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
+  const [cachedUser, setCachedUser] = useKV<UserInfo | null>('cached-user-info', null)
+  const [cacheTimestamp, setCacheTimestamp] = useKV<number>('user-cache-timestamp', 0)
 
   useEffect(() => {
     const loadUser = async () => {
-      try {
-        const userInfo = await window.spark.user()
-        setUser(userInfo)
-      } catch (error) {
-        console.error('Failed to load user:', error)
-      } finally {
+      const now = Date.now()
+      
+      if (cachedUser && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+        setUser(cachedUser)
         setLoading(false)
+        return
       }
+
+      let currentRetry = 0
+      
+      while (currentRetry <= MAX_RETRIES) {
+        try {
+          const userInfo = await window.spark.user()
+          setUser(userInfo)
+          setCachedUser(userInfo)
+          setCacheTimestamp(Date.now())
+          setError(null)
+          setLoading(false)
+          return
+        } catch (err: any) {
+          const errorMessage = err?.message || String(err)
+          
+          if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
+            if (currentRetry < MAX_RETRIES) {
+              const delay = INITIAL_RETRY_DELAY * Math.pow(2, currentRetry)
+              setError(`Rate limit reached. Retrying in ${delay / 1000}s... (${currentRetry + 1}/${MAX_RETRIES})`)
+              await new Promise(resolve => setTimeout(resolve, delay))
+              currentRetry++
+              setRetryCount(currentRetry)
+              continue
+            } else {
+              if (cachedUser) {
+                setUser(cachedUser)
+                setError('Using cached user data due to rate limiting')
+                setLoading(false)
+                return
+              }
+              setError('GitHub rate limit reached. Please try again in a few minutes.')
+            }
+          } else {
+            console.error('Failed to load user:', err)
+            setError('Failed to authenticate. Please try again.')
+          }
+          break
+        }
+      }
+      
+      setLoading(false)
     }
 
     loadUser()
   }, [])
+
+  const handleRetry = () => {
+    setError(null)
+    setRetryCount(0)
+    setLoading(true)
+    window.location.reload()
+  }
 
   if (loading) {
     return (
@@ -46,13 +102,56 @@ export function AuthGate({ children }: AuthGateProps) {
           animate={{ opacity: 1, scale: 1 }}
           className="relative z-10"
         >
-          <Card className="p-8 text-center">
+          <Card className="p-8 text-center max-w-md">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-accent/20 flex items-center justify-center">
               <Sparkle size={32} weight="duotone" className="text-accent animate-pulse" />
             </div>
-            <p className="text-muted-foreground">Loading...</p>
+            <p className="text-muted-foreground mb-2">Loading...</p>
+            {error && (
+              <div className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+                <div className="flex items-center gap-2 justify-center text-warning mb-2">
+                  <Warning size={20} weight="fill" />
+                  <p className="text-sm font-medium">Rate Limit Notice</p>
+                </div>
+                <p className="text-xs text-muted-foreground">{error}</p>
+              </div>
+            )}
           </Card>
         </motion.div>
+      </div>
+    )
+  }
+
+  if (!user && error) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="grid-background fixed inset-0 opacity-30" />
+        
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-md w-full"
+          >
+            <Card className="p-8 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-destructive/20 flex items-center justify-center">
+                <Warning size={32} weight="duotone" className="text-destructive" />
+              </div>
+              <h2 className="text-xl font-semibold mb-2">Authentication Issue</h2>
+              <p className="text-muted-foreground mb-6">{error}</p>
+              <Button 
+                onClick={handleRetry}
+                className="w-full gap-2"
+              >
+                <GithubLogo size={20} weight="fill" />
+                Retry Authentication
+              </Button>
+              <p className="text-xs text-muted-foreground mt-4">
+                If this persists, please wait a few minutes and try again
+              </p>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     )
   }
