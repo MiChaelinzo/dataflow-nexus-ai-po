@@ -4,11 +4,8 @@ export interface ExportOptions {
   filename?: string
   dateFormat?: string
   includeHeaders?: boolean
-}
-
 export type ExportFormat = 'csv' | 'excel'
 
-/**
  * Format a value for export (handling dates, nulls, booleans)
  */
 function formatValue(value: any): string {
@@ -25,7 +22,7 @@ function formatValue(value: any): string {
 }
 
 /**
- * Escape a string for CSV format (wrapping in quotes if necessary)
+}* Escape a string for CSV format (wrapping in quotes if necessary)
  */
 function escapeCSV(value: string): string {
   const stringValue = String(value)
