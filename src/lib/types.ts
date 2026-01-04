@@ -27,6 +27,7 @@ export interface Insight {
   metric?: string
   timestamp: number
   saved?: boolean
+  priority?: 'high' | 'medium' | 'low'
 }
 
 export interface PredictionData {

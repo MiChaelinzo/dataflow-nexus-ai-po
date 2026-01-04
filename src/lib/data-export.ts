@@ -3,6 +3,7 @@ import { Metric, ChartDataPoint, Insight } from './types'
 export interface ExportOptions {
   filename?: string
   dateFormat?: string
+  includeHeaders?: boolean
 }
 
 export type ExportFormat = 'csv' | 'excel'
@@ -69,8 +70,8 @@ function exportToCSV(data: any[], filename: string): void {
     return
   }
 
-  const headers = Object.keys(data[0])
-  const csvRows = []
+  const headers = Object.keys(data[0]) as string[]
+  const csvRows: string[] = []
 
   // Add Header Row
   csvRows.push(headers.map(escapeCSV).join(','))
