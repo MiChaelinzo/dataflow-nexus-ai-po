@@ -10,7 +10,12 @@
         "build": "tsc -b --noCheck && vite build",
         "lint": "eslint .",
         "optimize": "vite optimize",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "clean": "rm -rf dist node_modules/.vite",
+        "clean:all": "rm -rf dist node_modules/.vite node_modules package-lock.json",
+        "rebuild": "npm run clean && npm install && npm run build",
+        "analyze": "npm run build && du -sh dist && echo '\nLargest files:' && find dist -type f -exec du -h {} + | sort -rh | head -10",
+        "test:build": "npm run build && npm run preview"
     },
     "dependencies": {
         "@github/spark": ">=0.43.1 <1",

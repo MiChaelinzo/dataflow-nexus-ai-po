@@ -217,6 +217,20 @@ All code is production-ready with TypeScript type safety, comprehensive error ha
 
 ---
 
+## 🌐 Live Demo URLs
+
+### Primary URL
+**URL**: [Your primary deployment URL]
+**Platform**: GitHub Spark / Netlify / Vercel
+
+### Backup URLs (Recommended)
+**Backup #1**: [Your Netlify URL] - e.g., `https://analytics-intelligence.netlify.app`  
+**Backup #2**: [Your Vercel URL] - e.g., `https://analytics-intelligence.vercel.app`
+
+**Note:** Multiple URLs provided for reliability during demos and interviews. See `DEPLOYMENT_GUIDE.md` in repository for deployment instructions.
+
+---
+
 ## 🔧 Technologies & APIs Used
 
 ### Tableau APIs & Tools

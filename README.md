@@ -44,9 +44,32 @@ npm run dev
 
 # Build for production
 npm run build
+
+# Preview production build
+npm run preview
 ```
 
 Open your browser and start exploring the platform!
+
+### 🌐 Alternative Deployment Options
+
+**Need a backup URL for interviews/demos?** We support multiple hosting platforms:
+
+- 🟢 **Netlify** - Fastest deploy (2 minutes via drag & drop)
+- 🔵 **Vercel** - GitHub integration with auto-deploy
+- 🟠 **Cloudflare Pages** - Global CDN with edge functions
+- ⚫ **GitHub Pages** - Free `.github.io` hosting
+
+**📚 Deployment Guides:**
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete multi-platform deployment guide
+- **[BACKUP_DEPLOYMENT_CHECKLIST.md](./BACKUP_DEPLOYMENT_CHECKLIST.md)** - Pre-demo checklist & emergency procedures
+- **[BUILD_SCRIPTS.md](./BUILD_SCRIPTS.md)** - Ready-to-use build & deploy scripts
+
+**⚡ Quick Backup Deploy (2 minutes):**
+```bash
+npm run build
+# Then drag 'dist' folder to https://app.netlify.com/drop
+```
 
 ## ✨ Key Features
 
@@ -118,10 +141,25 @@ This project is designed to compete in multiple prize categories:
 
 ## 📚 Documentation
 
+### Core Documentation
 - **[HACKATHON_README.md](./HACKATHON_README.md)** - Complete feature documentation and technical details
 - **[TABLEAU_INTEGRATION.md](./TABLEAU_INTEGRATION.md)** - Comprehensive Tableau integration guide with examples
 - **[REQUIREMENTS.md](./REQUIREMENTS.md)** - Hackathon requirements checklist and compliance
 - **[PRD.md](./PRD.md)** - Product requirements and design decisions
+
+### Deployment & Build
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Multi-platform deployment guide (Netlify, Vercel, GitHub Pages, Cloudflare)
+- **[BACKUP_DEPLOYMENT_CHECKLIST.md](./BACKUP_DEPLOYMENT_CHECKLIST.md)** - Pre-demo checklist with emergency procedures
+- **[BUILD_SCRIPTS.md](./BUILD_SCRIPTS.md)** - Ready-to-use scripts for building and deploying
+
+### Feature Documentation
+- **[TABLEAU_PRODUCTS_USED.md](./TABLEAU_PRODUCTS_USED.md)** - Tableau products and APIs used
+- **[DEVPOST_SUBMISSION_GUIDE.md](./DEVPOST_SUBMISSION_GUIDE.md)** - Complete submission guide
+- **[COMPLETE_FEATURE_LIST.md](./COMPLETE_FEATURE_LIST.md)** - All features with descriptions
+- **[COLLABORATION.md](./COLLABORATION.md)** - Real-time collaboration features
+- **[SESSION_REPLAY.md](./SESSION_REPLAY.md)** - Session recording and replay
+- **[EXPORT_FEATURE.md](./EXPORT_FEATURE.md)** - Data export capabilities
+- **[WORKSPACES_AND_SHARING.md](./WORKSPACES_AND_SHARING.md)** - Multi-user workspaces
 
 ## 🎨 Design Philosophy
 
