@@ -1,35 +1,39 @@
 import { Metric, ChartDataPoint, Insight } from './types'
 
+// --- Types ---
+
+export type ExportFormat = 'csv' | 'excel'
+
 export interface ExportOptions {
   filename?: string
   dateFormat?: string
   includeHeaders?: boolean
 }
 
-export type ExportFormat = 'csv' | 'excel'
+// --- Helper Functions ---
 
 /**
- * Format a value for export (handling dates, nulls, booleans)
+ * Format a value for export (handles nulls, dates, objects)
  */
 function formatValue(value: any): string {
   if (value === null || value === undefined) {
     return ''
   }
-  if (typeof value === 'boolean') {
-    return value ? 'Yes' : 'No'
-  }
   if (value instanceof Date) {
-    return value.toLocaleDateString()
+    return value.toISOString().split('T')[0] // Basic YYYY-MM-DD
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value)
   }
   return String(value)
 }
 
 /**
- * Escape a string for CSV format (wrapping in quotes if necessary)
+ * Escape special characters for CSV (quotes, commas, newlines)
  */
 function escapeCSV(value: string): string {
   const stringValue = String(value)
-  if (stringValue.includes(',') || stringValue.includes('\n') || stringValue.includes('"')) {
+  if (/[",\n]/.test(stringValue)) {
     return `"${stringValue.replace(/"/g, '""')}"`
   }
   return stringValue
@@ -39,6 +43,7 @@ function escapeCSV(value: string): string {
  * Escape special characters for XML/Excel
  */
 function escapeXML(value: any): string {
+  if (value === null || value === undefined) return ''
   return String(value)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -61,8 +66,10 @@ function downloadBlob(blob: Blob, filename: string): void {
   URL.revokeObjectURL(url)
 }
 
+// --- Core Export Logic ---
+
 /**
- * Core function to export data to CSV
+ * Export data to CSV
  */
 function exportToCSV(data: any[], filename: string): void {
   if (!data.length) {
@@ -70,17 +77,17 @@ function exportToCSV(data: any[], filename: string): void {
     return
   }
 
-  const headers = Object.keys(data[0]) as string[]
+  const headers = Object.keys(data[0])
   const csvRows: string[] = []
 
-  // Add Header Row
-  csvRows.push(headers.map(escapeCSV).join(','))
+  // Add Header
+  csvRows.push(headers.join(','))
 
-  // Add Data Rows
+  // Add Rows
   for (const row of data) {
     const values = headers.map(header => {
-      const value = row[header]
-      return escapeCSV(formatValue(value))
+      const val = formatValue(row[header])
+      return escapeCSV(val)
     })
     csvRows.push(values.join(','))
   }
@@ -109,14 +116,6 @@ function exportToExcel(data: any[], filename: string): void {
     'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" ' +
     'xmlns:html="http://www.w3.org/TR/REC-html40">\n' +
     '<Styles>\n' +
-    '<Style ss:ID="Default" ss:Name="Normal">\n' +
-    '<Alignment ss:Vertical="Bottom"/>\n' +
-    '<Borders/>\n' +
-    '<Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>\n' +
-    '<Interior/>\n' +
-    '<NumberFormat/>\n' +
-    '<Protection/>\n' +
-    '</Style>\n' +
     '<Style ss:ID="BoldHeader">\n' +
     '<Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000" ss:Bold="1"/>\n' +
     '</Style>\n' +
@@ -217,5 +216,3 @@ export function exportInsights(
     exportToExcel(data, filename)
   }
 }
-
-
