@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
 import { Sparkle, ArrowClockwise } from '@phosphor-icons/react'
 import { InsightCard } from './InsightCard'
 import { Insight, Metric } from '@/lib/types'
@@ -11,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useUserActivity, useUserStats } from './UserProfile'
 import { ExportButton } from './ExportButton'
 import { exportInsights, ExportFormat } from '@/lib/data-export'
+import { llmRateLimiter } from '@/lib/rate-limiter'
 
 interface InsightGeneratorProps {
   metrics: Metric[]
@@ -22,12 +24,24 @@ export function InsightGenerator({ metrics }: InsightGeneratorProps) {
   const [progress, setProgress] = useState(0)
   const { trackActivity } = useUserActivity()
   const { incrementStat } = useUserStats()
+  const [remainingRequests, setRemainingRequests] = useState(llmRateLimiter.getRemainingRequests())
   
   const generateInsights = async () => {
+    if (!llmRateLimiter.canMakeRequest()) {
+      const waitTime = Math.ceil(llmRateLimiter.getTimeUntilNextRequest() / 1000)
+      toast.error('Rate limit reached', {
+        description: `Please wait ${waitTime} seconds before generating more insights.`
+      })
+      return
+    }
+
     setIsGenerating(true)
     setProgress(10)
     
     try {
+      llmRateLimiter.recordRequest()
+      setRemainingRequests(llmRateLimiter.getRemainingRequests())
+      
       const metricsData = metrics.map(m => ({
         label: m.label,
         value: m.value,
@@ -67,7 +81,7 @@ Return format:
 
       setProgress(60)
       
-      const response = await window.spark.llm(promptText, 'gpt-4o', true)
+      const response = await window.spark.llm(promptText, 'gpt-4o-mini', true)
       
       setProgress(80)
       
@@ -92,15 +106,30 @@ Return format:
       toast.success('Insights generated successfully', {
         description: `Generated ${newInsights.length} actionable insights from your data`
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate insights:', error)
-      toast.error('Failed to generate insights', {
-        description: 'Please try again in a moment'
-      })
+      
+      const errorMessage = error?.message || String(error)
+      
+      if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
+        llmRateLimiter.reset()
+        toast.error('API rate limit reached', {
+          description: 'Please wait 60 seconds before generating more insights.'
+        })
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        toast.error('Network error', {
+          description: 'Please check your connection and try again'
+        })
+      } else {
+        toast.error('Failed to generate insights', {
+          description: 'An unexpected error occurred. Please try again later.'
+        })
+      }
     } finally {
       setTimeout(() => {
         setIsGenerating(false)
         setProgress(0)
+        setRemainingRequests(llmRateLimiter.getRemainingRequests())
       }, 500)
     }
   }
@@ -138,24 +167,24 @@ Return format:
           <div className="flex items-center gap-2">
             <Button 
               onClick={generateInsights}
-              disabled={isGenerating}
+              disabled={isGenerating || remainingRequests === 0}
               size="lg"
               className="flex-shrink-0 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
             >
               {isGenerating ? (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <ArrowClockwise size={20} />
-                  </motion.div>
-                  Analyzing...
+                  <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
+                  Generating...
                 </>
               ) : (
                 <>
-                  <Sparkle size={20} weight="fill" />
+                  <Sparkle size={18} weight="fill" />
                   Generate Insights
+                  {remainingRequests < 5 && (
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {remainingRequests}/5
+                    </Badge>
+                  )}
                 </>
               )}
             </Button>

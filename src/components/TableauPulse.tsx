@@ -27,6 +27,7 @@ import { useKV } from '@github/spark/hooks'
 import { Metric } from '@/lib/types'
 import { SlackIntegration, SlackNotificationRule } from '@/components/SlackIntegration'
 import { DigestScheduler } from '@/components/DigestScheduler'
+import { llmRateLimiter } from '@/lib/rate-limiter'
 
 interface PulseInsight {
   id: string
@@ -58,11 +59,18 @@ export function TableauPulse({ metrics }: TableauPulseProps) {
   const [activeView, setActiveView] = useState<'insights' | 'slack'>('insights')
   const [slackConnected] = useKV<boolean>('slack-connected', false)
   const [notificationRules] = useKV<SlackNotificationRule[]>('slack-notification-rules', [])
+  const [remainingRequests, setRemainingRequests] = useState(llmRateLimiter.getRemainingRequests())
 
   useEffect(() => {
     if (!pulseInsights || pulseInsights.length === 0) {
       generateInitialInsights()
     }
+    
+    const interval = setInterval(() => {
+      setRemainingRequests(llmRateLimiter.getRemainingRequests())
+    }, 1000)
+    
+    return () => clearInterval(interval)
   }, [])
 
   const generateInitialInsights = async () => {
@@ -140,9 +148,19 @@ export function TableauPulse({ metrics }: TableauPulseProps) {
   }
 
   const generateAIInsight = async () => {
+    if (!llmRateLimiter.canMakeRequest()) {
+      const waitTime = Math.ceil(llmRateLimiter.getTimeUntilNextRequest() / 1000)
+      toast.error('Rate limit reached', {
+        description: `Please wait ${waitTime} seconds before generating more insights.`
+      })
+      return
+    }
+
     setIsGenerating(true)
     
     try {
+      llmRateLimiter.recordRequest()
+      
       const metricsData = metrics.map(m => `${m.label}: ${m.value}${m.unit} (${m.change > 0 ? '+' : ''}${m.change.toFixed(1)}%)`).join(', ')
       
       const promptText = `You are an analytics expert for Tableau Pulse. Analyze these business metrics and generate ONE specific, actionable insight: ${metricsData}
@@ -162,7 +180,7 @@ Generate a JSON object with a single property "insight" that contains an object 
 
 Focus on finding meaningful patterns, correlations, or anomalies that would be valuable to business leaders.`
 
-      const response = await window.spark.llm(promptText, 'gpt-4o', true)
+      const response = await window.spark.llm(promptText, 'gpt-4o-mini', true)
       const parsed = JSON.parse(response)
       
       const newInsight: PulseInsight = {
@@ -180,11 +198,25 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
       toast.success('New Pulse insight generated!', {
         description: newInsight.title
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating insight:', error)
-      toast.error('Failed to generate insight', {
-        description: 'Please try again'
-      })
+      
+      const errorMessage = error?.message || String(error)
+      
+      if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
+        llmRateLimiter.reset()
+        toast.error('API rate limit reached', {
+          description: 'Please wait 60 seconds before generating more insights.'
+        })
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        toast.error('Network error', {
+          description: 'Please check your connection and try again'
+        })
+      } else {
+        toast.error('Failed to generate insight', {
+          description: 'An unexpected error occurred. Please try again later.'
+        })
+      }
     } finally {
       setIsGenerating(false)
     }
@@ -326,7 +358,7 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
             
             <Button
               onClick={generateAIInsight}
-              disabled={isGenerating}
+              disabled={isGenerating || remainingRequests === 0}
               className="flex-shrink-0 gap-2 bg-accent hover:bg-accent/90 text-accent-foreground"
             >
               {isGenerating ? (
@@ -338,6 +370,11 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
                 <>
                   <Sparkle size={18} weight="fill" />
                   Generate Insight
+                  {remainingRequests < 5 && (
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {remainingRequests}/5
+                    </Badge>
+                  )}
                 </>
               )}
             </Button>

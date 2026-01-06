@@ -259,6 +259,22 @@ Configure automated notification rules to send insights and alerts directly to t
 ### 🏢 Workspace Management
 Create and manage multiple workspaces with team sharing, permissions, and activity feeds.
 
+### ⚡ Rate Limiting & Error Handling
+Built-in protection against API rate limits with intelligent request throttling, user-friendly error messages, and graceful degradation. The platform tracks API usage in real-time and displays remaining requests to prevent errors before they occur.
+
+**Key Features:**
+- **Smart Rate Limiter**: Tracks API requests (max 5 per minute) with automatic reset
+- **Visual Indicators**: Shows remaining API quota on Generate Insight buttons
+- **Graceful Errors**: User-friendly messages for rate limits, network issues, and API failures
+- **Automatic Recovery**: Failed requests don't crash the app - error boundaries catch and display helpful fallback UI
+- **Zero Downtime**: Rate limit errors only affect the specific feature, not the entire platform
+
+**Usage Tips:**
+- Watch for the quota indicator (e.g., "3/5") next to Generate Insight buttons
+- If rate limited, wait 60 seconds before trying again
+- The platform will automatically track and reset your quota
+- All non-AI features work without any limitations
+
 ## 🚀 Quick Start
 
 The application is pre-configured and ready to run in your Spark environment.
