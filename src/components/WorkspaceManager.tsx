@@ -88,13 +88,13 @@ export function WorkspaceManager() {
   }, [])
 
   useEffect(() => {
-    if (!workspacesInitialized && (workspaces?.length ?? 0) === 0) {
+    if (!workspacesInitialized) {
       const userName = user?.login || 'You'
       const sampleWorkspaces = generateSampleWorkspaces('user-1', userName)
       setWorkspaces(() => sampleWorkspaces)
       setWorkspacesInitialized(true)
     }
-  }, [workspacesInitialized, workspaces, setWorkspaces, setWorkspacesInitialized, user])
+  }, [workspacesInitialized, setWorkspaces, setWorkspacesInitialized, user])
 
   const [newWorkspace, setNewWorkspace] = useState({
     name: '',
