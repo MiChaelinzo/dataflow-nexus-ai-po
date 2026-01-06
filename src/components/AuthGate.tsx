@@ -84,7 +84,7 @@ export function AuthGate({ children }: AuthGateProps) {
     }
 
     loadUser()
-  }, [])
+  }, [cachedUser, cacheTimestamp, setCachedUser, setCacheTimestamp])
 
   const handleRetry = () => {
     setError(null)

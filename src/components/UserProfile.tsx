@@ -79,7 +79,7 @@ export function UserProfile() {
     }
 
     loadUser()
-  }, [])
+  }, [setStats])
 
   if (!user) {
     return null
