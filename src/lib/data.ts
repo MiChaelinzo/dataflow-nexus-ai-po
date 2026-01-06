@@ -665,3 +665,54 @@ export function generateSampleExportHistory() {
   
   return history.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 }
+
+export function generateFunnelData() {
+  return [
+    { label: 'Website Visitors', value: 125000, color: 'oklch(0.70 0.15 195)' },
+    { label: 'Product Views', value: 87500, color: 'oklch(0.65 0.15 210)' },
+    { label: 'Add to Cart', value: 43750, color: 'oklch(0.60 0.18 225)' },
+    { label: 'Checkout Started', value: 21875, color: 'oklch(0.55 0.20 240)' },
+    { label: 'Purchase Complete', value: 15313, color: 'oklch(0.50 0.22 255)' }
+  ]
+}
+
+export function generateDonutData() {
+  return [
+    { label: 'Desktop', value: 45230, color: 'oklch(0.70 0.15 195)' },
+    { label: 'Mobile', value: 38420, color: 'oklch(0.60 0.18 290)' },
+    { label: 'Tablet', value: 18650, color: 'oklch(0.65 0.15 145)' },
+    { label: 'Other', value: 5847, color: 'oklch(0.70 0.15 70)' }
+  ]
+}
+
+export function generateRadarData() {
+  return [
+    { label: 'Performance', value: 85, maxValue: 100 },
+    { label: 'Quality', value: 92, maxValue: 100 },
+    { label: 'Reliability', value: 78, maxValue: 100 },
+    { label: 'Support', value: 88, maxValue: 100 },
+    { label: 'Features', value: 75, maxValue: 100 },
+    { label: 'Value', value: 82, maxValue: 100 }
+  ]
+}
+
+export function generateEngagementData() {
+  const data: ChartDataPoint[] = []
+  const now = Date.now()
+  const baseValue = 3500
+  
+  for (let i = 0; i < 14; i++) {
+    const date = new Date(now - (14 - i) * 24 * 60 * 60 * 1000)
+    const trend = i * 80
+    const variance = Math.random() * 500 - 250
+    const weekendEffect = date.getDay() === 0 || date.getDay() === 6 ? -400 : 0
+    
+    data.push({
+      label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      date: date.toISOString(),
+      value: Math.round(baseValue + trend + variance + weekendEffect)
+    })
+  }
+  
+  return data
+}

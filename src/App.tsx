@@ -58,6 +58,11 @@ import { SafeErrorBoundary } from '@/components/SafeErrorBoundary'
 import { ExportButton } from '@/components/ExportButton'
 import { DataExportPanel } from '@/components/DataExportPanel'
 import { ScheduledExportManager } from '@/components/ScheduledExportManager'
+import { FunnelChart } from '@/components/FunnelChart'
+import { GaugeChart } from '@/components/GaugeChart'
+import { AreaChart } from '@/components/AreaChart'
+import { RadarChart } from '@/components/RadarChart'
+import { DonutChart } from '@/components/DonutChart'
 
 // Hooks & Libs
 import { useCollaboration } from '@/hooks/use-collaboration'
@@ -65,7 +70,11 @@ import {
   generateMetrics, 
   generateTimeSeriesData, 
   generateCategoryData, 
-  generatePredictionData
+  generatePredictionData,
+  generateFunnelData,
+  generateDonutData,
+  generateRadarData,
+  generateEngagementData
 } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { exportMetrics, exportChartData, exportInsights, ExportFormat } from '@/lib/data-export'
@@ -90,6 +99,10 @@ function App() {
   const timeSeriesData = useMemo(() => generateTimeSeriesData(30), [])
   const categoryData = useMemo(() => generateCategoryData(), [])
   const predictionData = useMemo(() => generatePredictionData(), [])
+  const funnelData = useMemo(() => generateFunnelData(), [])
+  const donutData = useMemo(() => generateDonutData(), [])
+  const radarData = useMemo(() => generateRadarData(), [])
+  const engagementData = useMemo(() => generateEngagementData(), [])
   
   // Collaboration Hook
   const { currentUser, cursors, activeUsers } = useCollaboration({
@@ -476,6 +489,59 @@ function App() {
                       </div>
                     </div>
                   </Card>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, duration: 0.4 }}
+                  className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                >
+                  <FunnelChart 
+                    data={funnelData}
+                    title="Conversion Funnel Analysis"
+                  />
+                  
+                  <DonutChart 
+                    data={donutData}
+                    title="Traffic by Device"
+                    centerLabel="Total Sessions"
+                  />
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9, duration: 0.4 }}
+                  className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+                >
+                  <GaugeChart 
+                    value={12847}
+                    max={15000}
+                    title="Customer Retention"
+                    subtitle="Current active customers vs target"
+                  />
+                  
+                  <div className="lg:col-span-2">
+                    <AreaChart 
+                      data={engagementData}
+                      title="User Engagement Trend (14 Days)"
+                      color="oklch(0.60 0.18 290)"
+                      secondaryColor="oklch(0.70 0.15 195)"
+                    />
+                  </div>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.1, duration: 0.4 }}
+                >
+                  <RadarChart 
+                    data={radarData}
+                    title="Product Performance Metrics"
+                    color="oklch(0.65 0.15 145)"
+                  />
                 </motion.div>
               </TabsContent>
               
