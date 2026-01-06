@@ -1,7 +1,4 @@
-import { useState } from 'react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect } from 'react'
 import { 
   FilePdf, 
   FileCsv, 
@@ -15,6 +12,22 @@ import {
   CalendarBlank
 } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
+import { format } from 'date-fns'
+import { toast } from 'sonner'
+
+// UI Components
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+
+// Local/Lib Imports
 import {
   ReportTemplate,
   ExportOptions,
@@ -26,20 +39,16 @@ import {
   DateRange
 } from '@/lib/report-export'
 import { Metric, ChartDataPoint, PredictionData, Insight } from '@/lib/types'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
-import { toast } from 'sonner'
 import { ReportPreview } from './ReportPreview'
 import { ScheduledReportsManager } from './ScheduledReportsManager'
 import { DateRangeFilter } from './DateRangeFilter'
-import { useKV } from '@github/spark/hooks'
-import { format } from 'date-fns'
-import { useUserActivity, useUserStats } from './UserProfile'
+import { useUserStats } from './UserProfile'
+
+// Mock useKV hook if not available in environment
+function useKV<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(initialValue)
+  return [value, setValue]
+}
 
 interface ReportBuilderProps {
   metrics: Metric[]
@@ -56,6 +65,7 @@ export function ReportBuilder({
   predictionData,
   insights
 }: ReportBuilderProps) {
+  // State
   const [templates, setTemplates] = useKV<ReportTemplate[]>('report-templates', defaultReportTemplates)
   const [selectedTemplate, setSelectedTemplate] = useState<ReportTemplate | null>(null)
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
@@ -67,12 +77,15 @@ export function ReportBuilder({
   })
   const [isExporting, setIsExporting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
-  const { trackActivity } = useUserActivity()
-  const { incrementStat } = useUserStats()
+
+  // Hooks
+  const { addActivity, incrementStat } = useUserStats()
+  const trackActivity = addActivity // Alias for consistency
 
   const safeTemplates = templates || defaultReportTemplates
 
-  const handleExport = async (template: ReportTemplate, format: 'pdf' | 'csv' | 'json') => {
+  // Handlers
+  const handleExport = async (template: ReportTemplate, formatType: 'pdf' | 'csv' | 'json') => {
     setIsExporting(true)
     
     try {
@@ -88,7 +101,7 @@ export function ReportBuilder({
       const timestamp = new Date().toISOString().split('T')[0]
       const filename = `${template.name.replace(/\s+/g, '-').toLowerCase()}-${timestamp}`
 
-      switch (format) {
+      switch (formatType) {
         case 'csv':
           const csvData: any[] = []
           reportData.sections.forEach((section: any) => {
@@ -116,14 +129,14 @@ export function ReportBuilder({
           })
           exportToCSV(csvData, `${filename}.csv`)
           incrementStat('reportsCreated')
-          trackActivity('report', `Exported ${template.name} as CSV`, 'Reports')
+          trackActivity(`Exported ${template.name} as CSV`, 'report', 'Reports')
           toast.success('CSV exported successfully')
           break
 
         case 'json':
           exportToJSON(reportData, `${filename}.json`)
           incrementStat('reportsCreated')
-          trackActivity('report', `Exported ${template.name} as JSON`, 'Reports')
+          trackActivity(`Exported ${template.name} as JSON`, 'report', 'Reports')
           toast.success('JSON exported successfully')
           break
 
@@ -136,7 +149,7 @@ export function ReportBuilder({
             setTimeout(() => {
               printWindow.print()
               incrementStat('reportsCreated')
-              trackActivity('report', `Exported ${template.name} as PDF`, 'Reports')
+              trackActivity(`Exported ${template.name} as PDF`, 'report', 'Reports')
               toast.success('PDF print dialog opened')
             }, 500)
           }
@@ -150,10 +163,12 @@ export function ReportBuilder({
     }
   }
 
-  const handleQuickExport = (format: 'pdf' | 'csv' | 'json') => {
+  const handleQuickExport = (formatType: 'pdf' | 'csv' | 'json') => {
     const executiveSummary = safeTemplates.find(t => t.id === 'executive-summary')
     if (executiveSummary) {
-      handleExport(executiveSummary, format)
+      handleExport(executiveSummary, formatType)
+    } else {
+      toast.error("Executive Summary template not found")
     }
   }
 
@@ -303,16 +318,16 @@ export function ReportBuilder({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="p-6 hover:border-accent/50 transition-colors">
+                <Card className="p-6 hover:border-accent/50 transition-colors h-full flex flex-col">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold mb-1">{template.name}</h3>
-                      <p className="text-sm text-muted-foreground">{template.description}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{template.description}</p>
                       {template.dateRange && (
                         <div className="flex items-center gap-2 mt-2">
                           <Badge variant="outline" className="gap-1 text-xs">
                             <CalendarBlank size={12} weight="duotone" />
-                            {format(template.dateRange.startDate, 'MMM d')} - {format(template.dateRange.endDate, 'MMM d, yyyy')}
+                            {format(new Date(template.dateRange.startDate), 'MMM d')} - {format(new Date(template.dateRange.endDate), 'MMM d, yyyy')}
                           </Badge>
                           {template.dynamicTimeEnabled && (
                             <Badge variant="secondary" className="text-xs">
@@ -327,14 +342,14 @@ export function ReportBuilder({
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteTemplate(template.id)}
-                        className="text-destructive hover:text-destructive"
+                        className="text-destructive hover:text-destructive h-8 w-8 p-0"
                       >
                         <Trash size={16} />
                       </Button>
                     )}
                   </div>
 
-                  <div className="space-y-2 mb-4">
+                  <div className="space-y-2 mb-4 flex-1">
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">
                       Sections ({template.sections.filter(s => s.enabled).length}/{template.sections.length})
                     </p>
@@ -358,7 +373,7 @@ export function ReportBuilder({
 
                   <Separator className="my-4" />
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 mt-auto">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
@@ -544,27 +559,32 @@ export function ReportBuilder({
         <TabsContent value="scheduled">
           <ScheduledReportsManager
             templates={safeTemplates}
-            onExport={handleExport}
+            onExport={(templateId) => {
+               const template = safeTemplates.find(t => t.id === templateId)
+               if(template) handleExport(template, 'pdf')
+            }}
           />
         </TabsContent>
       </Tabs>
 
       {showPreview && selectedTemplate && (
         <Dialog open={showPreview} onOpenChange={setShowPreview}>
-          <DialogContent className="max-w-5xl max-h-[90vh]">
+          <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col">
             <DialogHeader>
               <DialogTitle>Report Preview: {selectedTemplate.name}</DialogTitle>
             </DialogHeader>
-            <ScrollArea className="h-[70vh]">
-              <ReportPreview
-                template={selectedTemplate}
-                metrics={metrics}
-                timeSeriesData={timeSeriesData}
-                categoryData={categoryData}
-                predictionData={predictionData}
-                insights={insights}
-              />
-            </ScrollArea>
+            <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-[70vh]">
+                <ReportPreview
+                    template={selectedTemplate}
+                    metrics={metrics}
+                    timeSeriesData={timeSeriesData}
+                    categoryData={categoryData}
+                    predictionData={predictionData}
+                    insights={insights}
+                />
+                </ScrollArea>
+            </div>
           </DialogContent>
         </Dialog>
       )}

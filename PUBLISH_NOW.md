@@ -2,11 +2,11 @@
 
 **Status**: ✅ **PRODUCTION READY** - 32+ iterations complete
 
-**Time to Submit**: 30-45 minutes total
+---
 
 ---
 
-## ✅ What's Already Complete
+- ✅ **Rate limiting protecti
 
 - ✅ **32+ iterations** of development and refinement
 - ✅ **All features implemented** and tested
@@ -26,13 +26,13 @@
 **Primary URL**: `https://[your-spark-url].app.github.dev`
 
 **Alternative Deployment Options** (backup URLs for reliability):
-- Netlify: Ready to deploy (see step 2 below)
+```
 - Vercel: Ready to deploy (see step 2 below)
-- GitHub Pages: Available as option
+- Show welcome page
 
----
+[0:
 
-## 📋 Final Checklist - Complete These Steps
+- Click Export button to show data export
 
 ### 1️⃣ Record Demo Video (5 minutes) ⏱️ 15 mins
 
@@ -40,25 +40,25 @@
 
 **Script & Timing** (use VIDEO_SCRIPT.md for detailed script):
 
-```
+- E
 [0:00-0:30] Introduction
 - "Hi, I'm [name] and this is the Analytics Intelligence Platform"
 - Show welcome page
-- Click "Get Started"
+- Navigate to "Shared
 
 [0:30-1:00] Dashboard Overview
 - Show real-time metrics with animations
-- Highlight trend indicators and sparklines
+
 - Click Export button to show data export
 
 [1:00-1:30] AI Insights
-- Navigate to "AI Insights" tab
+
 - Click "Generate Insights" button
 - Show generated insights with confidence scores
 - Mention: "Rate limiting prevents API overuse"
 
 [1:30-2:00] Tableau Integration
-- Navigate to "Tableau" tab
+- Highlight prediction metr
 - Show embedded dashboard examples
 - Switch to REST API tab
 - Execute a mock API call and show results
@@ -66,98 +66,98 @@
 [2:00-2:30] Workspaces & Collaboration
 - Navigate to "Workspaces" tab
 - Show pre-configured workspaces
-- Click into one to show dashboards
+- ✅ Show mouse cursor during record
 - Navigate to "Shared" tab to show dashboard sharing
 
 [2:30-3:00] Seasonal Insights
-- Navigate to "Seasonal" tab
+- Vimeo: Upload as "Anyone w
 - Show AI-detected patterns
 - Highlight automated recommendations
 
-[3:00-3:30] Data Governance
+**Why?** The GitHub Spark U
 - Navigate to "Governance" tab
 - Show data quality monitoring
 - Show audit logs
-- Show compliance dashboard
+2. **AI Insights** - Genera
 
-[3:30-4:00] Scheduled Exports
-- Navigate to "Scheduled" tab
-- Show pre-configured export schedules
-- Demonstrate schedule management features
+**Screenshot Tips:**
+- Use 1920x1080 or higher res
+- Save as PNG for best quality
 
-[4:00-4:30] Predictions
-- Navigate to "Predictions" tab
-- Show forecast with confidence intervals
-- Highlight prediction metrics
 
-[4:30-5:00] Closing
-- "This platform demonstrates Tableau Cloud extensibility"
-- "Built with React, TypeScript, and Spark SDK"
-- "Thank you!"
+
+
+# Verify repository status
+
+
+
+git push origin main
+
+- ✅ README.md 
+- ✅
+
+
+1. Go to GitHub repository settings
+3. Click "Change visibility" → "Make public"
+---
+### 5️⃣ Complete Devpost Submission ⏱️
+**Go to**: [Tableau Hackathon Devpo
+
+Analytics Intellige
+
+```
 ```
 
-**Recording Tips:**
-- ✅ Close unnecessary tabs and apps
-- ✅ Use fullscreen mode (F11) to hide browser chrome
-- ✅ Speak clearly at moderate pace
-- ✅ Show mouse cursor during recording
-- ✅ Keep total time under 5 minutes
+An 
 
-**Upload Options:**
-- YouTube: Set to "Unlisted" or "Public"
-- Loom: Share link directly
-- Vimeo: Upload as "Anyone with link"
+• AI-Powered Insights using GPT-4o for automatic pattern discov
+
+• Data Governance with quality monitoring, audit logs, and compliance tracking
+
+
+• Built
+• AI integration vi
+• Persistent 
+
+
+This platform demonstrates how or
+
+- ☑
+
+- Tableau Embedding API (for in
+- Table
+
+- ❌ Salesforce 
+
+```
+```
+#### **Live D
+
+```
+###
+
+
+- React
+- Tableau Cloud
+- OpenAI GPT-4
+
+
+- ☑️ Grand Prize
+
+- ☑️ Bes
+#### **Screens
+
+3. Tableau Integration
+
+
+
+|--
+
+| **RATE_LIMIT_FIXES.md** | Rate l
 
 ---
 
-### 2️⃣ Deploy Backup URLs (Optional but Recommended) ⏱️ 5 mins
-
-**Why?** The GitHub Spark URL sometimes shows 429 errors during high traffic. A backup URL ensures judges can always access your project.
-
-**Option A: Netlify (Easiest - 2 minutes)**
-```bash
-# Build the project
-npm run build
-
-# Go to https://app.netlify.com/drop
-# Drag and drop the 'dist' folder
-# Get your URL: https://[random-name].netlify.app
-```
-
-**Option B: Vercel (With CLI)**
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-npm run build
-vercel --prod
-
-# Follow prompts, get URL: https://[project-name].vercel.app
-```
-
-**Option C: GitHub Pages**
-```bash
-# Add to package.json scripts:
-"deploy": "npm run build && gh-pages -d dist"
-
-# Install gh-pages
-npm install -D gh-pages
-
-# Deploy
-npm run deploy
-
-# Enable Pages in GitHub repo settings
-# URL: https://[username].github.io/[repo-name]
-```
-
----
-
-### 3️⃣ Take Screenshots ⏱️ 5 mins
-
-**Required: 4 high-quality screenshots**
-
-1. **Dashboard Overview** - Main dashboard with metrics and charts
+**Practice this for judges/interviews:**
 2. **AI Insights** - Generated insights with confidence scores
 3. **Tableau Integration** - Embedded dashboard or API showcase
 4. **Workspaces** - Workspace management or shared dashboards
@@ -169,7 +169,7 @@ npm run deploy
 - Save as PNG for best quality
 - Name files: `screenshot-1-dashboard.png`, etc.
 
----
+   
 
 ### 4️⃣ Prepare GitHub Repository ⏱️ 5 mins
 
@@ -322,21 +322,21 @@ Upload your 4 screenshots in this order:
 
 ---
 
-## 💡 Key Talking Points
+
 
 ### **Why This Project Stands Out:**
 
 1. **Production-Ready Quality**
    - Rate limiting prevents API abuse
-   - Error boundaries prevent crashes
+- ✅ **Extensive documentation** for j
    - Comprehensive error handling
-   - 32+ iterations of refinement
+**Now submit it and let the judge
 
-2. **Tableau Integration Depth**
+
    - Real embedded dashboards (not just mockups)
    - REST API examples with live testing
    - Multiple integration patterns demonstrated
-   - Clear documentation for developers
+2. Deploy backup URL: 5 minutes
 
 3. **AI-Powered Intelligence**
    - GPT-4o generates contextual insights
@@ -344,27 +344,27 @@ Upload your 4 screenshots in this order:
    - Predictive forecasting with confidence intervals
    - Natural language semantic layer
 
-4. **Enterprise Features**
+- Video: `VIDEO_SCRIPT.md`
    - Data governance with audit trails
    - Role-based access control
    - Workspace collaboration
-   - Scheduled export automation
+---
 
 5. **User Experience**
    - Professional, polished interface
    - Smooth animations and transitions
    - Mobile-responsive design
-   - Intuitive navigation
 
----
+
+
 
 ## 🎯 Prize Category Alignment
 
-**Grand Prize:**
+
 - Most comprehensive submission with 15+ major features
 - Production-ready code quality
 - Complete Tableau integration showcase
-- Extensive documentation
+
 
 **Best Use of Semantic Modeling:**
 - Business-friendly metric catalog
@@ -378,23 +378,23 @@ Upload your 4 screenshots in this order:
 - Scheduled exports and notifications
 - Collaborative decision-making tools
 
-**Best Data Layer Implementation:**
-- Data quality monitoring (4 dimensions)
-- Comprehensive audit logging
-- Compliance dashboard (SOC 2, GDPR, HIPAA)
-- Data source health tracking
 
-**Best Product Extensibility:**
+- Data quality monitoring (4 dimensions)
+
+- Compliance dashboard (SOC 2, GDPR, HIPAA)
+
+
+
 - Modular component architecture
-- Clear integration patterns
+
 - Extensible workspace system
-- Plugin-ready design
+
 
 ---
 
 ## 🐛 Known Limitations (Be Transparent)
 
-**Rate Limiting:**
+
 - AI insight generation limited to 5 requests per minute
 - Visual indicators show remaining quota
 - User-friendly error messages guide users
@@ -411,7 +411,7 @@ Upload your 4 screenshots in this order:
 **Why This Is Fine:**
 These are expected for a hackathon demo. The code demonstrates how real integrations would work, and the architecture is ready to connect to real Tableau servers with proper credentials.
 
----
+
 
 ## ✅ Pre-Submission Checklist
 
@@ -438,29 +438,29 @@ Before clicking "Submit":
 - Post in relevant Slack channels
 - Add to your portfolio
 
-**Prepare for Judging:**
+
 - Be ready to demo live (bookmark your URL)
 - Practice your elevator pitch
 - Know your key metrics (15+ features, 32+ iterations)
 - Be ready to discuss technical decisions
 
-**Talking Points for Technical Questions:**
+
 - "Why React?" - Modern, component-based, extensive ecosystem
 - "How did you handle rate limiting?" - Smart tracking, visual indicators, graceful errors
 - "Why Spark SDK?" - Rapid development, built-in LLM integration, KV persistence
 - "What's unique?" - Production-ready quality, comprehensive features, polished UX
 
----
 
-## 📊 Project Stats to Highlight
 
-- **32+ iterations** of development
+
+
+
 - **15+ major features** across analytics, AI, governance, and collaboration
-- **6 pre-configured workspaces** with realistic data
+
 - **16 shared dashboards** demonstrating collaboration
-- **5 scheduled exports** showing automation
+
 - **40+ sample activities** in activity feed
-- **20+ documentation files** covering every feature
+
 - **40+ shadcn components** for professional UI
 - **100% TypeScript** for type safety
 - **Zero unhandled errors** with comprehensive error boundaries
@@ -472,7 +472,7 @@ Before clicking "Submit":
 **If the demo URL is down:**
 1. ✅ Use your backup URL (Netlify/Vercel)
 2. ✅ Show the video demo instead
-3. ✅ Share screenshots and GitHub repo
+
 4. ✅ Offer to run locally if judges can wait 2 minutes
 
 **If asked about Tableau credentials:**
@@ -500,23 +500,23 @@ Your project represents:
 
 ---
 
-## ⏰ Submission Timeline
 
-**Total Time: 30-45 minutes**
 
-1. Record video: 15 minutes
+
+
+
 2. Deploy backup URL: 5 minutes
-3. Take screenshots: 5 minutes
+
 4. Prepare GitHub repo: 5 minutes
-5. Complete Devpost form: 15 minutes
+
 
 **🎯 You can do this!**
 
----
 
-**Questions?** Review these docs:
+
+
 - Features: `COMPLETE_FEATURE_LIST.md`
-- Tableau: `TABLEAU_INTEGRATION.md`
+
 - Video: `VIDEO_SCRIPT.md`
 - Deploy: `DEPLOYMENT_GUIDE.md`
 
