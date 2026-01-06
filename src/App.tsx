@@ -63,6 +63,8 @@ import { GaugeChart } from '@/components/GaugeChart'
 import { AreaChart } from '@/components/AreaChart'
 import { RadarChart } from '@/components/RadarChart'
 import { DonutChart } from '@/components/DonutChart'
+import { InteractiveBarChart } from '@/components/InteractiveBarChart'
+import { DrillDownData } from '@/components/DrillDownDialog'
 
 // Hooks & Libs
 import { useCollaboration } from '@/hooks/use-collaboration'
@@ -150,6 +152,103 @@ function App() {
     exportChartData(categoryData, format, { filename, includeHeaders })
     trackActivity(`Exported category data as ${format.toUpperCase()}`, 'report', 'category')
   }
+
+  const handleSegmentDrillDown = (item: any, index: number): DrillDownData | null => {
+    trackActivity(`Drilled down into ${item.label} segment`, 'view', 'drill-down')
+    
+    return {
+      title: `${item.label} - Detailed Analysis`,
+      value: `$${(item.value / 1000).toFixed(1)}K`,
+      category: 'Revenue Segment',
+      breakdown: [
+        { label: 'Q1 Revenue', value: Math.floor(item.value * 0.22), percentage: 22, trend: 'up' as const, change: 5.2 },
+        { label: 'Q2 Revenue', value: Math.floor(item.value * 0.28), percentage: 28, trend: 'up' as const, change: 8.1 },
+        { label: 'Q3 Revenue', value: Math.floor(item.value * 0.25), percentage: 25, trend: 'neutral' as const, change: 0 },
+        { label: 'Q4 Revenue', value: Math.floor(item.value * 0.25), percentage: 25, trend: 'down' as const, change: -2.3 },
+      ],
+      timeSeries: Array.from({ length: 12 }, (_, i) => ({
+        date: new Date(2024, i, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        value: Math.floor(item.value * (0.06 + Math.random() * 0.04))
+      })),
+      metadata: {
+        period: 'Last 12 Months',
+        total: item.value,
+        average: Math.floor(item.value / 12),
+        highest: { label: 'June 2024', value: Math.floor(item.value * 0.12) },
+        lowest: { label: 'January 2024', value: Math.floor(item.value * 0.06) }
+      },
+      insights: [
+        `${item.label} shows consistent growth with ${((Math.random() * 20) + 10).toFixed(1)}% year-over-year increase.`,
+        `Peak performance observed in Q2, driven by seasonal demand and successful marketing campaigns.`,
+        `Opportunity to optimize Q4 performance through targeted promotions and customer engagement strategies.`
+      ]
+    }
+  }
+
+  const handleDonutDrillDown = (segment: any, index: number): DrillDownData | null => {
+    trackActivity(`Drilled down into ${segment.label} device segment`, 'view', 'drill-down')
+    
+    return {
+      title: `${segment.label} Traffic Analysis`,
+      value: segment.value.toLocaleString(),
+      category: 'Device Analytics',
+      breakdown: [
+        { label: 'New Users', value: Math.floor(segment.value * 0.35), percentage: 35, trend: 'up' as const, change: 12.4 },
+        { label: 'Returning Users', value: Math.floor(segment.value * 0.65), percentage: 65, trend: 'up' as const, change: 6.2 },
+      ],
+      timeSeries: Array.from({ length: 14 }, (_, i) => ({
+        date: `Day ${i + 1}`,
+        value: Math.floor(segment.value * (0.05 + Math.random() * 0.05))
+      })),
+      metadata: {
+        period: 'Last 14 Days',
+        total: segment.value,
+        average: Math.floor(segment.value / 14),
+        highest: { label: 'Day 7', value: Math.floor(segment.value * 0.09) },
+        lowest: { label: 'Day 1', value: Math.floor(segment.value * 0.05) }
+      },
+      insights: [
+        `${segment.label} users demonstrate ${segment.percent.toFixed(1)}% of total traffic with strong engagement patterns.`,
+        `Conversion rate on ${segment.label.toLowerCase()} devices is ${(Math.random() * 3 + 2).toFixed(1)}% above platform average.`,
+        `User session duration averages ${(Math.random() * 5 + 3).toFixed(1)} minutes, indicating quality engagement.`
+      ]
+    }
+  }
+
+  const handleFunnelDrillDown = (stage: any, index: number): DrillDownData | null => {
+    trackActivity(`Drilled down into ${stage.label} funnel stage`, 'view', 'drill-down')
+    
+    const conversionRate = index > 0 ? (stage.value / funnelData[index - 1].value) * 100 : 100
+    
+    return {
+      title: `${stage.label} - Conversion Analysis`,
+      value: stage.value.toLocaleString(),
+      category: 'Funnel Stage',
+      breakdown: [
+        { label: 'Direct Traffic', value: Math.floor(stage.value * 0.40), percentage: 40, trend: 'up' as const, change: 7.8 },
+        { label: 'Organic Search', value: Math.floor(stage.value * 0.30), percentage: 30, trend: 'up' as const, change: 11.2 },
+        { label: 'Paid Ads', value: Math.floor(stage.value * 0.20), percentage: 20, trend: 'neutral' as const, change: 0 },
+        { label: 'Referrals', value: Math.floor(stage.value * 0.10), percentage: 10, trend: 'up' as const, change: 15.3 },
+      ],
+      timeSeries: Array.from({ length: 7 }, (_, i) => ({
+        date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short' }),
+        value: Math.floor(stage.value * (0.12 + Math.random() * 0.05))
+      })),
+      metadata: {
+        period: 'Last 7 Days',
+        total: stage.value,
+        average: Math.floor(stage.value / 7),
+        highest: { label: 'Friday', value: Math.floor(stage.value * 0.16) },
+        lowest: { label: 'Monday', value: Math.floor(stage.value * 0.12) }
+      },
+      insights: [
+        `${stage.label} stage converts at ${conversionRate.toFixed(1)}% from the previous step.`,
+        `Optimization potential identified: improving user experience could increase conversions by ${(Math.random() * 10 + 5).toFixed(1)}%.`,
+        `Best performing day: Friday with ${(Math.random() * 20 + 10).toFixed(1)}% above average conversions.`
+      ]
+    }
+  }
+
 
   if (!hasSeenWelcome) {
     return (
@@ -365,51 +464,19 @@ function App() {
                     />
                   </Card>
                   
-                  <Card className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-semibold">Revenue by Segment</h3>
-                      <ExportButton
-                        onExport={handleExportCategoryData}
-                        defaultFilename="revenue-by-segment"
-                        title="Export Segment Data"
-                        description="Export revenue breakdown by business segment"
-                        variant="ghost"
-                        size="sm"
-                        label="Export"
-                      />
-                    </div>
-                    <div className="space-y-4">
-                      {categoryData.map((item, index) => {
-                        const total = categoryData.reduce((sum, d) => sum + d.value, 0)
-                        const percentage = (item.value / total) * 100
-                        
-                        return (
-                          <motion.div
-                            key={item.label}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.5 + index * 0.1 }}
-                            className="space-y-2"
-                          >
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="font-medium">{item.label}</span>
-                              <span className="font-mono text-muted-foreground">
-                                ${(item.value / 1000).toFixed(0)}K
-                              </span>
-                            </div>
-                            <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${percentage}%` }}
-                                transition={{ delay: 0.5 + index * 0.1, duration: 0.6, ease: 'easeOut' }}
-                                className="h-full bg-gradient-to-r from-accent to-purple-500"
-                              />
-                            </div>
-                          </motion.div>
-                        )
-                      })}
-                    </div>
-                  </Card>
+                  <div className="md:col-span-1">
+                    <InteractiveBarChart
+                      data={categoryData.map(item => ({
+                        label: item.label,
+                        value: item.value,
+                        trend: Math.random() > 0.5 ? 'up' as const : 'down' as const,
+                        change: Math.random() * 10
+                      }))}
+                      title="Revenue by Segment"
+                      subtitle="Click any bar to see detailed breakdown"
+                      onBarClick={handleSegmentDrillDown}
+                    />
+                  </div>
                 </motion.div>
                 
                 <motion.div
@@ -500,12 +567,14 @@ function App() {
                   <FunnelChart 
                     data={funnelData}
                     title="Conversion Funnel Analysis"
+                    onStageClick={handleFunnelDrillDown}
                   />
                   
                   <DonutChart 
                     data={donutData}
                     title="Traffic by Device"
                     centerLabel="Total Sessions"
+                    onSegmentClick={handleDonutDrillDown}
                   />
                 </motion.div>
                 

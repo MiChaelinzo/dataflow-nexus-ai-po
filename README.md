@@ -101,6 +101,7 @@ npm run build
 - Live metric cards with trend indicators
 - Interactive time-series charts
 - Revenue segmentation analysis
+- **Interactive drill-down capabilities** - click any chart element for detailed breakdowns
 - Responsive design for all devices
 
 ### 2. Tableau Integration
