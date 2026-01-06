@@ -54,6 +54,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { LiveCursors } from '@/components/LiveCursor'
 import { PresenceIndicator } from '@/components/PresenceIndicator'
 import { MouseTrail } from '@/components/MouseTrail'
+import { SafeErrorBoundary } from '@/components/SafeErrorBoundary'
 import { useCollaboration } from '@/hooks/use-collaboration'
 import { useKV } from '@github/spark/hooks'
 import {
@@ -551,18 +552,20 @@ function App() {
             </TabsContent>
             
             <TabsContent value="activity" className="space-y-6">
-              <Card className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Pulse size={28} weight="duotone" className="text-accent" />
-                  <div>
-                    <h2 className="text-2xl font-bold">Activity Overview</h2>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Real-time workspace activity tracking and analytics
-                    </p>
+              <SafeErrorBoundary>
+                <Card className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Pulse size={28} weight="duotone" className="text-accent" />
+                    <div>
+                      <h2 className="text-2xl font-bold">Activity Overview</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Real-time workspace activity tracking and analytics
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Card>
-              <WorkspaceActivityFeed limit={100} showFilters={true} />
+                </Card>
+                <WorkspaceActivityFeed limit={100} showFilters={true} />
+              </SafeErrorBoundary>
             </TabsContent>
             
             <TabsContent value="export" className="space-y-6">
@@ -594,15 +597,21 @@ function App() {
             </TabsContent>
 
             <TabsContent value="pulse" className="space-y-6">
-              <TableauPulse metrics={metrics} />
+              <SafeErrorBoundary>
+                <TableauPulse metrics={metrics} />
+              </SafeErrorBoundary>
             </TabsContent>
 
             <TabsContent value="insights" className="space-y-6">
-              <InsightGenerator metrics={metrics} />
+              <SafeErrorBoundary>
+                <InsightGenerator metrics={metrics} />
+              </SafeErrorBoundary>
             </TabsContent>
             
             <TabsContent value="seasonal" className="space-y-6">
-              <SeasonalInsights metrics={metrics} />
+              <SafeErrorBoundary>
+                <SeasonalInsights metrics={metrics} />
+              </SafeErrorBoundary>
             </TabsContent>
             
             <TabsContent value="predictions" className="space-y-6">

@@ -159,8 +159,6 @@ export function TableauPulse({ metrics }: TableauPulseProps) {
     setIsGenerating(true)
     
     try {
-      llmRateLimiter.recordRequest()
-      
       const metricsData = metrics.map(m => `${m.label}: ${m.value}${m.unit} (${m.change > 0 ? '+' : ''}${m.change.toFixed(1)}%)`).join(', ')
       
       const promptText = `You are an analytics expert for Tableau Pulse. Analyze these business metrics and generate ONE specific, actionable insight: ${metricsData}
@@ -180,7 +178,10 @@ Generate a JSON object with a single property "insight" that contains an object 
 
 Focus on finding meaningful patterns, correlations, or anomalies that would be valuable to business leaders.`
 
-      const response = await window.spark.llm(promptText, 'gpt-4o-mini', true)
+      const response = await llmRateLimiter.enqueueRequest(async () => {
+        return await window.spark.llm(promptText, 'gpt-4o-mini', true)
+      })
+      
       const parsed = JSON.parse(response)
       
       const newInsight: PulseInsight = {
@@ -204,9 +205,9 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
       const errorMessage = error?.message || String(error)
       
       if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
-        llmRateLimiter.reset()
+        const waitTime = Math.ceil(llmRateLimiter.getTimeUntilNextRequest() / 1000)
         toast.error('API rate limit reached', {
-          description: 'Please wait 60 seconds before generating more insights.'
+          description: `Too many requests. Please wait ${Math.max(waitTime, 30)} seconds before trying again.`
         })
       } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
         toast.error('Network error', {
@@ -219,6 +220,7 @@ Focus on finding meaningful patterns, correlations, or anomalies that would be v
       }
     } finally {
       setIsGenerating(false)
+      setRemainingRequests(llmRateLimiter.getRemainingRequests())
     }
   }
 

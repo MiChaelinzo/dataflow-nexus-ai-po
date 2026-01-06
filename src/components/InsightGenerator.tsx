@@ -39,7 +39,6 @@ export function InsightGenerator({ metrics }: InsightGeneratorProps) {
     setProgress(10)
     
     try {
-      llmRateLimiter.recordRequest()
       setRemainingRequests(llmRateLimiter.getRemainingRequests())
       
       const metricsData = metrics.map(m => ({
@@ -81,7 +80,9 @@ Return format:
 
       setProgress(60)
       
-      const response = await window.spark.llm(promptText, 'gpt-4o-mini', true)
+      const response = await llmRateLimiter.enqueueRequest(async () => {
+        return await window.spark.llm(promptText, 'gpt-4o-mini', true)
+      })
       
       setProgress(80)
       
@@ -112,9 +113,9 @@ Return format:
       const errorMessage = error?.message || String(error)
       
       if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
-        llmRateLimiter.reset()
+        const waitTime = Math.ceil(llmRateLimiter.getTimeUntilNextRequest() / 1000)
         toast.error('API rate limit reached', {
-          description: 'Please wait 60 seconds before generating more insights.'
+          description: `Too many requests. Please wait ${Math.max(waitTime, 30)} seconds before trying again.`
         })
       } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
         toast.error('Network error', {
