@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badg
 import { Badge } from '@/components/ui/badge'
 import { ArrowDown } from '@phosphor-icons/react'
 
@@ -42,59 +42,59 @@ export function FunnelChart({ data, title }: FunnelChartProps) {
                 <div className="flex-1 flex items-center gap-2">
                   <span className="font-mono text-lg font-semibold">
                     {stage.value.toLocaleString()}
-                  </span>
-                  {index > 0 && (
-                    <Badge 
-                      variant="outline" 
-                      className={`text-xs ${dropOff > 50 ? 'border-destructive text-destructive' : 'border-muted-foreground text-muted-foreground'}`}
-                    >
-                      {conversionRate.toFixed(1)}% conversion
-                    </Badge>
+                      cla
+                      {conversion
                   )}
-                </div>
               </div>
-              
               <div className="relative h-14 flex items-center">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${widthPercent}%` }}
-                  transition={{ delay: index * 0.1 + 0.2, duration: 0.6, ease: 'easeOut' }}
-                  className="h-full rounded-lg relative overflow-hidden"
+                  ini
+                  transition={{ delay: index * 0.1 + 0.2, dur
                   style={{ 
-                    background: `linear-gradient(135deg, ${stage.color}, ${stage.color}dd)`,
-                    boxShadow: `0 2px 8px ${stage.color}40`
-                  }}
+                    
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/10" />
-                </motion.div>
-              </div>
+                </mo
               
-              {index < data.length - 1 && (
                 <div className="flex justify-center my-1">
-                  <ArrowDown size={16} weight="bold" className="text-muted-foreground/50" />
                 </div>
-              )}
             </motion.div>
-          )
         })}
-      </div>
       
-      <div className="mt-6 pt-6 border-t border-border">
         <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="text-muted-foreground">Overall Conversion</p>
-            <p className="text-2xl font-bold font-mono mt-1">
+            <p className="t
               {((data[data.length - 1].value / data[0].value) * 100).toFixed(2)}%
-            </p>
           </div>
-          <div>
-            <p className="text-muted-foreground">Total Drop-off</p>
-            <p className="text-2xl font-bold font-mono mt-1 text-destructive">
-              {(data[0].value - data[data.length - 1].value).toLocaleString()}
-            </p>
+            <p class
+              {(d
           </div>
-        </div>
       </div>
-    </Card>
   )
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
