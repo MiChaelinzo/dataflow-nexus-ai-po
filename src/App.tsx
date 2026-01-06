@@ -14,7 +14,8 @@ import {
   SquaresFour,
   ShareNetwork,
   Download,
-  CalendarCheck
+  CalendarCheck,
+  Gear
 } from '@phosphor-icons/react'
 import { Toaster } from 'sonner'
 import { useKV } from '@github/spark/hooks'
@@ -58,6 +59,7 @@ import { SafeErrorBoundary } from '@/components/SafeErrorBoundary'
 import { ExportButton } from '@/components/ExportButton'
 import { DataExportPanel } from '@/components/DataExportPanel'
 import { ScheduledExportManager } from '@/components/ScheduledExportManager'
+import { TableauSettings } from '@/components/TableauSettings'
 import { FunnelChart } from '@/components/FunnelChart'
 import { GaugeChart } from '@/components/GaugeChart'
 import { AreaChart } from '@/components/AreaChart'
@@ -397,6 +399,10 @@ function App() {
                     <FileText size={16} weight="duotone" />
                     <span>Reports</span>
                   </TabsTrigger>
+                  <TabsTrigger value="tableau-settings" className="gap-2 py-2 px-4">
+                    <Gear size={16} weight="duotone" />
+                    <span>Tableau Setup</span>
+                  </TabsTrigger>
                 </TabsList>
               </div>
               
@@ -719,6 +725,10 @@ function App() {
                   predictionData={predictionData}
                   insights={insights || []}
                 />
+              </TabsContent>
+
+              <TabsContent value="tableau-settings" className="space-y-6">
+                <TableauSettings />
               </TabsContent>
             </Tabs>
           </main>
