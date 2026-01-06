@@ -46,9 +46,6 @@ import { UserProfile, useUserActivity, useUserStats } from '@/components/UserPro
 import { WorkspaceManager } from '@/components/WorkspaceManager'
 import { SharedDashboards } from '@/components/SharedDashboards'
 import { WorkspaceActivityFeed } from '@/components/WorkspaceActivityFeed'
-import { ActivityHeatmap } from '@/components/ActivityHeatmap'
-import { TrendComparisonCharts } from '@/components/TrendComparisonCharts'
-import { ActivityForecast } from '@/components/ActivityForecast'
 import { generateMetrics, generateTimeSeriesData, generateCategoryData, generatePredictionData, generateSampleActivities } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { WorkspaceActivity } from '@/components/WorkspaceActivityFeed'
@@ -554,9 +551,17 @@ function App() {
             </TabsContent>
             
             <TabsContent value="activity" className="space-y-6">
-              <ActivityForecast />
-              <ActivityHeatmap />
-              <TrendComparisonCharts />
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Pulse size={28} weight="duotone" className="text-accent" />
+                  <div>
+                    <h2 className="text-2xl font-bold">Activity Overview</h2>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Real-time workspace activity tracking and analytics
+                    </p>
+                  </div>
+                </div>
+              </Card>
               <WorkspaceActivityFeed limit={100} showFilters={true} />
             </TabsContent>
             
