@@ -7,15 +7,12 @@ import {
   Shield, 
   Function, 
   Users, 
-  ChartLineUp, 
   VideoCamera, 
   FileText, 
-  ArrowsLeftRight, 
   SunHorizon, 
   House, 
   SquaresFour,
   ShareNetwork,
-  Pulse,
   Download,
   CalendarCheck
 } from '@phosphor-icons/react'
@@ -45,21 +42,15 @@ import { InsightGenerator } from '@/components/InsightGenerator'
 import { DataGovernance } from '@/components/DataGovernance'
 import { SemanticLayer } from '@/components/SemanticLayer'
 import { CollaborationHub } from '@/components/CollaborationHub'
-import { TableauEmbed } from '@/components/TableauEmbed'
-import { TableauAPIShowcase } from '@/components/TableauAPIShowcase'
-import { TableauPulse } from '@/components/TableauPulse'
 import { SessionReplay } from '@/components/SessionReplay'
 import { MentionNotifications } from '@/components/MentionNotifications'
 import { ReportBuilder } from '@/components/ReportBuilder'
-import { ComparisonReport } from '@/components/ComparisonReport'
-import { YoYComparison } from '@/components/YoYComparison'
 import { SeasonalInsights } from '@/components/SeasonalInsights'
 import { WelcomePage } from '@/components/WelcomePage'
 import { AuthGate } from '@/components/AuthGate'
 import { UserProfile, useUserStats } from '@/components/UserProfile'
 import { WorkspaceManager } from '@/components/WorkspaceManager'
 import { SharedDashboards } from '@/components/SharedDashboards'
-import { WorkspaceActivityFeed, WorkspaceActivity } from '@/components/WorkspaceActivityFeed'
 import { LiveCursors } from '@/components/LiveCursor'
 import { PresenceIndicator } from '@/components/PresenceIndicator'
 import { MouseTrail } from '@/components/MouseTrail'
@@ -74,8 +65,7 @@ import {
   generateMetrics, 
   generateTimeSeriesData, 
   generateCategoryData, 
-  generatePredictionData, 
-  generateSampleActivities 
+  generatePredictionData
 } from '@/lib/data'
 import { Insight } from '@/lib/types'
 import { exportMetrics, exportChartData, exportInsights, ExportFormat } from '@/lib/data-export'
@@ -94,16 +84,12 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [user, setUser] = useState<{ login: string; avatarUrl?: string; isOwner?: boolean } | null>(null)
   
-  // Activity State
-  const [activitiesInitialized, setActivitiesInitialized] = useKV<boolean>('activities-initialized', false)
-  const [activities, setActivities] = useKV<WorkspaceActivity[]>('workspace-activities', [])
+  const [insights] = useKV<Insight[]>('analytics-insights', [])
   
-  // Data State
   const metrics = useMemo(() => generateMetrics(), [])
   const timeSeriesData = useMemo(() => generateTimeSeriesData(30), [])
   const categoryData = useMemo(() => generateCategoryData(), [])
   const predictionData = useMemo(() => generatePredictionData(), [])
-  const [insights] = useKV<Insight[]>('analytics-insights', [])
   
   // Collaboration Hook
   const { currentUser, cursors, activeUsers } = useCollaboration({
@@ -128,14 +114,6 @@ function App() {
     }
     loadUser()
   }, [])
-  
-  useEffect(() => {
-    if (!activitiesInitialized) {
-      const sampleActivities = generateSampleActivities()
-      setActivities(sampleActivities)
-      setActivitiesInitialized(true)
-    }
-  }, [activitiesInitialized, setActivities, setActivitiesInitialized])
   
   useEffect(() => {
     trackActivity(`Viewed ${activeTab} tab`, 'view', activeTab)
@@ -275,18 +253,6 @@ function App() {
                     <CalendarCheck size={16} weight="duotone" />
                     <span>Scheduled</span>
                   </TabsTrigger>
-                  <TabsTrigger value="activity" className="gap-2 py-2 px-4">
-                    <Pulse size={16} weight="duotone" />
-                    <span>Activity</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="tableau" className="gap-2 py-2 px-4">
-                    <ChartLineUp size={16} weight="duotone" />
-                    <span>Tableau</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="pulse" className="gap-2 py-2 px-4">
-                    <Sparkle size={16} weight="duotone" />
-                    <span>Pulse</span>
-                  </TabsTrigger>
                   <TabsTrigger value="insights" className="gap-2 py-2 px-4">
                     <Sparkle size={16} weight="duotone" />
                     <span>AI Insights</span>
@@ -318,10 +284,6 @@ function App() {
                   <TabsTrigger value="reports" className="gap-2 py-2 px-4">
                     <FileText size={16} weight="duotone" />
                     <span>Reports</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="comparison" className="gap-2 py-2 px-4">
-                    <ArrowsLeftRight size={16} weight="duotone" />
-                    <span>Compare</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -525,23 +487,6 @@ function App() {
                 <SharedDashboards />
               </TabsContent>
               
-              <TabsContent value="activity" className="space-y-6">
-                <SafeErrorBoundary>
-                  <Card className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Pulse size={28} weight="duotone" className="text-accent" />
-                      <div>
-                        <h2 className="text-2xl font-bold">Activity Overview</h2>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Real-time workspace activity tracking and analytics
-                        </p>
-                      </div>
-                    </div>
-                    <WorkspaceActivityFeed limit={100} showFilters={true} />
-                  </Card>
-                </SafeErrorBoundary>
-              </TabsContent>
-              
               <TabsContent value="export" className="space-y-6">
                 <DataExportPanel
                   metrics={metrics}
@@ -553,27 +498,6 @@ function App() {
               
               <TabsContent value="scheduled" className="space-y-6">
                 <ScheduledExportManager />
-              </TabsContent>
-              
-              <TabsContent value="tableau" className="space-y-6">
-                <Tabs defaultValue="embed" className="w-full">
-                  <TabsList className="grid w-full max-w-md grid-cols-2">
-                    <TabsTrigger value="embed">Dashboard Embeds</TabsTrigger>
-                    <TabsTrigger value="api">REST API</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="embed" className="mt-6">
-                    <TableauEmbed />
-                  </TabsContent>
-                  <TabsContent value="api" className="mt-6">
-                    <TableauAPIShowcase />
-                  </TabsContent>
-                </Tabs>
-              </TabsContent>
-
-              <TabsContent value="pulse" className="space-y-6">
-                <SafeErrorBoundary>
-                  <TableauPulse metrics={metrics} />
-                </SafeErrorBoundary>
               </TabsContent>
 
               <TabsContent value="insights" className="space-y-6">
@@ -660,26 +584,6 @@ function App() {
                   predictionData={predictionData}
                   insights={insights || []}
                 />
-              </TabsContent>
-
-              <TabsContent value="comparison" className="space-y-6">
-                <Tabs defaultValue="period" className="w-full">
-                  <TabsList className="grid w-full max-w-md grid-cols-2">
-                    <TabsTrigger value="period">Period Comparison</TabsTrigger>
-                    <TabsTrigger value="yoy">Year-over-Year</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="period" className="mt-6">
-                    <ComparisonReport
-                      metrics={metrics}
-                      timeSeriesData={timeSeriesData}
-                    />
-                  </TabsContent>
-                  
-                  <TabsContent value="yoy" className="mt-6">
-                    <YoYComparison />
-                  </TabsContent>
-                </Tabs>
               </TabsContent>
             </Tabs>
           </main>
