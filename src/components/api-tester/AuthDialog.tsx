@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { AuthConfig } from '@/App'
 import { toast } from 'sonner'
-
-  open: boolean
-  onAuth: (config: AuthConfig)
-}
+import { Loader2 } from 'lucide-react'
 
 interface AuthDialogProps {
   open: boolean
@@ -24,52 +24,62 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
   const handleSignIn = async () => {
     if (!serverUrl || !username || !password) {
       toast.error('Please fill in all required fields')
-          si
+      return
     }
 
     setIsLoading(true)
 
     try {
-          'Content-Type': 'appl
+      const apiVersion = '3.21'
       const signInUrl = `${serverUrl}/api/${apiVersion}/auth/signin`
       
       const requestBody = {
-        siteId,
+        credentials: {
+          name: username,
+          password: password,
+          site: {
+            contentUrl: siteName || ''
+          }
+        }
       }
-      onAuth(authConfig)
-      setPassword
-    } catch (error) {
-      toast
-      set
-  }
 
-      <DialogContent className="sm:max-w-md">
-          <DialogTitle>
-            Sign i
-        </DialogHeader>
-        <div className="space-y-4 py-4
-          
-              id="server-url"
+      const response = await fetch(signInUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        let errorMessage = 'Authentication failed'
         
+        try {
+          const errorJson = JSON.parse(errorText)
+          errorMessage = errorJson.error?.summary || errorJson.error?.detail || errorMessage
+        } catch {
+          errorMessage = `Authentication failed: ${response.status} ${response.statusText}`
+        }
+        
+        throw new Error(errorMessage)
+      }
 
-          </div>
-          <div className="space-y-2">
-            <Input
-       
+      const data = await response.json()
+      
+      const token = data.credentials?.token
+      const siteId = data.credentials?.site?.id
+      
+      if (!token) {
+        throw new Error('No authentication token received from server')
+      }
 
-            />
-
-            <Label htmlFor="username">Username 
-
-              value
-              disabled={isLoading}
-       
-
-            <Input
-              type
-              val
-              onK
-            />
+      const authConfig: AuthConfig = {
+        serverUrl,
+        siteName,
+        username,
+        token,
         siteId,
         tokenExpiry: Date.now() + (240 * 60 * 1000)
       }
@@ -142,17 +152,17 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
               disabled={isLoading}
             />
           </div>
+        </div>
 
-
-
+        <DialogFooter className="gap-2">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >
-
+            Cancel
           </Button>
-
+          <Button
             onClick={handleSignIn}
             disabled={isLoading}
           >
@@ -160,13 +170,13 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing In...
-
+              </>
             ) : (
-
+              'Sign In'
             )}
           </Button>
-        </div>
-
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
-
+  )
 }
