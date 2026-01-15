@@ -103,7 +103,7 @@ export function SharedDashboards() {
     const loadUser = async () => {
       try {
         const userInfo = await window.spark.user()
-        setUser(userInfo)
+        setUser({ login: userInfo.login, avatarUrl: userInfo.avatarUrl || '' })
       } catch (error) {
         console.error('Failed to load user:', error)
       }

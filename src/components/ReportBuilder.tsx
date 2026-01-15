@@ -559,9 +559,8 @@ export function ReportBuilder({
         <TabsContent value="scheduled">
           <ScheduledReportsManager
             templates={safeTemplates}
-            onExport={(templateId) => {
-               const template = safeTemplates.find(t => t.id === templateId)
-               if(template) handleExport(template, 'pdf')
+            onExport={(template, format) => {
+               handleExport(template, format)
             }}
           />
         </TabsContent>

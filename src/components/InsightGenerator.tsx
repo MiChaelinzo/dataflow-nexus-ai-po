@@ -2,19 +2,18 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkle, ArrowClockwise, Warning, CheckCircle } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { useKV } from '@github/spark/hooks'
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 
-// Assumed internal imports - keeping these but ensuring types match logic
 import { InsightCard } from './InsightCard'
 import { ExportButton } from './ExportButton'
 import { exportInsights, ExportFormat } from '@/lib/data-export'
 import { llmRateLimiter } from '@/lib/rate-limiter'
 
-// Importing the custom hook from the previous UserProfile component
 import { useUserStats } from './UserProfile'
 
 // ------------------------------------------------------------------
@@ -40,29 +39,9 @@ export interface Insight {
   saved: boolean
 }
 
-// Global declaration for the window.spark object
-declare global {
-  interface Window {
-    spark: {
-      llm: (prompt: string, model: string, json?: boolean) => Promise<string>
-    }
-  }
-}
-
-// Simple Mock for useKV if @github/spark/hooks isn't available locally
-// In a real Spark environment, keep the original import.
-function useKV<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const [value, setValue] = useState<T>(initialValue)
-  return [value, setValue]
-}
-
 interface InsightGeneratorProps {
   metrics: Metric[]
 }
-
-// ------------------------------------------------------------------
-// Main Component
-// ------------------------------------------------------------------
 
 export function InsightGenerator({ metrics }: InsightGeneratorProps) {
   const [insights, setInsights] = useKV<Insight[]>('analytics-insights', [])
@@ -132,9 +111,8 @@ Return format:
 
       setProgress(60)
       
-      // Execute LLM Request
       const makeRequest = async () => {
-        return await window.spark.llm(promptText, 'gpt-4o-mini', true)
+        return await (window.spark as any).llm(promptText, 'gpt-4o-mini', true)
       }
 
       const response = llmRateLimiter 

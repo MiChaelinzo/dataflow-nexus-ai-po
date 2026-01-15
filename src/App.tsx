@@ -87,15 +87,6 @@ import {
 import { Insight } from '@/lib/types'
 import { exportMetrics, exportChartData, exportInsights, ExportFormat } from '@/lib/data-export'
 
-// Type augmentations
-declare global {
-  interface Window {
-    spark: {
-      user: () => Promise<{ login: string; avatarUrl: string; isOwner: boolean }>
-    }
-  }
-}
-
 function App() {
   const [hasSeenWelcome, setHasSeenWelcome] = useKV<boolean>('welcome-page-seen', false)
   const [activeTab, setActiveTab] = useState('dashboard')

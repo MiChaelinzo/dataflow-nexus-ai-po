@@ -7,10 +7,10 @@ import { motion } from 'framer-motion'
 import { GithubLogo, Sparkle, ChartBar, Shield, Users, TrendUp, Warning } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
 
-interface UserInfo {
-  avatarUrl: string
-  email: string
-  id: number
+interface SparkUserInfo {
+  avatarUrl?: string
+  email?: string
+  id?: number
   isOwner: boolean
   login: string
 }
@@ -24,11 +24,11 @@ const MAX_RETRIES = 3
 const INITIAL_RETRY_DELAY = 1000
 
 export function AuthGate({ children }: AuthGateProps) {
-  const [user, setUser] = useState<UserInfo | null>(null)
+  const [user, setUser] = useState<SparkUserInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [retryCount, setRetryCount] = useState(0)
-  const [cachedUser, setCachedUser] = useKV<UserInfo | null>('cached-user-info', null)
+  const [cachedUser, setCachedUser] = useKV<SparkUserInfo | null>('cached-user-info', null)
   const [cacheTimestamp, setCacheTimestamp] = useKV<number>('user-cache-timestamp', 0)
 
   useEffect(() => {
@@ -46,8 +46,14 @@ export function AuthGate({ children }: AuthGateProps) {
       while (currentRetry <= MAX_RETRIES) {
         try {
           const userInfo = await window.spark.user()
-          setUser(userInfo)
-          setCachedUser(userInfo)
+          const sparkUser: SparkUserInfo = {
+            avatarUrl: userInfo.avatarUrl,
+            email: userInfo.email,
+            isOwner: userInfo.isOwner || false,
+            login: userInfo.login
+          }
+          setUser(sparkUser)
+          setCachedUser(sparkUser)
           setCacheTimestamp(Date.now())
           setError(null)
           setLoading(false)
