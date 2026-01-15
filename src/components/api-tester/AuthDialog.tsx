@@ -1,21 +1,21 @@
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { AuthConfig } from '@/App'
+import { Button } from '@/components/ui/butto
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
 
-interface AuthDialogProps {
   open: boolean
-  onOpenChange: (open: boolean) => void
-  onAuth: (config: AuthConfig) => void
-  currentAuth: AuthConfig | null
+  onAuth: (config: AuthConfig)
 }
 
-export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDialogProps) {
-  const [serverUrl, setServerUrl] = useState(currentAuth?.serverUrl || '')
+  const [siteName, setSiteN
+  const [passwo
+
+    if (!serverUrl || !username || !pa
+      return
+
+
+      const apiVersion = '3.21'
+      
   const [siteName, setSiteName] = useState(currentAuth?.siteName || '')
   const [username, setUsername] = useState(currentAuth?.username || '')
   const [password, setPassword] = useState('')
@@ -24,62 +24,62 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
   const handleSignIn = async () => {
     if (!serverUrl || !username || !password) {
       toast.error('Please fill in all required fields')
-      return
+      })
     }
 
     setIsLoading(true)
 
     try {
-      const apiVersion = '3.21'
+        
       const signInUrl = `${serverUrl}/api/${apiVersion}/auth/signin`
       
       const requestBody = {
-        credentials: {
-          name: username,
-          password: password,
-          site: {
-            contentUrl: siteName || ''
-          }
-        }
-      }
-
-      const response = await fetch(signInUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        let errorMessage = 'Authentication failed'
-        
-        try {
-          const errorJson = JSON.parse(errorText)
-          errorMessage = errorJson.error?.summary || errorJson.error?.detail || errorMessage
-        } catch {
-          errorMessage = `Authentication failed: ${response.status} ${response.statusText}`
-        }
-        
-        throw new Error(errorMessage)
-      }
-
-      const data = await response.json()
       
-      const token = data.credentials?.token
-      const siteId = data.credentials?.site?.id
-      
-      if (!token) {
-        throw new Error('No authentication token received from server')
-      }
+        throw new Error('
 
-      const authConfig: AuthConfig = {
-        serverUrl,
-        siteName,
+        serverUrl
         username,
-        token,
+        sit
+      }
+      }
+
+    } catch (error) {
+      toast.error(error
+      setIsLoading
+  }
+  return (
+      <Dia
+          <DialogTitle>Tableau Authentica
+        
+
+        <div className="s
+            <Label htmlFor="server-url">Server 
+              id="server-url"
+        
+             
+          </div>
+          <div className="space-y-2">
+            <Inpu
+              placeholder="Leave empty for default site"
+         
+        
+
+       
+
+              value={username}
+      
+          </div>
+          <div className="space-y-2">
+      
+              type=
+              value={password}
+       
+
+        </div>
+        <DialogFoo
+            varia
+            disab
+            Ca
         siteId,
         tokenExpiry: Date.now() + (240 * 60 * 1000)
       }
@@ -152,17 +152,17 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
               disabled={isLoading}
             />
           </div>
-        </div>
 
-        <DialogFooter className="gap-2">
+
+
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >
-            Cancel
+
           </Button>
-          <Button
+
             onClick={handleSignIn}
             disabled={isLoading}
           >
@@ -170,13 +170,13 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing In...
-              </>
+
             ) : (
-              'Sign In'
+
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
+
+
     </Dialog>
-  )
+
 }
