@@ -1,14 +1,14 @@
 # Planning Guide
 
-An enterprise-grade analytics intelligence platform built to showcase the future of Tableau integration - combining real-time metrics, AI-powered insights, semantic data modeling, and actionable analytics in a stunning visual interface with GitHub authentication and personalized user dashboards. This platform demonstrates extensibility, data governance, workflow integration, and secure user-specific experiences that align with Tableau's Developer Platform vision.
+A next-generation analytics intelligence platform featuring AI-powered insights, natural language queries, real-time collaboration, automated reporting, and intelligent data exploration - designed to make analytics accessible, actionable, and delightful for modern teams.
 
 **Experience Qualities**:
-1. **Enterprise-Ready** - Professional-grade analytics with robust data governance, security controls, audit trails, and authenticated user access
-2. **Intelligent** - AI-enhanced insights with semantic understanding surface automatically, guiding users to what matters most
-3. **Actionable** - Data integrated into workflows with smart recommendations, alerts, and automated actions
+1. **Intuitive & Conversational** - Natural language queries and AI assistance make complex analytics accessible to everyone
+2. **Proactive & Intelligent** - Smart anomaly detection, predictive alerts, and automated insights surface opportunities before you look for them
+3. **Collaborative & Connected** - Real-time team presence, smart notifications, and seamless workflow integration keep everyone aligned
 
 **Complexity Level**: Complex Application (advanced functionality, likely with multiple views)
-This is a comprehensive analytics platform featuring GitHub authentication, personalized user dashboards, real-time analytics dashboards, AI-powered insights, semantic data layer, predictive modeling, data governance controls, collaboration features, and custom dashboard builder - demonstrating enterprise-grade analytics capabilities suitable for Tableau integration.
+This is a modern analytics platform featuring smart anomaly detection, natural language queries, automated insight delivery, customizable alert systems, intelligent goal tracking, AI-powered data explanations, real-time collaboration tools, and advanced export capabilities - demonstrating what users actually want from analytics tools.
 
 ## Essential Features
 
@@ -130,6 +130,41 @@ This is a comprehensive analytics platform featuring GitHub authentication, pers
 - **Trigger**: User clicks export button on any dashboard section or navigates to dedicated Export Center tab
 - **Progression**: Click export → Select format (CSV/Excel) → Customize filename → Toggle headers → Confirm → Download file instantly → Track export in activity log
 - **Success criteria**: Sub-second export generation, properly formatted files with headers, support for all data types, intuitive export dialog with format preview
+
+### Smart Anomaly Detection & Alerts
+- **Functionality**: AI-powered real-time anomaly detection that identifies unusual patterns, spikes, dips, and outliers across all metrics with customizable alert thresholds and smart notifications
+- **Purpose**: Proactively alerts users to significant changes before they become problems, reducing manual monitoring effort
+- **Trigger**: Background monitoring detects anomaly → Alert badge appears → User clicks to view details
+- **Progression**: View anomaly feed → See detected patterns → Review historical context → Adjust alert sensitivity → Acknowledge or investigate → Set custom thresholds → Configure notification preferences
+- **Success criteria**: Accurate anomaly detection with <5% false positives, instant alerts, clear explanation of what changed and why it matters
+
+### Natural Language Query Interface
+- **Functionality**: Conversational analytics powered by AI - type questions in plain English and get instant visual answers with relevant charts and insights
+- **Purpose**: Democratizes data access by removing technical barriers - anyone can explore data naturally
+- **Trigger**: User clicks search bar or presses "/" hotkey → Types question in natural language
+- **Progression**: Type query ("What were sales last quarter?") → AI interprets intent → Generates relevant visualization → Display answer with context → Offer follow-up suggestions → Refine query → Export results
+- **Success criteria**: 90%+ accurate query interpretation, sub-2s response time, relevant visualizations generated automatically, conversation history maintained
+
+### Smart Goal Tracking Dashboard
+- **Functionality**: Set business goals with targets, track progress in real-time, get AI-powered recommendations to hit targets, and celebrate achievements with visual progress indicators
+- **Purpose**: Keeps teams focused on what matters most and motivated by visualizing progress toward objectives
+- **Trigger**: User navigates to Goals tab → Creates new goal or views existing goals
+- **Progression**: Define goal (name, target, deadline) → Select metrics to track → Set milestones → View progress dashboard → Receive trajectory predictions → Get AI recommendations → Adjust strategies → Achieve goal → View celebration animation
+- **Success criteria**: Intuitive goal creation, real-time progress tracking, accurate trajectory predictions, actionable AI recommendations, motivating visual feedback
+
+### Interactive Data Stories & Narratives
+- **Functionality**: AI generates narrative explanations of data trends, creates guided walkthroughs of insights, and produces shareable data stories with key takeaways
+- **Purpose**: Makes complex data accessible through storytelling - helps non-technical stakeholders understand insights quickly
+- **Trigger**: User clicks "Explain this data" or "Create story" on any visualization
+- **Progression**: Select data → Request narrative → AI analyzes patterns → Generates story with key points → Highlight significant trends → Add annotations → Customize narrative → Share story with team
+- **Success criteria**: Clear, accurate narratives generated in <3s, highlights most important insights, shareable format, engaging presentation
+
+### Advanced Filtering & Comparison Tools
+- **Functionality**: Powerful multi-dimensional filtering with date range comparisons, segment analysis, cohort comparison, and side-by-side metric analysis
+- **Purpose**: Enables deep data exploration and comparative analysis without requiring technical skills
+- **Trigger**: User opens filter panel or clicks "Compare" on any metric
+- **Progression**: Open filters → Select dimensions (date, category, segment) → Apply filters → View updated visualizations → Compare time periods → Analyze segments → Save filter combinations → Export filtered views
+- **Success criteria**: Instant filter application (<100ms), intuitive filter UI, unlimited filter combinations, saved filter presets, visual comparison tools
 
 ## Edge Case Handling
 

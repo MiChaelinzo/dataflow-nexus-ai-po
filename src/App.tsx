@@ -15,7 +15,9 @@ import {
   ShareNetwork,
   Download,
   CalendarCheck,
-  Gear
+  Gear,
+  Lightning,
+  ChatCircleDots
 } from '@phosphor-icons/react'
 import { Toaster } from 'sonner'
 import { useKV } from '@github/spark/hooks'
@@ -67,6 +69,8 @@ import { RadarChart } from '@/components/RadarChart'
 import { DonutChart } from '@/components/DonutChart'
 import { InteractiveBarChart } from '@/components/InteractiveBarChart'
 import { DrillDownData } from '@/components/DrillDownDialog'
+import { AnomalyDetector } from '@/components/AnomalyDetector'
+import { NaturalLanguageQuery } from '@/components/NaturalLanguageQuery'
 
 // Hooks & Libs
 import { useCollaboration } from '@/hooks/use-collaboration'
@@ -276,7 +280,7 @@ function App() {
                     animate={{ opacity: 1, x: 0 }}
                     className="text-2xl font-bold tracking-tight"
                   >
-                    Analytics Intelligence Platform
+                    Next-Gen Analytics Platform
                   </motion.h1>
                   <motion.p 
                     initial={{ opacity: 0, x: -20 }}
@@ -284,7 +288,7 @@ function App() {
                     transition={{ delay: 0.1 }}
                     className="text-sm text-muted-foreground"
                   >
-                    Real-time insights powered by AI and advanced analytics
+                    Smart anomaly detection, AI insights, and collaborative analytics
                   </motion.p>
                 </div>
                 
@@ -374,6 +378,14 @@ function App() {
                   <TabsTrigger value="seasonal" className="gap-2 py-2 px-4">
                     <SunHorizon size={16} weight="duotone" />
                     <span>Seasonal</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="anomalies" className="gap-2 py-2 px-4">
+                    <Lightning size={16} weight="duotone" />
+                    <span>Anomalies</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="nlquery" className="gap-2 py-2 px-4">
+                    <ChatCircleDots size={16} weight="duotone" />
+                    <span>Ask Data</span>
                   </TabsTrigger>
                   <TabsTrigger value="predictions" className="gap-2 py-2 px-4">
                     <TrendUp size={16} weight="duotone" />
@@ -650,6 +662,18 @@ function App() {
               <TabsContent value="seasonal" className="space-y-6">
                 <SafeErrorBoundary>
                   <SeasonalInsights metrics={metrics} />
+                </SafeErrorBoundary>
+              </TabsContent>
+              
+              <TabsContent value="anomalies" className="space-y-6">
+                <SafeErrorBoundary>
+                  <AnomalyDetector metrics={metrics} />
+                </SafeErrorBoundary>
+              </TabsContent>
+              
+              <TabsContent value="nlquery" className="space-y-6">
+                <SafeErrorBoundary>
+                  <NaturalLanguageQuery />
                 </SafeErrorBoundary>
               </TabsContent>
               
