@@ -62,6 +62,7 @@ import { ExportButton } from '@/components/ExportButton'
 import { DataExportPanel } from '@/components/DataExportPanel'
 import { ScheduledExportManager } from '@/components/ScheduledExportManager'
 import { TableauSettings } from '@/components/TableauSettings'
+import { TableauViewer } from '@/components/TableauViewer'
 import { FunnelChart } from '@/components/FunnelChart'
 import { GaugeChart } from '@/components/GaugeChart'
 import { AreaChart } from '@/components/AreaChart'
@@ -402,6 +403,10 @@ function App() {
                     <FileText size={16} weight="duotone" />
                     <span>Reports</span>
                   </TabsTrigger>
+                  <TabsTrigger value="tableau" className="gap-2 py-2 px-4">
+                    <ChartBar size={16} weight="duotone" />
+                    <span>Tableau</span>
+                  </TabsTrigger>
                   <TabsTrigger value="tableau-settings" className="gap-2 py-2 px-4">
                     <Gear size={16} weight="duotone" />
                     <span>Tableau Setup</span>
@@ -740,6 +745,10 @@ function App() {
                   predictionData={predictionData}
                   insights={insights || []}
                 />
+              </TabsContent>
+
+              <TabsContent value="tableau" className="space-y-6">
+                <TableauViewer />
               </TabsContent>
 
               <TabsContent value="tableau-settings" className="space-y-6">

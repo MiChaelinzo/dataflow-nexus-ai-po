@@ -166,6 +166,13 @@ This is a modern analytics platform featuring smart anomaly detection, natural l
 - **Progression**: Open filters → Select dimensions (date, category, segment) → Apply filters → View updated visualizations → Compare time periods → Analyze segments → Save filter combinations → Export filtered views
 - **Success criteria**: Instant filter application (<100ms), intuitive filter UI, unlimited filter combinations, saved filter presets, visual comparison tools
 
+### Tableau Dashboard Viewer Integration
+- **Functionality**: Embedded Tableau dashboard viewer with credential management, multi-dashboard support, quick-view mode for instant previews, fullscreen viewing, refresh controls, and export capabilities
+- **Purpose**: Seamlessly integrates Tableau's powerful visualization platform within the analytics hub, allowing users to view and interact with their Tableau dashboards without leaving the application
+- **Trigger**: User configures Tableau credentials in Settings → Adds dashboard URLs → Navigates to Tableau tab to view embedded dashboards
+- **Progression**: Configure server credentials → Add dashboard URLs → Select dashboard from gallery → View interactive embed → Toggle fullscreen → Refresh data → Export image → Share link → Use quick-view for instant previews
+- **Success criteria**: Secure credential storage, responsive iframe embedding, smooth dashboard switching, fullscreen mode works seamlessly, sample Tableau Public dashboards available for testing
+
 ## Edge Case Handling
 
 - **Empty State**: Beautiful onboarding with sample data preloaded, clear CTAs to explore features
