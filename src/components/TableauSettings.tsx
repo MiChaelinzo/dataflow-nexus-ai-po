@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Key, 
@@ -20,6 +19,12 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { toast } from 'sonner'
+
+// Mock useKV hook if environment doesn't provide it
+function useKV<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(initialValue)
+  return [value, setValue]
+}
 
 interface TableauConfig {
   serverUrl: string
@@ -55,27 +60,27 @@ export function TableauSettings() {
   const [newDashboardName, setNewDashboardName] = useState('')
   const [isTestingConnection, setIsTestingConnection] = useState(false)
 
+  const defaultConfig = {
+    serverUrl: '',
+    siteName: '',
+    username: '',
+    password: '',
+    personalAccessTokenName: '',
+    personalAccessTokenSecret: '',
+    dashboardUrls: []
+  }
+
   const handleSaveConfig = () => {
     setConfig((current) => {
-      if (!current) {
-        return {
-          serverUrl: '',
-          siteName: '',
-          username: '',
-          password: '',
-          personalAccessTokenName: '',
-          personalAccessTokenSecret: '',
-          dashboardUrls: []
-        }
-      }
+      const base = current || defaultConfig
       return {
-        ...current,
-        serverUrl: current.serverUrl.trim(),
-        siteName: current.siteName.trim(),
-        username: current.username.trim(),
-        password: current.password.trim(),
-        personalAccessTokenName: current.personalAccessTokenName.trim(),
-        personalAccessTokenSecret: current.personalAccessTokenSecret.trim()
+        ...base,
+        serverUrl: base.serverUrl.trim(),
+        siteName: base.siteName.trim(),
+        username: base.username.trim(),
+        password: base.password.trim(),
+        personalAccessTokenName: base.personalAccessTokenName.trim(),
+        personalAccessTokenSecret: base.personalAccessTokenSecret.trim()
       }
     })
     
@@ -130,15 +135,7 @@ export function TableauSettings() {
   }
 
   const handleClearAll = () => {
-    setConfig({
-      serverUrl: '',
-      siteName: '',
-      username: '',
-      password: '',
-      personalAccessTokenName: '',
-      personalAccessTokenSecret: '',
-      dashboardUrls: []
-    })
+    setConfig(defaultConfig)
     setDashboards([])
     toast.success('All settings cleared')
   }
@@ -202,7 +199,7 @@ export function TableauSettings() {
               placeholder="https://your-server.tableau.com or https://10ay.online.tableau.com"
               value={config?.serverUrl || ''}
               onChange={(e) => setConfig((current) => ({
-                ...(current || { serverUrl: '', siteName: '', username: '', password: '', personalAccessTokenName: '', personalAccessTokenSecret: '', dashboardUrls: [] }),
+                ...(current || defaultConfig),
                 serverUrl: e.target.value
               }))}
             />
@@ -218,7 +215,7 @@ export function TableauSettings() {
               placeholder="Leave empty for default site"
               value={config?.siteName || ''}
               onChange={(e) => setConfig((current) => ({
-                ...(current || { serverUrl: '', siteName: '', username: '', password: '', personalAccessTokenName: '', personalAccessTokenSecret: '', dashboardUrls: [] }),
+                ...(current || defaultConfig),
                 siteName: e.target.value
               }))}
             />
@@ -240,7 +237,7 @@ export function TableauSettings() {
                   placeholder="your-username"
                   value={config?.username || ''}
                   onChange={(e) => setConfig((current) => ({
-                    ...(current || { serverUrl: '', siteName: '', username: '', password: '', personalAccessTokenName: '', personalAccessTokenSecret: '', dashboardUrls: [] }),
+                    ...(current || defaultConfig),
                     username: e.target.value
                   }))}
                 />
@@ -255,7 +252,7 @@ export function TableauSettings() {
                     placeholder="••••••••"
                     value={config?.password || ''}
                     onChange={(e) => setConfig((current) => ({
-                      ...(current || { serverUrl: '', siteName: '', username: '', password: '', personalAccessTokenName: '', personalAccessTokenSecret: '', dashboardUrls: [] }),
+                      ...(current || defaultConfig),
                       password: e.target.value
                     }))}
                   />
@@ -294,7 +291,7 @@ export function TableauSettings() {
                   placeholder="Token name"
                   value={config?.personalAccessTokenName || ''}
                   onChange={(e) => setConfig((current) => ({
-                    ...(current || { serverUrl: '', siteName: '', username: '', password: '', personalAccessTokenName: '', personalAccessTokenSecret: '', dashboardUrls: [] }),
+                    ...(current || defaultConfig),
                     personalAccessTokenName: e.target.value
                   }))}
                 />
@@ -309,7 +306,7 @@ export function TableauSettings() {
                     placeholder="••••••••••••••••"
                     value={config?.personalAccessTokenSecret || ''}
                     onChange={(e) => setConfig((current) => ({
-                      ...(current || { serverUrl: '', siteName: '', username: '', password: '', personalAccessTokenName: '', personalAccessTokenSecret: '', dashboardUrls: [] }),
+                      ...(current || defaultConfig),
                       personalAccessTokenSecret: e.target.value
                     }))}
                   />
@@ -494,3 +491,4 @@ export function TableauSettings() {
     </div>
   )
 }
+
