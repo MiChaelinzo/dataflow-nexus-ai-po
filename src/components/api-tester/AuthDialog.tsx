@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { AuthConfig } from '@/App'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+
+  open: boolean
+  onAuth: (config: AuthConfig)
+}
 
 interface AuthDialogProps {
   open: boolean
@@ -24,52 +24,52 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
   const handleSignIn = async () => {
     if (!serverUrl || !username || !password) {
       toast.error('Please fill in all required fields')
-      return
+          si
     }
 
     setIsLoading(true)
 
     try {
-      const apiVersion = '3.21'
+          'Content-Type': 'appl
       const signInUrl = `${serverUrl}/api/${apiVersion}/auth/signin`
       
       const requestBody = {
-        credentials: {
-          name: username,
-          password: password,
-          site: {
-            contentUrl: siteName || ''
-          }
-        }
+        siteId,
       }
+      onAuth(authConfig)
+      setPassword
+    } catch (error) {
+      toast
+      set
+  }
 
-      const response = await fetch(signInUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      })
+      <DialogContent className="sm:max-w-md">
+          <DialogTitle>
+            Sign i
+        </DialogHeader>
+        <div className="space-y-4 py-4
+          
+              id="server-url"
+        
 
-      if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(`Authentication failed: ${response.status} ${response.statusText}\n${errorText}`)
-      }
+          </div>
+          <div className="space-y-2">
+            <Input
+       
 
-      const data = await response.json()
-      const token = data.credentials?.token
-      const siteId = data.credentials?.site?.id
+            />
 
-      if (!token) {
-        throw new Error('No authentication token received')
-      }
+            <Label htmlFor="username">Username 
 
-      const authConfig: AuthConfig = {
-        serverUrl,
-        siteName,
-        username,
-        token,
+              value
+              disabled={isLoading}
+       
+
+            <Input
+              type
+              val
+              onK
+            />
         siteId,
         tokenExpiry: Date.now() + (240 * 60 * 1000)
       }
@@ -142,17 +142,17 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
               disabled={isLoading}
             />
           </div>
-        </div>
 
-        <div className="flex justify-end gap-3">
+
+
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >
-            Cancel
+
           </Button>
-          <Button
+
             onClick={handleSignIn}
             disabled={isLoading}
           >
@@ -160,13 +160,13 @@ export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDial
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing In...
-              </>
+
             ) : (
-              'Sign In'
+
             )}
           </Button>
         </div>
-      </DialogContent>
+
     </Dialog>
-  )
+
 }
