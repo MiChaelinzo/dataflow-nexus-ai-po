@@ -47,14 +47,8 @@ interface UserStats {
   lastVisit: number
 }
 
-// Global declaration for the window.spark object
-declare global {
-  interface Window {
-    spark: {
-      user: () => Promise<UserInfo>
-    }
-  }
-}
+// Global declaration for the window.spark object (removed duplicate)
+// This declaration already exists in the global spark runtime SDK
 
 // ------------------------------------------------------------------
 // Mock Hooks (Replace with your actual imports if available)

@@ -78,7 +78,7 @@ export function WorkspaceManager() {
     const loadUser = async () => {
       try {
         const userInfo = await window.spark.user()
-        setUser({ login: userInfo.login, avatarUrl: userInfo.avatarUrl || '' })
+        setUser({ login: userInfo?.login || '', avatarUrl: userInfo?.avatarUrl || '' })
       } catch (error) {
         console.error('Failed to load user:', error)
       }

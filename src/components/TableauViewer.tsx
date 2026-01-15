@@ -1,35 +1,29 @@
-import { useState, useEffect } from 'react'
-import { 
+import { useState } from 'react'
+import { useKV } from '@github/spark/hooks'
 import { 
   ChartBar, 
-  Arrows
+  ArrowsClockwise,
+  Play,
   Pause, 
   ArrowsOut, 
   ArrowsIn,
-} from '@ph
-import { Card, CardCo
-import {
-import { A
-import { Label } fr
-import 
-interface Tabl
-  s
-  password: string
-  personalAccessTokenSecret: string
-}
-interface DashboardEntry {
-  url: string
-}
-export function TableauViewer() {
-    serverUrl: '',
-    username: '',
-    personalAccessTokenName: '
-    dashboardUrls: []
+  X,
+  LinkSimple,
+  Warning
+} from '@phosphor-icons/react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Separator } from '@/components/ui/separator'
+import { motion, AnimatePresence } from 'framer-motion'
 
-  const [selectedDashboar
-  const [isLoading,
-  const [refreshKe
-  const isConfigur
+interface TableauConfig {
+  serverUrl: string
+  siteName: string
+  username: string
   password: string
   personalAccessTokenName: string
   personalAccessTokenSecret: string
@@ -62,70 +56,27 @@ export function TableauViewer() {
 
   const isConfigured = config && config.serverUrl && (config.username || config.personalAccessTokenName)
 
-
-      <motion.div
-        initial={{ opacity: 0 }}
-     
-          isFullscreen ? 'fixed inset
-
-          <div className="absolute inset
-              <div cla
-            </div>
-        )}
-        <iframe
-          className="w-full h-full border-0"
-          onLoad={() => setIsLoading(false)}
-        
-        <div
-   
-
-          >
-              <ArrowsIn size={16} weigh
-              <ArrowsOut size={16} weight="bold" />
-      
-   
-
-              className="shad
-            >
-            </Button>
-        </div>
-    )
-
-    r
-   
-
-          </p>
-
-          <Warning size={18} weight
-          <AlertDescription className="space-y-3">
-        
-            
-     
-
-                const tabsList = document.q
-                  .find(el => e
-                  (table
-              }}
-     
-            </Button>
-        </Alert>
-        <Card className="p-12">
-            <div className="w-20 h-20 rounded-full bg-p
-      
-   
-
-              </p>
-          </div>
-
+  const handleQuickView = () => {
+    if (!quickViewUrl) return
+    
+    const tempDashboard: DashboardEntry = {
+      id: `temp-${Date.now()}`,
+      url: quickViewUrl,
+      name: 'Quick View Dashboard'
+    }
+    setSelectedDashboard(tempDashboard)
+    setIsLoading(true)
   }
-  re
-      <motion.div
-        animate={{ opacit
-        <div className="flex items-center justify
-            <h2 className="text-2xl font
-              View and interact with embedded Tableau dashboa
-          </div>
-     
+
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1)
+    setIsLoading(true)
+  }
+
+  const renderDashboardEmbed = () => {
+    if (!selectedDashboard) return null
+
+    const embedUrl = selectedDashboard.url
 
     return (
       <motion.div
@@ -179,265 +130,131 @@ export function TableauViewer() {
             </Button>
           )}
         </div>
-                   
-     
-   
+      </motion.div>
+    )
+  }
 
-                      
-            
-                        >
-             
-                        <Button
-                          size="sm"
-                          className="gap-2"
-              
-              
+  if (!isConfigured) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <Alert>
+          <Warning size={18} weight="duotone" />
+          <AlertDescription className="space-y-3">
+            <p>Tableau Server is not configured. Please configure your connection in Settings.</p>
+            <Button
+              size="sm"
+              className="gap-2"
+              onClick={() => {
+                const tabsList = document.querySelector('[role="tablist"]')
+                const settingsTab = Array.from(tabsList?.querySelectorAll('[role="tab"]') || [])
+                  .find(el => el.textContent?.includes('Settings'))
+                ;(settingsTab as HTMLElement)?.click()
+              }}
+            >
+              Go to Settings
+            </Button>
+          </AlertDescription>
+        </Alert>
+        <Card className="p-12 mt-6">
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <ChartBar size={40} weight="duotone" className="text-primary" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Tableau Dashboard Viewer</h3>
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                View and interact with embedded Tableau dashboards directly in this interface
+              </p>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+    )
+  }
 
-                  <CardContent className="p-0">
-                      {renderDashboardEmbed()}
-                  </CardContent>
-              )}
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Tableau Dashboard Viewer</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            View and interact with embedded Tableau dashboards
+          </p>
+        </div>
+        {selectedDashboard && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-2"
+            onClick={handleRefresh}
+          >
+            <ArrowsClockwise size={16} weight="bold" />
+            Refresh
+          </Button>
+        )}
+      </div>
+
+      <Tabs defaultValue="quick-view" className="w-full">
+        <TabsList>
+          <TabsTrigger value="quick-view">Quick View</TabsTrigger>
+          <TabsTrigger value="saved">Saved Dashboards</TabsTrigger>
+          <TabsTrigger value="samples">Sample Dashboards</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="quick-view" className="space-y-6">
+          {selectedDashboard && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">{selectedDashboard.name}</CardTitle>
+                <CardDescription>Viewing: {selectedDashboard.url}</CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <AnimatePresence mode="wait">
+                  {renderDashboardEmbed()}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
           )}
 
           <Card>
-              <C
-                Ent
+            <CardHeader>
+              <CardTitle className="text-base">Quick View URL</CardTitle>
+              <CardDescription>
+                Enter a Tableau dashboard URL to view it instantly
+              </CardDescription>
             </CardHeader>
-              <div clas
-                  <Label htmlFor="quick-url" className="sr-only">Dashboar
-                    id="quick-
+            <CardContent>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Label htmlFor="quick-url" className="sr-only">Dashboard URL</Label>
+                  <Input
+                    id="quick-url"
+                    placeholder="https://public.tableau.com/views/..."
                     value={quickViewUrl}
+                    onChange={(e) => setQuickViewUrl(e.target.value)}
                     onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
                         handleQuickView()
+                      }
                     }}
+                  />
                 </div>
-                 
-                
-
-                <LinkIcon size={18} weight="duoto
-                <AlertDescriptio
-                  Mak
+                <Button onClick={handleQuickView} className="gap-2">
+                  <Play size={16} weight="fill" />
+                  View
+                </Button>
+              </div>
+              
+              <Alert className="mt-4">
+                <LinkSimple size={18} weight="duotone" />
+                <AlertDescription>
+                  Make sure the dashboard URL allows embedding and is publicly accessible.
+                </AlertDescription>
               </Alert>
-              {s
-
-                    {renderDash
-                </div>
-            </CardContent>
-
-            <CardH
-              <Ca
-            <CardContent className="space-y-3">
-                {
-                  url: 'https://public.tableau.com/views/COVID-19Cases_1678861200739
-                {
-                  
-                {
-                
-              ]
-            
-     
-   
-
-          
-                    }
-                 
-                >
-                  {sample.name}
-       
-          </Card>
-      </Tabs>
-  )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+              
               {selectedDashboard?.id.startsWith('temp-') && (
                 <div className="pt-4">
                   <Separator className="mb-6" />
@@ -448,7 +265,61 @@ export function TableauViewer() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
 
+        <TabsContent value="saved" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Saved Dashboards</CardTitle>
+              <CardDescription>Your configured Tableau dashboards</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {(dashboards || []).length === 0 ? (
+                <div className="text-center py-12">
+                  <ChartBar size={48} weight="duotone" className="text-muted-foreground mx-auto mb-4" />
+                  <p className="text-sm text-muted-foreground">No dashboards saved yet</p>
+                  <Button size="sm" variant="outline" className="mt-4">
+                    Add Dashboard
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid gap-3">
+                  {(dashboards || []).map((dashboard) => (
+                    <Button
+                      key={dashboard.id}
+                      variant="outline"
+                      size="lg"
+                      className="w-full justify-start gap-3"
+                      onClick={() => {
+                        setSelectedDashboard(dashboard)
+                        setIsLoading(true)
+                      }}
+                    >
+                      <ChartBar size={20} weight="duotone" />
+                      {dashboard.name}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {selectedDashboard && !selectedDashboard.id.startsWith('temp-') && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">{selectedDashboard.name}</CardTitle>
+                <CardDescription>Viewing: {selectedDashboard.url}</CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <AnimatePresence mode="wait">
+                  {renderDashboardEmbed()}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="samples" className="space-y-6">
           <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
             <CardHeader>
               <CardTitle className="text-base">Sample Tableau Public Dashboards</CardTitle>
@@ -491,6 +362,20 @@ export function TableauViewer() {
               ))}
             </CardContent>
           </Card>
+
+          {selectedDashboard?.id.startsWith('temp-') && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">{selectedDashboard.name}</CardTitle>
+                <CardDescription>Viewing: {selectedDashboard.url}</CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <AnimatePresence mode="wait">
+                  {renderDashboardEmbed()}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

@@ -98,7 +98,7 @@ function App() {
 
       setCurrentResponse(apiResponse)
       
-      setRequestHistory((prev) => [request, ...prev.slice(0, 49)])
+      setRequestHistory((prev) => [request, ...(prev || []).slice(0, 49)])
       
     } catch (error) {
       const duration = performance.now() - startTime
@@ -196,10 +196,10 @@ function App() {
           <div className="lg:col-span-1 space-y-6">
             <EndpointTemplates 
               onSelectTemplate={handleLoadTemplate}
-              authConfig={authConfig}
+              authConfig={authConfig || null}
             />
             <RequestHistory
-              history={requestHistory}
+              history={requestHistory || []}
               onLoadRequest={handleLoadFromHistory}
               onClearHistory={handleClearHistory}
             />
@@ -215,7 +215,7 @@ function App() {
               <TabsContent value="builder">
                 <RequestBuilder
                   request={currentRequest}
-                  authConfig={authConfig}
+                  authConfig={authConfig || null}
                   isLoading={isLoading}
                   onSendRequest={handleSendRequest}
                   onRequestChange={setCurrentRequest}
@@ -237,7 +237,7 @@ function App() {
         open={showAuthDialog}
         onOpenChange={setShowAuthDialog}
         onAuth={handleAuth}
-        currentAuth={authConfig}
+        currentAuth={authConfig || null}
       />
 
       <Toaster />

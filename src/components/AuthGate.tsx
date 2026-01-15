@@ -47,10 +47,10 @@ export function AuthGate({ children }: AuthGateProps) {
         try {
           const userInfo = await window.spark.user()
           const sparkUser: SparkUserInfo = {
-            avatarUrl: userInfo.avatarUrl,
-            email: userInfo.email,
-            isOwner: userInfo.isOwner || false,
-            login: userInfo.login
+            avatarUrl: userInfo?.avatarUrl || '',
+            email: userInfo?.email || '',
+            isOwner: userInfo?.isOwner || false,
+            login: userInfo?.login || ''
           }
           setUser(sparkUser)
           setCachedUser(sparkUser)

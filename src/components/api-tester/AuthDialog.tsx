@@ -1,21 +1,21 @@
 import { useState } from 'react'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/butto
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import type { AuthConfig } from '@/App'
 
+interface AuthDialogProps {
   open: boolean
-  onAuth: (config: AuthConfig)
+  onOpenChange: (open: boolean) => void
+  onAuth: (config: AuthConfig) => void
+  currentAuth: AuthConfig | null
 }
 
-  const [siteName, setSiteN
-  const [passwo
-
-    if (!serverUrl || !username || !pa
-      return
-
-
-      const apiVersion = '3.21'
-      
+export function AuthDialog({ open, onOpenChange, onAuth, currentAuth }: AuthDialogProps) {
+  const [serverUrl, setServerUrl] = useState(currentAuth?.serverUrl || '')
   const [siteName, setSiteName] = useState(currentAuth?.siteName || '')
   const [username, setUsername] = useState(currentAuth?.username || '')
   const [password, setPassword] = useState('')
@@ -24,62 +24,51 @@ import { toast } from 'sonner'
   const handleSignIn = async () => {
     if (!serverUrl || !username || !password) {
       toast.error('Please fill in all required fields')
-      })
+      return
     }
 
     setIsLoading(true)
 
     try {
-        
+      const apiVersion = '3.21'
       const signInUrl = `${serverUrl}/api/${apiVersion}/auth/signin`
       
       const requestBody = {
-      
-        throw new Error('
+        credentials: {
+          name: username,
+          password: password,
+          site: {
+            contentUrl: siteName || ''
+          }
+        }
+      }
 
-        serverUrl
+      const response = await fetch(signInUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      })
+
+      if (!response.ok) {
+        throw new Error(`Authentication failed: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      const token = data.credentials?.token
+      const siteId = data.credentials?.site?.id
+
+      if (!token) {
+        throw new Error('No authentication token received')
+      }
+
+      const authConfig: AuthConfig = {
+        serverUrl,
+        siteName: siteName || '',
         username,
-        sit
-      }
-      }
-
-    } catch (error) {
-      toast.error(error
-      setIsLoading
-  }
-  return (
-      <Dia
-          <DialogTitle>Tableau Authentica
-        
-
-        <div className="s
-            <Label htmlFor="server-url">Server 
-              id="server-url"
-        
-             
-          </div>
-          <div className="space-y-2">
-            <Inpu
-              placeholder="Leave empty for default site"
-         
-        
-
-       
-
-              value={username}
-      
-          </div>
-          <div className="space-y-2">
-      
-              type=
-              value={password}
-       
-
-        </div>
-        <DialogFoo
-            varia
-            disab
-            Ca
+        token,
         siteId,
         tokenExpiry: Date.now() + (240 * 60 * 1000)
       }
@@ -152,17 +141,17 @@ import { toast } from 'sonner'
               disabled={isLoading}
             />
           </div>
+        </div>
 
-
-
+        <DialogFooter>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >
-
+            Cancel
           </Button>
-
+          <Button
             onClick={handleSignIn}
             disabled={isLoading}
           >
@@ -170,13 +159,13 @@ import { toast } from 'sonner'
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing In...
-
+              </>
             ) : (
-
+              'Sign In'
             )}
           </Button>
-
-
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
-
+  )
 }

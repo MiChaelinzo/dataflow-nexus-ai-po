@@ -1,35 +1,35 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/but
-import { Switch } from '@/components/ui/switc
+import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
+import { Badge } from '@/components/ui/badge'
+import { Label } from '@/components/ui/label'
+import { Slider } from '@/components/ui/slider'
 import { 
+  TrendUp,
   TrendDown, 
-  Warning, 
+  Warning,
+  Lightning,
+  BellRinging,
   Sliders,
-  X
-import { us
+  X,
+  Check
+} from '@phosphor-icons/react'
+import { useKV } from '@github/spark/hooks'
+import { toast } from 'sonner'
+import { motion, AnimatePresence } from 'framer-motion'
 
+interface Metric {
   id: string
-  value: nu
-  trend: 'up' |
-
-  id: st
-  m
-  severity: 'critical' | 'warn
-  expectedValue: number
-  timestamp: number
-
-}
-interface An
-}
-interface Alert
-  sensitivity: n
-  notifyOnWarning: boolean
+  label: string
+  value: number
+  change: number
+  trend: 'up' | 'down' | 'neutral'
 }
 
-  const [alertSetti
-    sensitiv
-    notifyOnWarnin
+interface Anomaly {
+  id: string
+  metricId: string
   metricLabel: string
   type: 'spike' | 'drop' | 'unusual_pattern' | 'threshold_breach'
   severity: 'critical' | 'warning' | 'info'
@@ -46,9 +46,17 @@ interface AnomalyDetectorProps {
   metrics: Metric[]
 }
 
+interface AlertSettings {
+  enabled: boolean
+  sensitivity: number
+  notifyOnCritical: boolean
+  notifyOnWarning: boolean
+  notifyOnInfo: boolean
+}
+
 export function AnomalyDetector({ metrics }: AnomalyDetectorProps) {
   const [anomalies, setAnomalies] = useKV<Anomaly[]>('detected-anomalies', [])
-  const [alertSettings, setAlertSettings] = useKV('anomaly-alert-settings', {
+  const [alertSettings, setAlertSettings] = useKV<AlertSettings>('anomaly-alert-settings', {
     enabled: true,
     sensitivity: 50,
     notifyOnCritical: true,
@@ -58,11 +66,11 @@ export function AnomalyDetector({ metrics }: AnomalyDetectorProps) {
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
-    if (!alertSettings.enabled) return
+    if (!alertSettings?.enabled) return
 
     const detectAnomalies = () => {
       const newAnomalies: Anomaly[] = []
-      const sensitivityFactor = alertSettings.sensitivity / 50
+      const sensitivityFactor = (alertSettings?.sensitivity || 50) / 50
 
       metrics.forEach((metric) => {
         const changeThreshold = 15 * sensitivityFactor
@@ -106,16 +114,16 @@ export function AnomalyDetector({ metrics }: AnomalyDetectorProps) {
 
       if (newAnomalies.length > 0) {
         setAnomalies((current) => {
-          const existingIds = new Set(current.map(a => a.metricId))
+          const existingIds = new Set((current || []).map(a => a.metricId))
           const trulyNew = newAnomalies.filter(a => !existingIds.has(a.metricId))
-          return [...current, ...trulyNew]
+          return [...(current || []), ...trulyNew]
         })
 
         newAnomalies.forEach(anomaly => {
           if (
-            (anomaly.severity === 'critical' && alertSettings.notifyOnCritical) ||
-            (anomaly.severity === 'warning' && alertSettings.notifyOnWarning) ||
-            (anomaly.severity === 'info' && alertSettings.notifyOnInfo)
+            (anomaly.severity === 'critical' && alertSettings?.notifyOnCritical) ||
+            (anomaly.severity === 'warning' && alertSettings?.notifyOnWarning) ||
+            (anomaly.severity === 'info' && alertSettings?.notifyOnInfo)
           ) {
             toast.error(`Anomaly Detected: ${anomaly.metricLabel}`, {
               description: anomaly.explanation
@@ -132,18 +140,18 @@ export function AnomalyDetector({ metrics }: AnomalyDetectorProps) {
 
   const handleAcknowledge = (anomalyId: string) => {
     setAnomalies((current) =>
-      current.map(a => a.id === anomalyId ? { ...a, acknowledged: true } : a)
+      (current || []).map(a => a.id === anomalyId ? { ...a, acknowledged: true } : a)
     )
     toast.success('Anomaly acknowledged')
   }
 
   const handleDismiss = (anomalyId: string) => {
-    setAnomalies((current) => current.filter(a => a.id !== anomalyId))
+    setAnomalies((current) => (current || []).filter(a => a.id !== anomalyId))
     toast.success('Anomaly dismissed')
   }
 
-  const unacknowledgedAnomalies = anomalies.filter(a => !a.acknowledged)
-  const acknowledgedAnomalies = anomalies.filter(a => a.acknowledged)
+  const unacknowledgedAnomalies = (anomalies || []).filter(a => !a.acknowledged)
+  const acknowledgedAnomalies = (anomalies || []).filter(a => a.acknowledged)
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -214,20 +222,26 @@ export function AnomalyDetector({ metrics }: AnomalyDetectorProps) {
                   <p className="text-sm text-muted-foreground">Configure anomaly detection preferences</p>
                 </div>
                 <Switch
-                  checked={alertSettings.enabled}
+                  checked={alertSettings?.enabled || false}
                   onCheckedChange={(checked) => 
-                    setAlertSettings((current) => ({ ...current, enabled: checked }))
+                    setAlertSettings((current) => ({ 
+                      ...(current || { sensitivity: 50, notifyOnCritical: true, notifyOnWarning: false, notifyOnInfo: false }),
+                      enabled: checked 
+                    }))
                   }
                 />
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm">Detection Sensitivity: {alertSettings.sensitivity}%</Label>
+                  <Label className="text-sm">Detection Sensitivity: {alertSettings?.sensitivity || 50}%</Label>
                   <Slider
-                    value={[alertSettings.sensitivity]}
+                    value={[alertSettings?.sensitivity || 50]}
                     onValueChange={([value]) => 
-                      setAlertSettings((current) => ({ ...current, sensitivity: value }))
+                      setAlertSettings((current) => ({ 
+                        ...(current || { enabled: true, notifyOnCritical: true, notifyOnWarning: false, notifyOnInfo: false }),
+                        sensitivity: value 
+                      }))
                     }
                     min={10}
                     max={100}
@@ -242,172 +256,165 @@ export function AnomalyDetector({ metrics }: AnomalyDetectorProps) {
                 <div className="space-y-3 pt-4 border-t border-border">
                   <Label className="text-sm font-semibold">Notification Preferences</Label>
                   
-                        setAlertSettings((current) => ({
+                  <div className="flex items-center justify-between">
                     <Label htmlFor="notify-critical" className="text-sm cursor-pointer">
                       Critical anomalies
                     </Label>
                     <Switch
                       id="notify-critical"
-                      checked={alertSettings.notifyOnCritical}
+                      checked={alertSettings?.notifyOnCritical || false}
                       onCheckedChange={(checked) =>
-                        setAlertSettings((current) => ({ ...current, notifyOnCritical: checked }))
+                        setAlertSettings((current) => ({ 
+                          ...(current || { enabled: true, sensitivity: 50, notifyOnWarning: false, notifyOnInfo: false }),
+                          notifyOnCritical: checked 
+                        }))
                       }
                     />
                   </div>
 
                   <div className="flex items-center justify-between">
+                    <Label htmlFor="notify-warning" className="text-sm cursor-pointer">
+                      Warning anomalies
+                    </Label>
                     <Switch
-                      checked={alertSet
-                        setA
-                          s
-                          notifyOnWarning
+                      id="notify-warning"
+                      checked={alertSettings?.notifyOnWarning || false}
+                      onCheckedChange={(checked) =>
+                        setAlertSettings((current) => ({ 
+                          ...(current || { enabled: true, sensitivity: 50, notifyOnCritical: true, notifyOnInfo: false }),
+                          notifyOnWarning: checked 
                         }))
-                    />
-
-                    <La
-                    </
-                      id
-
-                          enabled: current?.enabled || true,
-                          notifyOnCritical: current?.notifyOnCritical || true,
-                          notifyOnIn
                       }
+                    />
                   </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="notify-info" className="text-sm cursor-pointer">
+                      Info anomalies
+                    </Label>
+                    <Switch
+                      id="notify-info"
+                      checked={alertSettings?.notifyOnInfo || false}
+                      onCheckedChange={(checked) =>
+                        setAlertSettings((current) => ({ 
+                          ...(current || { enabled: true, sensitivity: 50, notifyOnCritical: true, notifyOnWarning: false }),
+                          notifyOnInfo: checked 
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
               </div>
+            </Card>
           </motion.div>
+        )}
       </AnimatePresence>
+
       {unacknowledgedAnomalies.length === 0 && acknowledgedAnomalies.length === 0 && (
-          <div classNam
-              <Check s
+        <Card className="p-12">
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto">
+              <Check size={32} weight="bold" className="text-success" />
+            </div>
             <div>
-              <p class
-              </p>
+              <p className="font-semibold text-lg">All Clear</p>
+              <p className="text-sm text-muted-foreground">No anomalies detected in your metrics</p>
+            </div>
           </div>
+        </Card>
       )}
-      {una
-          <h3 className=
 
-                key={anomaly.id}
-                animate={{ opacity: 1, x: 0
-              >
-                  <div className="flex items-start gap-4">
-                      {getTypeIcon(anomaly.type)}
-                  
-                 
-                            <h4 className="font-semibold">{anomaly.metr
-                              {anomaly.severity}
-                          </div>
-                  
-                  
-                
-               
-        
-
-                      </div>
-                        <Button
-                          variant="outline"
-                          onClick={()
-                          <Check size={14} />
-                        <
-                          size="
-                          className="gap-2"
-                        >
-                          Dismiss
-               
-                  </div>
-              </motion.div>
-          </div>
-      )}
-      {acknowledgedAnomali
-          <h3 className="text-lg font-semibold text-
-            {acknowledgedAnomalies.map((anomaly) => (
-                <div className="flex items-start
+      {unacknowledgedAnomalies.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Active Alerts</h3>
+          {unacknowledgedAnomalies.map((anomaly) => (
+            <motion.div
+              key={anomaly.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
+              <Card className={`p-4 ${getSeverityBg(anomaly.severity)}`}>
+                <div className="flex items-start gap-4">
+                  <div className={getSeverityColor(anomaly.severity)}>
                     {getTypeIcon(anomaly.type)}
-                  <div className="flex-1">
-                      <h4 className="font-semibold">{anomaly.metricLabel}</h4>
-                        {anomaly.severity}
-                      <Check size={1
-                    <p className
-                    </p>
-                      size="sm"
-                      classNam
-                    >
-                      Remove
                   </div>
+                  
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h4 className="font-semibold">{anomaly.metricLabel}</h4>
+                        <Badge variant="outline" className={`text-xs ${getSeverityColor(anomaly.severity)}`}>
+                          {anomaly.severity}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-2"
+                          onClick={() => handleAcknowledge(anomaly.id)}
+                        >
+                          <Check size={14} />
+                          Acknowledge
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="gap-2"
+                          onClick={() => handleDismiss(anomaly.id)}
+                        >
+                          <X size={14} />
+                          Dismiss
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm">{anomaly.explanation}</p>
+                    <p className="text-sm text-muted-foreground italic">{anomaly.recommendation}</p>
+                  </div>
+                </div>
               </Card>
-          </div>
+            </motion.div>
+          ))}
+        </div>
       )}
+
+      {acknowledgedAnomalies.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-muted-foreground">Acknowledged Anomalies</h3>
+          {acknowledgedAnomalies.map((anomaly) => (
+            <Card key={anomaly.id} className="p-4 opacity-60">
+              <div className="flex items-start gap-4">
+                <div className="text-muted-foreground">
+                  {getTypeIcon(anomaly.type)}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h4 className="font-semibold">{anomaly.metricLabel}</h4>
+                      <Badge variant="outline" className="text-xs">
+                        {anomaly.severity}
+                      </Badge>
+                      <Check size={14} className="inline ml-2 text-success" />
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="gap-2"
+                      onClick={() => handleDismiss(anomaly.id)}
+                    >
+                      <X size={14} />
+                      Remove
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">{anomaly.explanation}</p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
