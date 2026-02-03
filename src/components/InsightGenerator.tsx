@@ -1,16 +1,43 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Sparkle, ArrowClockwise, Warning, CheckCircle } from '@phosphor-icons/react'
+import { toast } from 'sonner'
+import { useKV } from '@github/spark/hooks'
+
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Sparkle, ArrowClockwise } from '@phosphor-icons/react'
+import { Badge } from '@/components/ui/badge'
+
 import { InsightCard } from './InsightCard'
-import { Insight, Metric } from '@/lib/types'
-import { useKV } from '@github/spark/hooks'
-import { toast } from 'sonner'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useUserActivity, useUserStats } from './UserProfile'
 import { ExportButton } from './ExportButton'
 import { exportInsights, ExportFormat } from '@/lib/data-export'
+import { llmRateLimiter } from '@/lib/rate-limiter'
+
+import { useUserStats } from './UserProfile'
+
+// ------------------------------------------------------------------
+// Types & Interfaces
+// ------------------------------------------------------------------
+
+export interface Metric {
+  label: string
+  value: string | number
+  change?: number
+  trend?: 'up' | 'down' | 'neutral'
+  unit?: string
+}
+
+export interface Insight {
+  id: string
+  title: string
+  description: string
+  confidence: number
+  type: 'opportunity' | 'warning' | 'trend' | 'anomaly'
+  metric: string
+  timestamp: number
+  saved: boolean
+}
 
 interface InsightGeneratorProps {
   metrics: Metric[]
@@ -20,14 +47,31 @@ export function InsightGenerator({ metrics }: InsightGeneratorProps) {
   const [insights, setInsights] = useKV<Insight[]>('analytics-insights', [])
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState(0)
-  const { trackActivity } = useUserActivity()
-  const { incrementStat } = useUserStats()
+  
+  // Adjusted to use the hook from UserProfile
+  const { addActivity, incrementStat } = useUserStats()
+  const trackActivity = addActivity // Alias to match your existing logic
+
+  const [remainingRequests, setRemainingRequests] = useState(
+    llmRateLimiter ? llmRateLimiter.getRemainingRequests() : 5
+  )
   
   const generateInsights = async () => {
+    // Safety check for rate limiter
+    if (llmRateLimiter && !llmRateLimiter.canMakeRequest()) {
+      const waitTime = Math.ceil(llmRateLimiter.getTimeUntilNextRequest() / 1000)
+      toast.error('Rate limit reached', {
+        description: `Please wait ${waitTime} seconds before generating more insights.`
+      })
+      return
+    }
+
     setIsGenerating(true)
     setProgress(10)
     
     try {
+      if (llmRateLimiter) setRemainingRequests(llmRateLimiter.getRemainingRequests())
+      
       const metricsData = metrics.map(m => ({
         label: m.label,
         value: m.value,
@@ -67,11 +111,24 @@ Return format:
 
       setProgress(60)
       
-      const response = await window.spark.llm(promptText, 'gpt-4o', true)
+      const makeRequest = async () => {
+        return await (window.spark as any).llm(promptText, 'gpt-4o-mini', true)
+      }
+
+      const response = llmRateLimiter 
+        ? await llmRateLimiter.enqueueRequest(makeRequest) 
+        : await makeRequest()
       
       setProgress(80)
       
-      const parsed = JSON.parse(response)
+      // Sanitize response: Remove Markdown code blocks if present
+      let cleanResponse = response.trim()
+      if (cleanResponse.startsWith('```')) {
+        cleanResponse = cleanResponse.replace(/^```json\n?/, '').replace(/\n?```$/, '')
+      }
+
+      const parsed = JSON.parse(cleanResponse)
+      
       const newInsights: Insight[] = parsed.insights.map((insight: any, index: number) => ({
         id: `insight-${Date.now()}-${index}`,
         title: insight.title,
@@ -87,20 +144,35 @@ Return format:
       setProgress(100)
       
       incrementStat('insightsGenerated')
-      trackActivity('insight', `Generated ${newInsights.length} AI insights`, 'AI Insights')
+      trackActivity('Generated AI insights', 'insight', `Count: ${newInsights.length}`)
       
       toast.success('Insights generated successfully', {
         description: `Generated ${newInsights.length} actionable insights from your data`
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate insights:', error)
-      toast.error('Failed to generate insights', {
-        description: 'Please try again in a moment'
-      })
+      
+      const errorMessage = error?.message || String(error)
+      
+      if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
+        const waitTime = llmRateLimiter ? Math.ceil(llmRateLimiter.getTimeUntilNextRequest() / 1000) : 60
+        toast.error('API rate limit reached', {
+          description: `Too many requests. Please wait ${Math.max(waitTime, 30)} seconds before trying again.`
+        })
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        toast.error('Network error', {
+          description: 'Please check your connection and try again'
+        })
+      } else {
+        toast.error('Failed to generate insights', {
+          description: 'An unexpected error occurred. Please try again later.'
+        })
+      }
     } finally {
       setTimeout(() => {
         setIsGenerating(false)
         setProgress(0)
+        if (llmRateLimiter) setRemainingRequests(llmRateLimiter.getRemainingRequests())
       }, 500)
     }
   }
@@ -113,12 +185,12 @@ Return format:
       )
     })
     incrementStat('bookmarksCount')
-    trackActivity('bookmark', 'Bookmarked an insight', 'AI Insights')
+    trackActivity('Bookmarked an insight', 'bookmark', 'AI Insights')
   }
 
   const handleExportInsights = (format: ExportFormat, filename: string, includeHeaders: boolean) => {
     exportInsights(insights || [], format, { filename, includeHeaders })
-    trackActivity('view', `Exported insights as ${format.toUpperCase()}`, 'insights')
+    trackActivity(`Exported insights as ${format.toUpperCase()}`, 'report', 'insights')
   }
   
   return (
@@ -127,7 +199,7 @@ Return format:
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkle size={24} weight="fill" className="text-accent" />
+              <Sparkle size={24} weight="fill" className="text-purple-500" />
               <h2 className="text-xl font-bold">AI-Powered Insights</h2>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -138,24 +210,24 @@ Return format:
           <div className="flex items-center gap-2">
             <Button 
               onClick={generateInsights}
-              disabled={isGenerating}
+              disabled={isGenerating || remainingRequests === 0}
               size="lg"
-              className="flex-shrink-0 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
+              className="flex-shrink-0 gap-2"
             >
               {isGenerating ? (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <ArrowClockwise size={20} />
-                  </motion.div>
-                  Analyzing...
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  Generating...
                 </>
               ) : (
                 <>
-                  <Sparkle size={20} weight="fill" />
+                  <Sparkle size={18} weight="fill" />
                   Generate Insights
+                  {remainingRequests < 5 && (
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {remainingRequests}/5
+                    </Badge>
+                  )}
                 </>
               )}
             </Button>
