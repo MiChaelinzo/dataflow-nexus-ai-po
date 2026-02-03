@@ -103,7 +103,7 @@ export function SharedDashboards() {
     const loadUser = async () => {
       try {
         const userInfo = await window.spark.user()
-        setUser(userInfo)
+        setUser({ login: userInfo?.login || '', avatarUrl: userInfo?.avatarUrl || '' })
       } catch (error) {
         console.error('Failed to load user:', error)
       }
@@ -113,13 +113,13 @@ export function SharedDashboards() {
   }, [])
 
   useEffect(() => {
-    if (!dashboardsInitialized && (dashboards?.length ?? 0) === 0) {
+    if (!dashboardsInitialized) {
       const userName = user?.login || 'You'
       const sampleDashboards = generateSampleDashboards('user-1', userName)
       setDashboards(() => sampleDashboards)
       setDashboardsInitialized(true)
     }
-  }, [dashboardsInitialized, dashboards, setDashboards, setDashboardsInitialized, user])
+  }, [dashboardsInitialized, setDashboards, setDashboardsInitialized, user])
 
   const [newDashboard, setNewDashboard] = useState({
     name: '',

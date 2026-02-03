@@ -6,6 +6,8 @@
 ![Tailwind](https://img.shields.io/badge/Tailwind-4.1.17-38bdf8.svg)
 ![Tableau](https://img.shields.io/badge/Tableau-Cloud-E97627.svg)
 
+---
+
 ## 📋 Tableau Product(s) Used
 
 **☑️ Tableau Cloud** - Developer Platform & APIs  
@@ -77,6 +79,7 @@ npm run build
 - Live metric cards with trend indicators
 - Interactive time-series charts
 - Revenue segmentation analysis
+- **Interactive drill-down capabilities** - click any chart element for detailed breakdowns
 - Responsive design for all devices
 
 ### 2. Tableau Integration
@@ -258,6 +261,22 @@ Configure automated notification rules to send insights and alerts directly to t
 
 ### 🏢 Workspace Management
 Create and manage multiple workspaces with team sharing, permissions, and activity feeds.
+
+### ⚡ Rate Limiting & Error Handling
+Built-in protection against API rate limits with intelligent request throttling, user-friendly error messages, and graceful degradation. The platform tracks API usage in real-time and displays remaining requests to prevent errors before they occur.
+
+**Key Features:**
+- **Smart Rate Limiter**: Tracks API requests (max 5 per minute) with automatic reset
+- **Visual Indicators**: Shows remaining API quota on Generate Insight buttons
+- **Graceful Errors**: User-friendly messages for rate limits, network issues, and API failures
+- **Automatic Recovery**: Failed requests don't crash the app - error boundaries catch and display helpful fallback UI
+- **Zero Downtime**: Rate limit errors only affect the specific feature, not the entire platform
+
+**Usage Tips:**
+- Watch for the quota indicator (e.g., "3/5") next to Generate Insight buttons
+- If rate limited, wait 60 seconds before trying again
+- The platform will automatically track and reset your quota
+- All non-AI features work without any limitations
 
 ## 🚀 Quick Start
 
@@ -485,6 +504,29 @@ Additional documentation files:
 - `WORKSPACES_AND_SHARING.md` - Workspace management guide
 - `SEASONAL_INSIGHTS.md` - Seasonal analysis documentation
 - `SCHEDULED_EXPORTS.md` - Automated export scheduling guide
+
+---
+
+## 🚀 READY TO PUBLISH
+
+**Status**: ✅ **Production Ready** - 32+ iterations complete
+
+**⏰ Submit in 30-45 minutes** - Everything is ready!
+
+### 📋 Quick Start Submission
+
+**Choose Your Guide:**
+
+1. **🎯 [QUICK_SUBMIT_CARD.md](./QUICK_SUBMIT_CARD.md)** ← **FASTEST** (Print & follow)
+2. **📝 [PUBLISH_NOW.md](./PUBLISH_NOW.md)** ← **COMPLETE GUIDE** (Detailed steps)
+3. **✅ [GITHUB_PUBLICATION_READY.md](./GITHUB_PUBLICATION_READY.md)** ← **REPO CHECKLIST**
+
+### ⚡ What You Need (30-45 minutes total):
+1. 🎬 Record 5-minute demo → [VIDEO_SCRIPT.md](./VIDEO_SCRIPT.md)
+2. 🌐 Deploy backup URL → 5 minutes (optional but recommended)
+3. 📸 Take 4 screenshots → 5 minutes
+4. 📝 Submit to Devpost → 15 minutes
+
 
 ## 🤝 Contributing
 

@@ -58,7 +58,7 @@ export async function exportReplayAsShareableLink(
     views: 0
   }
 
-  await window.spark.kv.set(`shared-replay-${shareId}`, sharedData)
+  await (window.spark as any).kv.set(`shared-replay-${shareId}`, sharedData)
   
   const baseUrl = window.location.origin
   return `${baseUrl}?replay=${shareId}`
@@ -76,12 +76,12 @@ export function exportReplayData(
 }
 
 export async function getSharedReplay(shareId: string): Promise<SharedReplayData | null> {
-  const data = await window.spark.kv.get<SharedReplayData>(`shared-replay-${shareId}`)
+  const data: SharedReplayData | undefined = await (window.spark as any).kv.get(`shared-replay-${shareId}`)
   
   if (!data) return null
   
   if (data.expiresAt && data.expiresAt < Date.now()) {
-    await window.spark.kv.delete(`shared-replay-${shareId}`)
+    await (window.spark as any).kv.delete(`shared-replay-${shareId}`)
     return null
   }
   
@@ -93,7 +93,7 @@ export async function incrementReplayViews(shareId: string): Promise<void> {
   if (!data) return
   
   data.views += 1
-  await window.spark.kv.set(`shared-replay-${shareId}`, data)
+  await (window.spark as any).kv.set(`shared-replay-${shareId}`, data)
 }
 
 export async function verifyReplayPassword(shareId: string, password: string): Promise<boolean> {

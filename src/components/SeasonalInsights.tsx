@@ -57,10 +57,10 @@ export function SeasonalInsights({ metrics }: SeasonalInsightsProps) {
   }
 
   useEffect(() => {
-    if (metrics.length > 0) {
+    if (metrics.length > 0 && patterns.length === 0) {
       analyzeSeasonality()
     }
-  }, [metrics])
+  }, [])
 
   const handleApplyRecommendation = (recId: string) => {
     setAppliedRecommendations((current) => {

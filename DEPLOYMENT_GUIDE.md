@@ -1,6 +1,6 @@
 # 🚀 Deployment Guide - Alternative Hosting Options
 
-This guide provides multiple deployment options for hosting the Analytics Intelligence Platform beyond github.app, ensuring you have reliable backup URLs for interviews and presentations.
+## 📋 Table of Contents
 
 ## 📋 Table of Contents
 - [Quick Deployment Options](#quick-deployment-options)
@@ -318,157 +318,157 @@ If your app uses environment variables, set them in your hosting platform:
 - Add variables with names starting with `VITE_`
 
 ### Example Variables
-```env
-VITE_APP_NAME=Analytics Intelligence Platform
-VITE_API_URL=https://api.example.com
-```
 
-**Note:** This Spark app uses the built-in `spark.kv` persistence and `spark.user()` API, so no external environment variables are required for basic functionality.
 
----
 
-## 🎥 Alternative: Static Export for Any Host
 
-If you want maximum flexibility to host anywhere (AWS S3, your own server, etc.):
 
-### 1. Build the Project
 ```bash
-npm run build
-```
 
-### 2. Test Locally
-```bash
-npm run preview
-```
+###
 
-### 3. Upload the `dist` folder
-Upload the entire `dist` folder to any static hosting service:
-- AWS S3 + CloudFront
+
+
 - Azure Static Web Apps
-- Firebase Hosting
-- Any web server (Apache, Nginx)
 
-### 4. Server Configuration
-Ensure your server redirects all routes to `index.html` for React Router to work.
+### 4. Server Configurat
 
-**Nginx Example:**
 ```nginx
-location / {
-  try_files $uri $uri/ /index.html;
-}
-```
+  t
 
-**Apache (.htaccess):**
-```apache
-<IfModule mod_rewrite.c>
-  RewriteEngine On
+**Apache (.htaccess
+<IfModu
   RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
-</IfModule>
-```
+  R
 
+```
 ---
-
 ## 🐛 Troubleshooting
-
 ### Build Fails
-```bash
-# Clear cache and reinstall
-rm -rf node_modules package-lock.json
+# Clear cache and 
 npm install
-npm run build
-```
 
 ### 404 Errors on Routes
-- Ensure your hosting platform redirects all routes to `index.html`
 - Add redirect rules (see examples above)
 
-### Assets Not Loading
-- Check `base` path in `vite.config.ts`
-- For GitHub Pages: `base: '/repo-name/'`
-- For root domains: `base: '/'`
+- For GitHub Pages
 
-### Large Build Size
 ```bash
-# Analyze bundle size
 npm run build -- --mode production
-```
 
----
 
-## 📊 Recommended Setup for Hackathon
 
-For maximum reliability during interviews/demos:
 
-1. **Primary URL**: github.app (Spark hosting)
-2. **Backup URL #1**: Netlify (instant deploy)
-3. **Backup URL #2**: Vercel (instant deploy)
-4. **Backup Plan**: Local `npm run dev` with ngrok/localhost
-
-### Quick Netlify Deploy (2 minutes)
-```bash
+2. **Back
+4. **Backup Plan**: Loca
+### Quick Netlify 
 npm run build
-# Drag dist folder to app.netlify.com/drop
 ```
-
-### Emergency Local Demo with Public URL
-```bash
+### Emergency Local Demo with Public 
 # Install ngrok (if not installed)
-npm install -g ngrok
 
-# Start local server
 npm run dev
-
-# In another terminal, expose to internet
-ngrok http 5173
-```
+# I
 
 ---
 
-## 📝 Submission Checklist
+For your Devpost subm
 
-For your Devpost submission, include:
+- ✅ GitHub repo
+- ✅ Dem
 
-- ✅ Primary deployment URL (github.app or custom)
-- ✅ Backup deployment URL (Netlify/Vercel)
-- ✅ GitHub repository URL
-- ✅ Build instructions in README
-- ✅ Demo video (YouTube/Vimeo)
-- ✅ Screenshots of live site
 
----
 
-## 🎯 Quick Reference
+|----------|-
+| V
 
-| Platform | Speed | Difficulty | URL Format |
-|----------|-------|------------|------------|
-| Netlify | ⚡ Fast | 😊 Easy | `*.netlify.app` |
-| Vercel | ⚡ Fast | 😊 Easy | `*.vercel.app` |
-| Cloudflare | ⚡ Fast | 😊 Easy | `*.pages.dev` |
-| GitHub Pages | 🐌 Medium | 🤔 Medium | `*.github.io` |
-| Manual Upload | ⚡ Instant | 😊 Very Easy | Custom domain |
 
----
 
-## 💡 Pro Tips
 
-1. **Test Before Submission**: Always test your deployed URLs in an incognito window
-2. **Multiple Backups**: Deploy to 2-3 platforms for redundancy
-3. **Custom Domain**: Consider a custom domain for professional appearance
-4. **Monitor Uptime**: Check your deployment 1 hour before your interview
-5. **Screen Recording**: Always have a backup video of the working app
 
----
+4. **Monitor Uptime**:
 
-## 🆘 Need Help?
 
-- **Netlify Docs**: [docs.netlify.com](https://docs.netlify.com)
-- **Vercel Docs**: [vercel.com/docs](https://vercel.com/docs)
-- **Vite Deployment**: [vitejs.dev/guide/static-deploy](https://vitejs.dev/guide/static-deploy)
 
----
 
-**Ready to Deploy?** Start with Netlify's drag-and-drop option for the fastest backup URL!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

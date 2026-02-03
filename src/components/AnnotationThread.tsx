@@ -62,8 +62,8 @@ export function AnnotationThread({
         )
 
         const storageKey = `mentions-${mentionedUser.userId}`
-        const existingNotifications = await window.spark.kv.get<any[]>(storageKey) || []
-        await window.spark.kv.set(storageKey, [...existingNotifications, notification])
+        const existingNotifications: any[] = await (window.spark as any).kv.get(storageKey) || []
+        await (window.spark as any).kv.set(storageKey, [...existingNotifications, notification])
       }
     }
   }
